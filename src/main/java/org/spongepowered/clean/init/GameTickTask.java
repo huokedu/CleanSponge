@@ -6,44 +6,43 @@ import org.spongepowered.clean.SpongeGame;
 import org.spongepowered.clean.SpongeServer;
 import org.spongepowered.clean.scheduler.CoreScheduler;
 import org.spongepowered.clean.scheduler.Task;
+import org.spongepowered.clean.scheduler.condition.AndCondition;
 import org.spongepowered.clean.scheduler.condition.TasksCompleteCondition;
+import org.spongepowered.clean.scheduler.condition.TimeCondition;
 import org.spongepowered.clean.world.SpongeWorld;
 
 public class GameTickTask extends Task {
 
-    private long last = 0;
+    private long last = System.currentTimeMillis();
     private GameTickReturnTask return_task = new GameTickReturnTask();
-    private TasksCompleteCondition condition = new TasksCompleteCondition();
+    private TasksCompleteCondition task_condition = new TasksCompleteCondition();
+    private TimeCondition time_condition = new TimeCondition(0);
+    private AndCondition full_condition = new AndCondition(this.task_condition, this.time_condition);
 
     @Override
     public void execute() {
-        System.out.println("GameTick");
-        this.condition.clear();
+        this.task_condition.clear();
         for (World world : SpongeServer.insn.getWorlds()) {
             SpongeWorld sp_world = (SpongeWorld) world;
-            this.condition.addTask(sp_world.getTickTask());
+            this.task_condition.addTask(sp_world.getTickTask());
             CoreScheduler.addHighTask(sp_world.getTickTask());
         }
-        CoreScheduler.addHighTask(this.return_task, this.condition);
+        this.time_condition.setTime(this.last + 50);
+        CoreScheduler.addHighTask(this.return_task, this.full_condition);
     }
-    
+
     private class GameTickReturnTask extends Task {
 
         @Override
         protected void execute() {
-            long next = System.currentTimeMillis();
-            long delta = next - GameTickTask.this.last;
-            if (delta < 50) {
-                // Sleep for 50ms through scheduler
-            }
-            GameTickTask.this.last = next;
+            GameTickTask.this.last = System.currentTimeMillis();
             if (SpongeGame.game.getState() != GameState.SERVER_STARTED || getTaskCount() > 20) {
                 CoreScheduler.addHighTask(new ShutdownTask());
             } else {
                 CoreScheduler.addHighTask(GameTickTask.this);
             }
         }
-        
+
     }
 
 }

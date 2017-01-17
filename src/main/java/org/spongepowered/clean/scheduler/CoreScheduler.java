@@ -136,10 +136,10 @@ public class CoreScheduler {
                 }
                 if(!condition_tasks.isEmpty()) {
                     // await a new task arriving
-                    // we wake up once per millisecond to check if any of the pending
+                    // we wake up periodically to check if any of the pending
                     // conditioned tasks are now satisfied
                     while(true) {
-                        if(waiting.await(1, TimeUnit.MILLISECONDS)) {
+                        if(waiting.await(500, TimeUnit.MICROSECONDS)) {
                             break;
                         }
                         for(Iterator<ConditionedTask> it = condition_tasks.iterator(); it.hasNext();) {

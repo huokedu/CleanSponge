@@ -13,7 +13,6 @@ public class WorldTickTask extends Task {
 
     @Override
     public void execute() {
-        System.out.println("World tick");
         this.world.update();
     }
 
