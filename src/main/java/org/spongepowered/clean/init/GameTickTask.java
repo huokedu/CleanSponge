@@ -7,6 +7,7 @@ import org.spongepowered.clean.SpongeServer;
 import org.spongepowered.clean.scheduler.CoreScheduler;
 import org.spongepowered.clean.scheduler.Task;
 import org.spongepowered.clean.scheduler.condition.AndCondition;
+import org.spongepowered.clean.scheduler.condition.ResourceCondition;
 import org.spongepowered.clean.scheduler.condition.TasksCompleteCondition;
 import org.spongepowered.clean.scheduler.condition.TimeCondition;
 import org.spongepowered.clean.world.SpongeWorld;
@@ -25,7 +26,7 @@ public class GameTickTask extends Task {
         for (World world : SpongeServer.insn.getWorlds()) {
             SpongeWorld sp_world = (SpongeWorld) world;
             this.task_condition.addTask(sp_world.getTickTask());
-            CoreScheduler.addHighTask(sp_world.getTickTask());
+            CoreScheduler.addHighTask(sp_world.getTickTask(), new ResourceCondition(sp_world.getMutex()));
         }
         this.time_condition.setTime(this.last + 50);
         CoreScheduler.addHighTask(this.return_task, this.full_condition);

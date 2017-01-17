@@ -146,6 +146,7 @@ public class CoreScheduler {
                             ConditionedTask t = it.next();
                             if(t.getCondition().check()) {
                                 it.remove();
+                                waiting_count.getAndDecrement();
                                 return t.getTask();
                             }
                         }

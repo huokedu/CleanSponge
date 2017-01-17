@@ -14,6 +14,7 @@ public class WorldTickTask extends Task {
     @Override
     public void execute() {
         this.world.update();
+        this.world.getMutex().release();
     }
 
 }

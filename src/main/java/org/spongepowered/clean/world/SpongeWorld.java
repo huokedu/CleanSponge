@@ -67,6 +67,7 @@ import org.spongepowered.api.world.gen.WorldGenerator;
 import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.api.world.storage.WorldStorage;
 import org.spongepowered.api.world.weather.Weather;
+import org.spongepowered.clean.scheduler.condition.ResourceMutex;
 import org.spongepowered.clean.world.tasks.WorldTickTask;
 
 import com.flowpowered.math.vector.Vector3d;
@@ -75,6 +76,7 @@ import com.flowpowered.math.vector.Vector3i;
 public class SpongeWorld implements World {
 
     private final WorldTickTask tick_task = new WorldTickTask(this);
+    private final ResourceMutex world_mutex = new ResourceMutex();
 
     private final String name;
 
@@ -89,6 +91,10 @@ public class SpongeWorld implements World {
 
     public WorldTickTask getTickTask() {
         return this.tick_task;
+    }
+
+    public ResourceMutex getMutex() {
+        return this.world_mutex;
     }
 
     public void update() {
