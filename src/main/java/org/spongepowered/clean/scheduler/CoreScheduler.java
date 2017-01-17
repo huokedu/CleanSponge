@@ -50,6 +50,13 @@ public class CoreScheduler {
         }
     }
 
+    public static void emergencyShutdown(Throwable e) {
+        System.err.println("Sponge has crashed!");
+        e.printStackTrace();
+        stopWorkers();
+        System.exit(0);
+    }
+
     public static void waitForShutdown() throws InterruptedException {
         try {
             task_lock.lock();
@@ -72,10 +79,11 @@ public class CoreScheduler {
         try {
             task_lock.lock();
             while (true) {
-                // Check for previously attempted condition tasks whose conditions may have been fulfilled now
-                for(Iterator<ConditionedTask> it = condition_tasks.iterator(); it.hasNext();) {
+                // Check for previously attempted condition tasks whose
+                // conditions may have been fulfilled now
+                for (Iterator<ConditionedTask> it = condition_tasks.iterator(); it.hasNext();) {
                     ConditionedTask t = it.next();
-                    if(t.getCondition().check()) {
+                    if (t.getCondition().check()) {
                         it.remove();
                         return t.getTask();
                     }
@@ -83,10 +91,11 @@ public class CoreScheduler {
                 // Check for high tasks
                 Task task = high_tasks.pollFirst();
                 if (task != null) {
-                    if(task instanceof ConditionedTask) {
-                        // If it is a conditioned task then we need to check its condition
+                    if (task instanceof ConditionedTask) {
+                        // If it is a conditioned task then we need to check its
+                        // condition
                         ConditionedTask ctask = (ConditionedTask) task;
-                        if(!ctask.getCondition().check()) {
+                        if (!ctask.getCondition().check()) {
                             condition_tasks.add(ctask);
                             continue;
                         }
@@ -97,9 +106,9 @@ public class CoreScheduler {
                 // Check for normal tasks
                 task = med_tasks.pollFirst();
                 if (task != null) {
-                    if(task instanceof ConditionedTask) {
+                    if (task instanceof ConditionedTask) {
                         ConditionedTask ctask = (ConditionedTask) task;
-                        if(!ctask.getCondition().check()) {
+                        if (!ctask.getCondition().check()) {
                             condition_tasks.add(ctask);
                             continue;
                         }
@@ -110,9 +119,9 @@ public class CoreScheduler {
                 // Check for low tasks
                 task = low_tasks.pollFirst();
                 if (task != null) {
-                    if(task instanceof ConditionedTask) {
+                    if (task instanceof ConditionedTask) {
                         ConditionedTask ctask = (ConditionedTask) task;
-                        if(!ctask.getCondition().check()) {
+                        if (!ctask.getCondition().check()) {
                             condition_tasks.add(ctask);
                             continue;
                         }
@@ -123,28 +132,31 @@ public class CoreScheduler {
                 // check how many workers are waiting
                 int wait = waiting_count.incrementAndGet();
                 if (wait == workers.length && condition_tasks.isEmpty()) {
-                    // all workers are waiting and there are no tasks in the system
-                    // but we haven't recieved a shutdown yet, indicates an error preventing the
+                    // all workers are waiting and there are no tasks in the
+                    // system
+                    // but we haven't recieved a shutdown yet, indicates an
+                    // error preventing the
                     // next task from being added to the scheduler
                     if (running) {
                         System.err.println("Unexpected end of tasks");
                         waiting_count.getAndDecrement();
-                        // TODO: should change to some 'emergency' shutdown task and drop a crash report
+                        // TODO: should change to some 'emergency' shutdown task
+                        // and drop a crash report
                         return new ShutdownTask();
                     }
                     stopping.signalAll();
                 }
-                if(!condition_tasks.isEmpty()) {
+                if (!condition_tasks.isEmpty()) {
                     // await a new task arriving
                     // we wake up periodically to check if any of the pending
                     // conditioned tasks are now satisfied
-                    while(true) {
-                        if(waiting.await(500, TimeUnit.MICROSECONDS)) {
+                    while (true) {
+                        if (waiting.await(500, TimeUnit.MICROSECONDS)) {
                             break;
                         }
-                        for(Iterator<ConditionedTask> it = condition_tasks.iterator(); it.hasNext();) {
+                        for (Iterator<ConditionedTask> it = condition_tasks.iterator(); it.hasNext();) {
                             ConditionedTask t = it.next();
-                            if(t.getCondition().check()) {
+                            if (t.getCondition().check()) {
                                 it.remove();
                                 waiting_count.getAndDecrement();
                                 return t.getTask();
@@ -152,7 +164,8 @@ public class CoreScheduler {
                         }
                     }
                 } else {
-                    // there are no conditioned tasks so we simply await the next task
+                    // there are no conditioned tasks so we simply await the
+                    // next task
                     waiting.await();
                 }
                 waiting_count.getAndDecrement();
@@ -203,4 +216,5 @@ public class CoreScheduler {
     public static void addLowTask(Task task, TaskCondition condition) {
         addLowTask(new ConditionedTask(task, condition, System.currentTimeMillis()));
     }
+
 }

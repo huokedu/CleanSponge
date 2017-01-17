@@ -19,6 +19,8 @@ public class Worker extends Thread {
                 if (this.running) {
                     e.printStackTrace();
                 }
+            } catch(Throwable e) {
+                CoreScheduler.emergencyShutdown(e);
             }
         }
     }

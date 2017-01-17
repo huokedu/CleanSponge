@@ -1,7 +1,12 @@
 package org.spongepowered.clean;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameDictionary;
 import org.spongepowered.api.GameRegistry;
@@ -26,8 +31,31 @@ public class SpongeGame implements Game {
 
     private GameState state = GameState.CONSTRUCTION;
 
+    private final Logger logger = LogManager.getLogger("Sponge");
+
+    private Path rootDir;
+    private Path pluginsDir;
+    private Path worldsDir;
+    private Path configDir;
+
     private SpongeGame() {
 
+    }
+
+    public void initializeFiles() throws IOException {
+        this.rootDir = Paths.get("");
+        this.pluginsDir = this.rootDir.resolve("mods");
+        if (!Files.exists(this.pluginsDir)) {
+            Files.createDirectories(this.pluginsDir);
+        }
+        this.worldsDir = this.rootDir.resolve("worlds");
+        if (!Files.exists(this.worldsDir)) {
+            Files.createDirectories(this.worldsDir);
+        }
+        this.configDir = this.rootDir.resolve("config");
+        if (!Files.exists(this.configDir)) {
+            Files.createDirectories(this.configDir);
+        }
     }
 
     @Override

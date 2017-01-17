@@ -1,13 +1,13 @@
 package org.spongepowered.clean;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.spongepowered.api.Server;
 import org.spongepowered.api.command.source.ConsoleSource;
@@ -22,16 +22,33 @@ import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.WorldArchetype;
 import org.spongepowered.api.world.storage.ChunkLayout;
 import org.spongepowered.api.world.storage.WorldProperties;
+import org.spongepowered.clean.config.ServerProperties;
 import org.spongepowered.clean.world.SpongeWorld;
+
+import com.google.common.collect.ImmutableMap;
 
 public class SpongeServer implements Server {
 
     public static final SpongeServer insn = new SpongeServer();
 
-    private Map<String, World> worlds = new ConcurrentHashMap<>();
+    private ImmutableMap<String, Player> online_players = ImmutableMap.of();
+    private ImmutableMap<UUID, Player> online_players_uid = ImmutableMap.of();
+    private ServerProperties properties;
+
+    private ImmutableMap<String, World> worlds = ImmutableMap.of();
+    private ImmutableMap<String, WorldProperties> unloaded_worlds = ImmutableMap.of();
+    private ImmutableMap<String, WorldProperties> all_worlds = ImmutableMap.of();
 
     private SpongeServer() {
 
+    }
+
+    public ServerProperties getServerProperties() {
+        return this.properties;
+    }
+
+    public void setServerProperties(ServerProperties props) {
+        this.properties = props;
     }
 
     @Override
@@ -41,69 +58,72 @@ public class SpongeServer implements Server {
 
     @Override
     public Collection<Player> getOnlinePlayers() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.online_players.values();
     }
 
     @Override
     public int getMaxPlayers() {
-        // TODO Auto-generated method stub
-        return 0;
+        return this.properties.max_players;
     }
 
     @Override
     public Optional<Player> getPlayer(UUID uniqueId) {
-        // TODO Auto-generated method stub
-        return null;
+        checkNotNull(uniqueId, "uniqueId");
+        return Optional.ofNullable(this.online_players_uid.get(uniqueId));
     }
 
     @Override
     public Optional<Player> getPlayer(String name) {
-        // TODO Auto-generated method stub
-        return null;
+        checkNotNull(name, "name");
+        return Optional.ofNullable(this.online_players.get(name));
     }
 
     @Override
     public Collection<WorldProperties> getUnloadedWorlds() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.unloaded_worlds.values();
     }
 
     @Override
     public Collection<WorldProperties> getAllWorldProperties() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.all_worlds.values();
     }
 
     @Override
     public Optional<World> getWorld(UUID uniqueId) {
-        // TODO Auto-generated method stub
-        return null;
+        checkNotNull(uniqueId, "uniqueId");
+        for (World world : this.worlds.values()) {
+            if (uniqueId.equals(world.getUniqueId())) {
+                return Optional.of(world);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
     public Optional<World> getWorld(String worldName) {
-        // TODO Auto-generated method stub
-        return null;
+        checkNotNull(worldName, "worldName");
+        return Optional.ofNullable(this.worlds.get(worldName));
     }
 
     @Override
     public Optional<WorldProperties> getDefaultWorld() {
-        // TODO Auto-generated method stub
-        return null;
+        return Optional.ofNullable(this.all_worlds.get(getDefaultWorldName()));
     }
 
     @Override
     public String getDefaultWorldName() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.properties.level_name;
     }
 
     @Override
     public Optional<World> loadWorld(String worldName) {
+        World world = this.worlds.get(worldName);
+        if (world != null) {
+            return Optional.of(world);
+        }
         // TODO find world properties from disk
-        SpongeWorld world = new SpongeWorld(worldName);
-        this.worlds.put(worldName, world);
+        world = new SpongeWorld(worldName);
+        this.worlds = ImmutableMap.<String, World>builder().putAll(this.worlds).put(worldName, world).build();
         return Optional.of(world);
     }
 
@@ -194,7 +214,7 @@ public class SpongeServer implements Server {
     @Override
     public void setBroadcastChannel(MessageChannel channel) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -205,20 +225,18 @@ public class SpongeServer implements Server {
 
     @Override
     public boolean hasWhitelist() {
-        // TODO Auto-generated method stub
-        return false;
+        return this.properties.whitelist;
     }
 
     @Override
     public void setHasWhitelist(boolean enabled) {
-        // TODO Auto-generated method stub
-        
+        this.properties.whitelist = enabled;
+        // TODO mark properties as dirty
     }
 
     @Override
     public boolean getOnlineMode() {
-        // TODO Auto-generated method stub
-        return false;
+        return this.properties.online_mode;
     }
 
     @Override
@@ -230,13 +248,13 @@ public class SpongeServer implements Server {
     @Override
     public void shutdown() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void shutdown(Text kickMessage) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -271,20 +289,18 @@ public class SpongeServer implements Server {
 
     @Override
     public int getPlayerIdleTimeout() {
-        // TODO Auto-generated method stub
-        return 0;
+        return this.properties.player_idle_timeout;
     }
 
     @Override
     public void setPlayerIdleTimeout(int timeout) {
-        // TODO Auto-generated method stub
-        
+        this.properties.player_idle_timeout = timeout;
+        // TODO mark properties as dirty and write out
     }
 
     @Override
     public boolean isMainThread() {
-        // TODO Auto-generated method stub
-        return false;
+        throw new IllegalStateException("There is no main thread in this server model.");
     }
 
 }
