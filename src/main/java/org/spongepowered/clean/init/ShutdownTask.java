@@ -6,7 +6,7 @@ import org.spongepowered.clean.scheduler.Task;
 public class ShutdownTask extends Task {
 
     @Override
-    public void run() {
+    public void execute() {
         System.out.println("Shutdown");
 
         CoreScheduler.shutdown();
