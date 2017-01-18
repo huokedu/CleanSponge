@@ -10,20 +10,12 @@ import org.spongepowered.api.block.trait.BlockTrait;
 import org.spongepowered.api.data.Property;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.text.translation.Translation;
+import org.spongepowered.clean.registry.AbstractCatalogType;
 
-public class SBlockType implements BlockType {
-
-    private final String id;
-    private final String name;
+public class SBlockType extends AbstractCatalogType implements BlockType {
     
     public SBlockType(String id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-    
-    @Override
-    public String getId() {
-        return this.id;
+        super(id, name);
     }
 
     @Override
@@ -42,11 +34,6 @@ public class SBlockType implements BlockType {
     public Collection<Property<?, ?>> getApplicableProperties() {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
     }
 
     @Override

@@ -8,18 +8,12 @@ import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.text.translation.Translation;
+import org.spongepowered.clean.registry.AbstractCatalogType;
 
-public class SItemType implements ItemType {
+public class SItemType extends AbstractCatalogType implements ItemType {
 
-    private final String id;
-
-    public SItemType(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return this.id;
+    public SItemType(String id, String name) {
+        super(id, name);
     }
 
     @Override
@@ -53,12 +47,6 @@ public class SItemType implements ItemType {
 
     @Override
     public Optional<BlockType> getBlock() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getName() {
         // TODO Auto-generated method stub
         return null;
     }

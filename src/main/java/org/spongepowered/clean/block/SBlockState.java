@@ -22,31 +22,19 @@ import org.spongepowered.api.util.Cycleable;
 import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import org.spongepowered.clean.registry.AbstractCatalogType;
 
-public class SBlockState implements BlockState {
+public class SBlockState extends AbstractCatalogType implements BlockState {
 
     private final SBlockType type;
-    private final String id;
-    private final String name;
 
     public SBlockState(SBlockType type, String name) {
+        super(generateId(type), name);
         this.type = type;
-        this.id = generateId();
-        this.name = name;
     }
 
-    private String generateId() {
-        return this.type.getId() + "[]";
-    }
-
-    @Override
-    public String getId() {
-        return this.id;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
+    private static String generateId(SBlockType type) {
+        return type.getId() + "[]";
     }
 
     @Override

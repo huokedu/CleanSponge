@@ -8,6 +8,7 @@ import org.spongepowered.clean.Constants;
 import org.spongepowered.clean.SGame;
 import org.spongepowered.clean.SServer;
 import org.spongepowered.clean.config.ServerProperties;
+import org.spongepowered.clean.registry.RegistryModules;
 import org.spongepowered.clean.scheduler.CoreScheduler;
 import org.spongepowered.clean.scheduler.Task;
 
@@ -53,6 +54,8 @@ public class StartupTask extends Task {
             // TODO trigger crash reporter
             Throwables.propagate(e);
         }
+
+        RegistryModules.registerModules();
 
         // Load startup worlds
         // TODO actually locate startup worlds
