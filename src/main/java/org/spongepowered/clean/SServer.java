@@ -23,13 +23,11 @@ import org.spongepowered.api.world.WorldArchetype;
 import org.spongepowered.api.world.storage.ChunkLayout;
 import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.clean.config.ServerProperties;
-import org.spongepowered.clean.world.SpongeWorld;
+import org.spongepowered.clean.world.SWorld;
 
 import com.google.common.collect.ImmutableMap;
 
-public class SpongeServer implements Server {
-
-    public static final SpongeServer insn = new SpongeServer();
+public class SServer implements Server {
 
     private ImmutableMap<String, Player> online_players = ImmutableMap.of();
     private ImmutableMap<UUID, Player> online_players_uid = ImmutableMap.of();
@@ -39,7 +37,7 @@ public class SpongeServer implements Server {
     private ImmutableMap<String, WorldProperties> unloaded_worlds = ImmutableMap.of();
     private ImmutableMap<String, WorldProperties> all_worlds = ImmutableMap.of();
 
-    private SpongeServer() {
+    public SServer() {
 
     }
 
@@ -122,7 +120,7 @@ public class SpongeServer implements Server {
             return Optional.of(world);
         }
         // TODO find world properties from disk
-        world = new SpongeWorld(worldName);
+        world = new SWorld(worldName);
         this.worlds = ImmutableMap.<String, World>builder().putAll(this.worlds).put(worldName, world).build();
         return Optional.of(world);
     }

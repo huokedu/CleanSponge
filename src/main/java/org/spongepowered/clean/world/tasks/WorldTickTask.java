@@ -1,13 +1,13 @@
 package org.spongepowered.clean.world.tasks;
 
 import org.spongepowered.clean.scheduler.Task;
-import org.spongepowered.clean.world.SpongeWorld;
+import org.spongepowered.clean.world.SWorld;
 
 public class WorldTickTask extends Task {
 
-    private final SpongeWorld world;
+    private final SWorld world;
 
-    public WorldTickTask(SpongeWorld world) {
+    public WorldTickTask(SWorld world) {
         this.world = world;
     }
 

@@ -73,14 +73,14 @@ import org.spongepowered.clean.world.tasks.WorldTickTask;
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 
-public class SpongeWorld implements World {
+public class SWorld implements World {
 
     private final WorldTickTask tick_task = new WorldTickTask(this);
     private final ResourceMutex world_mutex = new ResourceMutex();
 
     private final String name;
 
-    public SpongeWorld(String name) {
+    public SWorld(String name) {
         this.name = name;
     }
 

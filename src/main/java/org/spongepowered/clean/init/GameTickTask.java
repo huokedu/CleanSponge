@@ -1,16 +1,16 @@
 package org.spongepowered.clean.init;
 
 import org.spongepowered.api.GameState;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.World;
-import org.spongepowered.clean.SpongeGame;
-import org.spongepowered.clean.SpongeServer;
+import org.spongepowered.clean.SGame;
 import org.spongepowered.clean.scheduler.CoreScheduler;
 import org.spongepowered.clean.scheduler.Task;
 import org.spongepowered.clean.scheduler.condition.AndCondition;
 import org.spongepowered.clean.scheduler.condition.ResourceCondition;
 import org.spongepowered.clean.scheduler.condition.TasksCompleteCondition;
 import org.spongepowered.clean.scheduler.condition.TimeCondition;
-import org.spongepowered.clean.world.SpongeWorld;
+import org.spongepowered.clean.world.SWorld;
 
 public class GameTickTask extends Task {
 
@@ -23,8 +23,8 @@ public class GameTickTask extends Task {
     @Override
     public void execute() {
         this.task_condition.clear();
-        for (World world : SpongeServer.insn.getWorlds()) {
-            SpongeWorld sp_world = (SpongeWorld) world;
+        for (World world : Sponge.getServer().getWorlds()) {
+            SWorld sp_world = (SWorld) world;
             this.task_condition.addTask(sp_world.getTickTask());
             CoreScheduler.addHighTask(sp_world.getTickTask(), new ResourceCondition(sp_world.getMutex()));
         }
@@ -37,7 +37,7 @@ public class GameTickTask extends Task {
         @Override
         protected void execute() {
             GameTickTask.this.last = System.currentTimeMillis();
-            if (SpongeGame.game.getState() != GameState.SERVER_STARTED || getTaskCount() > 20) {
+            if (SGame.game.getState() != GameState.SERVER_STARTED || getTaskCount() > 20) {
                 CoreScheduler.addHighTask(new ShutdownTask());
             } else {
                 CoreScheduler.addHighTask(GameTickTask.this);

@@ -1,6 +1,8 @@
 package org.spongepowered.clean;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,6 +15,7 @@ import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Server;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.asset.AssetManager;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.config.ConfigManager;
@@ -24,12 +27,36 @@ import org.spongepowered.api.plugin.PluginManager;
 import org.spongepowered.api.scheduler.Scheduler;
 import org.spongepowered.api.service.ServiceManager;
 import org.spongepowered.api.world.TeleportHelper;
+import org.spongepowered.clean.asset.SAssetManager;
+import org.spongepowered.clean.block.SPropertyRegistry;
+import org.spongepowered.clean.command.SCommandManager;
+import org.spongepowered.clean.data.SDataManager;
+import org.spongepowered.clean.event.SEventManager;
+import org.spongepowered.clean.plugin.SPluginManager;
+import org.spongepowered.clean.registry.SGameDictionary;
+import org.spongepowered.clean.registry.SGameRegistry;
+import org.spongepowered.clean.scheduler.CoreScheduler;
+import org.spongepowered.clean.scheduler.game.SScheduler;
+import org.spongepowered.clean.server.SPlatform;
+import org.spongepowered.clean.service.SServiceManager;
 
-public class SpongeGame implements Game {
+public class SGame implements Game {
 
-    public static final SpongeGame game = new SpongeGame();
+    public static final SGame game = new SGame();
 
     private GameState state = GameState.CONSTRUCTION;
+    private Platform platform = new SPlatform();
+    private Server server = new SServer();
+    private PluginManager pluginManager = new SPluginManager();
+    private EventManager eventManager = new SEventManager();
+    private AssetManager assetManager = new SAssetManager();
+    private GameRegistry gameRegistry = new SGameRegistry();
+    private GameDictionary gameDictionary = new SGameDictionary();
+    private ServiceManager serviceManager = new SServiceManager();
+    private Scheduler scheduler = new SScheduler();
+    private DataManager dataManager = new SDataManager();
+    private PropertyRegistry propertyRegistry = new SPropertyRegistry();
+    private CommandManager commandManager = new SCommandManager();
 
     private final Logger logger = LogManager.getLogger("Sponge");
 
@@ -38,7 +65,7 @@ public class SpongeGame implements Game {
     private Path worldsDir;
     private Path configDir;
 
-    private SpongeGame() {
+    private SGame() {
 
     }
 
@@ -69,80 +96,67 @@ public class SpongeGame implements Game {
 
     @Override
     public Platform getPlatform() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.platform;
     }
 
     @Override
     public boolean isServerAvailable() {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
     public Server getServer() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.server;
     }
 
     @Override
     public PluginManager getPluginManager() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.pluginManager;
     }
 
     @Override
     public EventManager getEventManager() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.eventManager;
     }
 
     @Override
     public AssetManager getAssetManager() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.assetManager;
     }
 
     @Override
     public GameRegistry getRegistry() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.gameRegistry;
     }
 
     @Override
     public GameDictionary getGameDictionary() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.gameDictionary;
     }
 
     @Override
     public ServiceManager getServiceManager() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.serviceManager;
     }
 
     @Override
     public Scheduler getScheduler() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.scheduler;
     }
 
     @Override
     public DataManager getDataManager() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.dataManager;
     }
 
     @Override
     public PropertyRegistry getPropertyRegistry() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.propertyRegistry;
     }
 
     @Override
     public CommandManager getCommandManager() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.commandManager;
     }
 
     @Override
@@ -173,6 +187,21 @@ public class SpongeGame implements Game {
     public ChannelRegistrar getChannelRegistrar() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    public void setGameObject() {
+        try {
+            Field field = Sponge.class.getDeclaredField("game");
+            field.setAccessible(true);
+
+            Field modifiersField = Field.class.getDeclaredField("modifiers");
+            modifiersField.setAccessible(true);
+            modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+
+            field.set(null, this);
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+            CoreScheduler.emergencyShutdown(e);
+        }
     }
 
 }
