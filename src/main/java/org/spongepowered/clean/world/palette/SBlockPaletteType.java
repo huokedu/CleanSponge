@@ -9,11 +9,6 @@ import org.spongepowered.clean.registry.FixedCatalogRegistryModule;
 
 public class SBlockPaletteType extends AbstractCatalogType implements BlockPaletteType {
 
-    public static void registerTypes(FixedCatalogRegistryModule<BlockPaletteType> registry) {
-        registry.register(new SBlockPaletteType("global", "Global", () -> GlobalPalette.instance));
-        registry.register(new SBlockPaletteType("local", "Local", LocalBlockPalette::new));
-    }
-
     private final Supplier<BlockPalette> builder;
 
     public SBlockPaletteType(String id, String name, Supplier<BlockPalette> builder) {
@@ -24,6 +19,12 @@ public class SBlockPaletteType extends AbstractCatalogType implements BlockPalet
     @Override
     public BlockPalette create() {
         return this.builder.get();
+    }
+
+    public static void registerTypes(FixedCatalogRegistryModule<BlockPaletteType> registry) {
+        registry.setDefaultNamespace("sponge");
+        registry.register(new SBlockPaletteType("global", "Global", () -> GlobalPalette.instance));
+        registry.register(new SBlockPaletteType("local", "Local", LocalBlockPalette::new));
     }
 
 }

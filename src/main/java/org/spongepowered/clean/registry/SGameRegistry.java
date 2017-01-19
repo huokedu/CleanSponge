@@ -7,6 +7,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -39,19 +40,35 @@ import org.spongepowered.api.text.translation.Translation;
 import org.spongepowered.api.util.ResettableBuilder;
 import org.spongepowered.api.util.rotation.Rotation;
 import org.spongepowered.api.world.extent.ExtentBufferFactory;
+import org.spongepowered.clean.SGame;
+
+import com.google.common.collect.Maps;
 
 public class SGameRegistry implements GameRegistry {
 
-    @Override
-    public <T extends CatalogType> Optional<T> getType(Class<T> typeClass, String id) {
-        // TODO Auto-generated method stub
-        return null;
+    private final Map<Class<? extends CatalogType>, CatalogRegistryModule<?>> modules = Maps.newHashMap();
+
+    public SGameRegistry() {
+
+    }
+
+    public void performDefaultRegistrations() {
+        SGame.getLogger().info("Performing initial type registrations");
+        for (CatalogRegistryModule<?> m : this.modules.values()) {
+            m.registerDefaults();
+        }
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public <T extends CatalogType> Optional<T> getType(Class<T> typeClass, String id) {
+        return ((CatalogRegistryModule<T>) this.modules.get(typeClass)).getById(id);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
     public <T extends CatalogType> Collection<T> getAllOf(Class<T> typeClass) {
-        // TODO Auto-generated method stub
-        return null;
+        return ((CatalogRegistryModule<T>) this.modules.get(typeClass)).getAll();
     }
 
     @Override
@@ -63,8 +80,12 @@ public class SGameRegistry implements GameRegistry {
     @Override
     public <T extends CatalogType> GameRegistry registerModule(Class<T> catalogClass, CatalogRegistryModule<T> registryModule)
             throws IllegalArgumentException, RegistryModuleAlreadyRegisteredException {
-        // TODO Auto-generated method stub
-        return null;
+        if (this.modules.containsKey(catalogClass)) {
+            throw new RegistryModuleAlreadyRegisteredException("Registry module for type " + catalogClass.getName() + " was already registered",
+                    this.modules.get(catalogClass));
+        }
+        this.modules.put(catalogClass, registryModule);
+        return this;
     }
 
     @Override

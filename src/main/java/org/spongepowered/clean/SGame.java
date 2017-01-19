@@ -44,6 +44,10 @@ public class SGame implements Game {
 
     public static final SGame game = new SGame();
 
+    public static Logger getLogger() {
+        return game.logger;
+    }
+
     private GameState state = GameState.CONSTRUCTION;
     private Platform platform = new SPlatform();
     private Server server = new SServer();

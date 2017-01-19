@@ -4,11 +4,13 @@ import java.io.IOException;
 
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.clean.Constants;
 import org.spongepowered.clean.SGame;
 import org.spongepowered.clean.SServer;
 import org.spongepowered.clean.config.ServerProperties;
 import org.spongepowered.clean.registry.RegistryModules;
+import org.spongepowered.clean.registry.SGameRegistry;
 import org.spongepowered.clean.scheduler.CoreScheduler;
 import org.spongepowered.clean.scheduler.Task;
 
@@ -39,9 +41,9 @@ public class StartupTask extends Task {
 
     @Override
     public void execute() {
-        System.out.printf("Loading sponge cleanroom server version %s\n", Constants.SERVER_VERSION);
-        System.out.printf("Implementing sponge api version %s\n", Constants.API_VERSION);
-        System.out.printf("Supporting minecraft version %s\n", Constants.MC_VERSION);
+        SGame.getLogger().info("Loading sponge cleanroom server version {}", Constants.SERVER_VERSION);
+        SGame.getLogger().info("Implementing sponge api version {}", Constants.API_VERSION);
+        SGame.getLogger().info("Supporting minecraft version {}", Constants.MC_VERSION);
         SGame.game.setGameObject();
         // Load config
         // TODO actually load these properties from disk
@@ -56,6 +58,10 @@ public class StartupTask extends Task {
         }
 
         RegistryModules.registerModules();
+
+        ((SGameRegistry) Sponge.getRegistry()).performDefaultRegistrations();
+
+        System.out.println("Air: " + BlockTypes.AIR);
 
         // Load startup worlds
         // TODO actually locate startup worlds
