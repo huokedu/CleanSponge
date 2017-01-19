@@ -337,7 +337,6 @@ public class SBlockType extends AbstractCatalogType implements BlockType {
     private static class Builder {
 
         private static String makeName(String id) {
-            String upper = id.toUpperCase();
             boolean nextIsUpper = true;
             String name = "";
             for (int i = 0; i < id.length(); i++) {

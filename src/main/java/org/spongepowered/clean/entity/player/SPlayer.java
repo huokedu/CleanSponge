@@ -1,4 +1,4 @@
-package org.spongepowered.clean.entity.living;
+package org.spongepowered.clean.entity.player;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +36,7 @@ import org.spongepowered.api.text.chat.ChatType;
 import org.spongepowered.api.text.chat.ChatVisibility;
 import org.spongepowered.api.text.title.Title;
 import org.spongepowered.api.util.Tristate;
+import org.spongepowered.clean.entity.living.SLiving;
 import org.spongepowered.clean.world.SWorld;
 
 import com.flowpowered.math.vector.Vector3d;
