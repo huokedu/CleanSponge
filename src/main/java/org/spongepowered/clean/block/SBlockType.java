@@ -18,6 +18,7 @@ public class SBlockType extends AbstractCatalogType implements BlockType {
 
     private final int blockId;
     private SBlockState defaultState;
+    private ItemType item = null;
 
     public SBlockType(String id, String name, int blockId) {
         super(id, name);
@@ -56,8 +57,11 @@ public class SBlockType extends AbstractCatalogType implements BlockType {
 
     @Override
     public Optional<ItemType> getItem() {
-        // TODO Auto-generated method stub
-        return null;
+        return Optional.ofNullable(this.item);
+    }
+    
+    public void setItem(ItemType type) {
+        this.item = type;
     }
 
     @Override
