@@ -93,6 +93,11 @@ public class SGame implements Game {
         return this.worldsDir;
     }
 
+    public Path getPluginsDir() {
+        return this.pluginsDir;
+    }
+
+
     @Override
     public GameState getState() {
         return this.state;

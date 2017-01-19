@@ -12,15 +12,24 @@ import org.spongepowered.api.asset.Asset;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.plugin.meta.PluginDependency;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 
 public class SPluginContainer implements PluginContainer {
 
     private final String id;
+    private String name;
+    private Optional<String> version = Optional.empty();
+    private Optional<String> description = Optional.empty();
+    private Optional<String> url = Optional.empty();
+    private List<String> authors = Lists.newArrayList();
+    private Object instance;
+    private Logger logger;
 
     public SPluginContainer(String id) {
         this.id = id;
+        this.name = id;
+        this.logger = LoggerFactory.getLogger(getId());
     }
 
     @Override
@@ -30,32 +39,51 @@ public class SPluginContainer implements PluginContainer {
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
-        return getId();
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
     public Optional<String> getVersion() {
-        // TODO Auto-generated method stub
-        return Optional.empty();
+        return this.version;
+    }
+
+    public void setVersion(String version) {
+        this.version = Optional.ofNullable(version);
     }
 
     @Override
     public Optional<String> getDescription() {
-        // TODO Auto-generated method stub
-        return Optional.empty();
+        return this.description;
+    }
+
+    public void setDescription(String desc) {
+        this.description = Optional.ofNullable(desc);
     }
 
     @Override
     public Optional<String> getUrl() {
-        // TODO Auto-generated method stub
-        return Optional.empty();
+        return this.url;
+    }
+
+    public void setUrl(String url) {
+        this.url = Optional.ofNullable(url);
     }
 
     @Override
     public List<String> getAuthors() {
-        // TODO Auto-generated method stub
-        return ImmutableList.of();
+        return this.authors;
+    }
+
+    public void addAuthor(String author) {
+        this.authors.add(author);
+    }
+
+    public void clearAuthors() {
+        this.authors.clear();
     }
 
     @Override
@@ -84,14 +112,12 @@ public class SPluginContainer implements PluginContainer {
 
     @Override
     public Optional<?> getInstance() {
-        // TODO Auto-generated method stub
-        return Optional.empty();
+        return Optional.ofNullable(this.instance);
     }
 
     @Override
     public Logger getLogger() {
-        // TODO Auto-generated method stub
-        return LoggerFactory.getLogger(getId());
+        return this.logger;
     }
 
 }
