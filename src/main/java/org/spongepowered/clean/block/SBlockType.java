@@ -12,14 +12,19 @@ import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.text.translation.Translation;
 import org.spongepowered.clean.registry.AbstractCatalogType;
 import org.spongepowered.clean.registry.FixedCatalogRegistryModule;
+import org.spongepowered.clean.world.palette.GlobalPalette;
 
 public class SBlockType extends AbstractCatalogType implements BlockType {
 
     private final int blockId;
+    private SBlockState defaultState;
 
     public SBlockType(String id, String name, int blockId) {
         super(id, name);
         this.blockId = blockId;
+        this.defaultState = new SBlockState(this, name);
+
+        GlobalPalette.instance.set(this.blockId << 4, this.defaultState);
     }
 
     public int getBlockId() {
@@ -46,8 +51,7 @@ public class SBlockType extends AbstractCatalogType implements BlockType {
 
     @Override
     public BlockState getDefaultState() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.defaultState;
     }
 
     @Override
