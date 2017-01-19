@@ -2,7 +2,15 @@ package org.spongepowered.clean;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.google.common.collect.ImmutableMap;
+import java.io.File;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+
 import org.spongepowered.api.Server;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -17,18 +25,13 @@ import org.spongepowered.api.world.WorldArchetype;
 import org.spongepowered.api.world.storage.ChunkLayout;
 import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.clean.config.ServerProperties;
+import org.spongepowered.clean.scheduler.condition.TaskCondition;
+import org.spongepowered.clean.scheduler.condition.TasksCompleteCondition;
 import org.spongepowered.clean.world.SWorld;
 import org.spongepowered.clean.world.SWorldProperties;
 import org.spongepowered.clean.world.storage.SaveHandler;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import com.google.common.collect.ImmutableMap;
 
 public class SServer implements Server {
 
@@ -68,9 +71,11 @@ public class SServer implements Server {
         this.unloaded_worlds = builder.build();
     }
 
-    public void loadStartupWorlds() {
+    public TaskCondition loadStartupWorlds() {
         // TODO load startup worlds from sponge configs as well as the default
         // world from the server.properties
+
+        return new TasksCompleteCondition();
     }
 
     public ServerProperties getServerProperties() {

@@ -190,6 +190,7 @@ public class SItemType extends AbstractCatalogType implements ItemType {
         registry.register(new Builder(BlockTypes.BRICK_STAIRS).build());
         registry.register(new Builder(BlockTypes.STONE_BRICK_STAIRS).build());
         registry.register(new Builder(BlockTypes.MYCELIUM).build());
+        registry.register(new Builder(BlockTypes.WATERLILY).build());
         registry.register(new Builder(BlockTypes.NETHER_BRICK).build());
         registry.register(new Builder(BlockTypes.NETHER_BRICK_FENCE).build());
         registry.register(new Builder(BlockTypes.NETHER_BRICK_STAIRS).build());
@@ -367,7 +368,7 @@ public class SItemType extends AbstractCatalogType implements ItemType {
         registry.register(new Builder("minecraft:cooked_fish", "Cooked Fish", 350).build());
         registry.register(new Builder("minecraft:dye", "Dye", 351).build());
         registry.register(new Builder("minecraft:bone", "Bone", 352).build());
-        registry.register(new Builder("minecraft:suger", "Suger", 353).build());
+        registry.register(new Builder("minecraft:sugar", "Sugar", 353).build());
         registry.register(new Builder("minecraft:cake", "Cake", 354).build());
         registry.register(new Builder("minecraft:bed", "Bed", 355).build());
         registry.register(new Builder("minecraft:repeater", "Diode", 356).build());
@@ -473,12 +474,14 @@ public class SItemType extends AbstractCatalogType implements ItemType {
         registry.register(new Builder("minecraft:record_chirp", "chirp", 2259).max(1).build());
         registry.register(new Builder("minecraft:record_far", "far", 2260).max(1).build());
         registry.register(new Builder("minecraft:record_mall", "mall", 2261).max(1).build());
-        registry.register(new Builder("minecraft:record_mallohi", "mallohi", 2262).max(1).build());
+        registry.register(new Builder("minecraft:record_mellohi", "mallohi", 2262).max(1).build());
         registry.register(new Builder("minecraft:record_stal", "stal", 2263).max(1).build());
         registry.register(new Builder("minecraft:record_strad", "strad", 2264).max(1).build());
         registry.register(new Builder("minecraft:record_ward", "ward", 2265).max(1).build());
         registry.register(new Builder("minecraft:record_11", "11", 2266).max(1).build());
         registry.register(new Builder("minecraft:record_wait", "wait", 2267).max(1).build());
+        
+        registry.registerAlias("minecraft:none", "minecraft:air");
     }
 
     private static class Builder {

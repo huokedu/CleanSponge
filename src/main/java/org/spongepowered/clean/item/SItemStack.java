@@ -49,8 +49,7 @@ public class SItemStack implements ItemStack {
 
     @Override
     public int getMaxStackQuantity() {
-        // TODO Auto-generated method stub
-        return 0;
+        return this.type.getMaxStackQuantity();
     }
 
     @Override
@@ -211,8 +210,7 @@ public class SItemStack implements ItemStack {
 
     @Override
     public ItemStack copy() {
-        // TODO Auto-generated method stub
-        return null;
+        return new SItemStack(this.type, this.quantity);
     }
 
 }

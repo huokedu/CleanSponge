@@ -2,17 +2,11 @@ package org.spongepowered.clean.init;
 
 import java.io.IOException;
 
-import org.spongepowered.api.GameState;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.clean.Constants;
 import org.spongepowered.clean.SGame;
-import org.spongepowered.clean.SServer;
-import org.spongepowered.clean.config.ServerProperties;
-import org.spongepowered.clean.registry.RegistryModules;
-import org.spongepowered.clean.registry.SGameRegistry;
 import org.spongepowered.clean.scheduler.CoreScheduler;
 import org.spongepowered.clean.scheduler.Task;
+import org.spongepowered.clean.scheduler.condition.TasksCompleteCondition;
 
 import com.google.common.base.Throwables;
 
@@ -45,10 +39,6 @@ public class StartupTask extends Task {
         SGame.getLogger().info("Implementing sponge api version {}", Constants.API_VERSION);
         SGame.getLogger().info("Supporting minecraft version {}", Constants.MC_VERSION);
         SGame.game.setGameObject();
-        // Load config
-        // TODO actually load these properties from disk
-        ServerProperties properties = new ServerProperties();
-        ((SServer) Sponge.getServer()).setServerProperties(properties);
 
         try {
             SGame.game.initializeFiles();
@@ -57,18 +47,17 @@ public class StartupTask extends Task {
             Throwables.propagate(e);
         }
 
-        RegistryModules.registerModules();
+        TasksCompleteCondition condition = new TasksCompleteCondition();
+        ServerPropertiesLoadTask propsLoad = new ServerPropertiesLoadTask();
+        condition.addTask(propsLoad);
+        CoreScheduler.addNormalTask(propsLoad);
+        SpongeConfigLoadTask configLoad = new SpongeConfigLoadTask();
+        condition.addTask(configLoad);
+        CoreScheduler.addNormalTask(configLoad);
 
-        ((SGameRegistry) Sponge.getRegistry()).performDefaultRegistrations();
+        PluginInitTask pluginInit = new PluginInitTask();
+        CoreScheduler.addNormalTask(pluginInit, condition);
 
-        System.out.println("Air: " + BlockTypes.AIR);
-
-        ((SServer) Sponge.getServer()).findAllWorlds();
-        SGame.getLogger().info("Located " + Sponge.getServer().getUnloadedWorlds().size() + " worlds");
-        ((SServer) Sponge.getServer()).loadStartupWorlds();
-
-        SGame.game.updateState(GameState.SERVER_STARTED);
-        CoreScheduler.addHighTask(new GameTickTask());
     }
 
 }
