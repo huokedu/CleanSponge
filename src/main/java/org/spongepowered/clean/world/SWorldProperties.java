@@ -1,11 +1,7 @@
 package org.spongepowered.clean.world;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
+import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
@@ -17,16 +13,25 @@ import org.spongepowered.api.world.SerializationBehavior;
 import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.api.world.gen.WorldGeneratorModifier;
 import org.spongepowered.api.world.storage.WorldProperties;
+import org.spongepowered.clean.world.storage.SaveHandler;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 public class SWorldProperties implements WorldProperties {
 
     private static final int CURRENT_CONTENT_VERSION = 0;
-    
-    public SWorldProperties() {
 
+    private final SaveHandler save;
+
+    public SWorldProperties(SaveHandler save) {
+        this.save = save;
+    }
+
+    public SaveHandler getSaveHandler() {
+        return this.save;
     }
 
     @Override

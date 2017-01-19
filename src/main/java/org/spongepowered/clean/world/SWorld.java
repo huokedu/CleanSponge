@@ -64,8 +64,10 @@ import org.spongepowered.api.world.storage.WorldStorage;
 import org.spongepowered.api.world.weather.Weather;
 import org.spongepowered.clean.scheduler.condition.ResourceMutex;
 import org.spongepowered.clean.world.gen.SWorldGenerator;
+import org.spongepowered.clean.world.storage.SaveHandler;
 import org.spongepowered.clean.world.tasks.WorldTickTask;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -80,12 +82,16 @@ public class SWorld implements World {
     private final ResourceMutex world_mutex = new ResourceMutex();
 
     private final String name;
+    private final SWorldProperties properties;
 
+    private final SaveHandler saveHandler;
     private final Long2ObjectOpenHashMap<SChunk> chunks = new Long2ObjectOpenHashMap<>();
-    private SWorldGenerator generator = new SWorldGenerator(this);
+    private final SWorldGenerator generator = new SWorldGenerator(this);
 
-    public SWorld(String name) {
+    public SWorld(String name, SWorldProperties props) {
         this.name = name;
+        this.properties = props;
+        this.saveHandler = props.getSaveHandler();
         // TODO setup generator based on worldtype
     }
 

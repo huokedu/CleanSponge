@@ -1,5 +1,11 @@
 package org.spongepowered.clean.registry;
 
+import org.spongepowered.api.CatalogType;
+import org.spongepowered.api.registry.CatalogRegistryModule;
+import org.spongepowered.api.util.annotation.CatalogedBy;
+import org.spongepowered.clean.SGame;
+import org.spongepowered.clean.scheduler.CoreScheduler;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
@@ -8,16 +14,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import org.spongepowered.api.CatalogType;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.registry.CatalogRegistryModule;
-import org.spongepowered.api.util.annotation.CatalogedBy;
-import org.spongepowered.clean.SGame;
-import org.spongepowered.clean.scheduler.CoreScheduler;
-
 public class FixedCatalogRegistryModule<T extends CatalogType> implements CatalogRegistryModule<T> {
 
     private final Map<String, T> types = new HashMap<>();
+    private final Map<String, String> aliases = new HashMap<>();
     private final Consumer<FixedCatalogRegistryModule<T>> registration;
     private final Class<T> type;
     private boolean closed = false;
@@ -57,6 +57,13 @@ public class FixedCatalogRegistryModule<T extends CatalogType> implements Catalo
         this.types.put(id, type);
     }
 
+    public void registerAlias(String alias, String id) {
+        if (!this.types.containsKey(id)) {
+            throw new IllegalArgumentException("Cannot add alias to non-existant type " + id);
+        }
+        this.aliases.put(alias, id);
+    }
+
     private static void set(Field field, Object type) {
         try {
             field.setAccessible(true);
@@ -78,15 +85,15 @@ public class FixedCatalogRegistryModule<T extends CatalogType> implements Catalo
         for (Class<?> c : this.catalog) {
             for (Field f : c.getDeclaredFields()) {
                 if (f.getType().equals(this.type) && Modifier.isStatic(f.getModifiers())) {
-                    T type = this.types.get(f.getName().toLowerCase());
-                    if (type == null) {
-                        type = this.types.get(this.defaultNamespace + ":" + f.getName().toLowerCase());
+                    Optional<T> type = getById(f.getName().toLowerCase());
+                    if (!type.isPresent()) {
+                        type = getById(this.defaultNamespace + ":" + f.getName().toLowerCase());
                     }
-                    if (type == null) {
+                    if (!type.isPresent()) {
                         SGame.getLogger().warn("No type found for field " + f.getName() + " in catalog " + c.getName());
                         continue;
                     }
-                    set(f, type);
+                    set(f, type.get());
                 }
             }
         }
@@ -94,6 +101,10 @@ public class FixedCatalogRegistryModule<T extends CatalogType> implements Catalo
 
     @Override
     public Optional<T> getById(String id) {
+        String alias = this.aliases.get(id);
+        if (alias != null) {
+            return Optional.ofNullable(this.types.get(alias));
+        }
         return Optional.ofNullable(this.types.get(id));
     }
 

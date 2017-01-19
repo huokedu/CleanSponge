@@ -2,13 +2,7 @@ package org.spongepowered.clean;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-
+import com.google.common.collect.ImmutableMap;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -24,8 +18,17 @@ import org.spongepowered.api.world.storage.ChunkLayout;
 import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.clean.config.ServerProperties;
 import org.spongepowered.clean.world.SWorld;
+import org.spongepowered.clean.world.SWorldProperties;
+import org.spongepowered.clean.world.storage.SaveHandler;
 
-import com.google.common.collect.ImmutableMap;
+import java.io.File;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class SServer implements Server {
 
@@ -39,6 +42,30 @@ public class SServer implements Server {
 
     public SServer() {
 
+    }
+
+    public void findAllWorlds() {
+        ImmutableMap.Builder<String, WorldProperties> builder = ImmutableMap.builder();
+
+        File worlds = SGame.game.getWorldsDir().toFile();
+        for (File world : worlds.listFiles()) {
+            if (world.isDirectory()) {
+                File data = new File(world, "level.dat");
+                if (data.exists()) {
+                    SaveHandler save = new SaveHandler(world);
+                    try {
+                        WorldProperties props = save.loadProperties();
+                        // TODO check for duplicates
+                        builder.put(props.getWorldName(), props);
+                    } catch (IOException e) {
+                        SGame.getLogger().error("Error loading world properties for world: " + world.getAbsolutePath());
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        this.unloaded_worlds = builder.build();
     }
 
     public ServerProperties getServerProperties() {
@@ -119,8 +146,19 @@ public class SServer implements Server {
         if (world != null) {
             return Optional.of(world);
         }
-        // TODO find world properties from disk
-        world = new SWorld(worldName);
+        WorldProperties props = this.unloaded_worlds.get(worldName);
+        if (props == null) {
+            return Optional.empty();
+        }
+        ImmutableMap.Builder<String, WorldProperties> builder = ImmutableMap.builder();
+        for (Map.Entry<String, WorldProperties> e : this.unloaded_worlds.entrySet()) {
+            if (e.getKey().equals(worldName)) {
+                continue;
+            }
+            builder.put(e);
+        }
+        this.unloaded_worlds = builder.build();
+        world = new SWorld(worldName, (SWorldProperties) props);
         this.worlds = ImmutableMap.<String, World>builder().putAll(this.worlds).put(worldName, world).build();
         return Optional.of(world);
     }

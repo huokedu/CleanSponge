@@ -58,7 +58,7 @@ public class SBiomeType extends AbstractCatalogType implements BiomeType {
         registry.register(new SBiomeType("minecraft:sky", "The End", 9));
         registry.register(new SBiomeType("minecraft:frozen_ocean", "Frozen Ocean", 10));
         registry.register(new SBiomeType("minecraft:frozen_river", "Frozen River", 11));
-        registry.register(new SBiomeType("minecraft:ice_flats", "Ice Flats", 12));
+        registry.register(new SBiomeType("minecraft:ice_flats", "Ice Plains", 12));
         registry.register(new SBiomeType("minecraft:ice_mountains", "Ice Mountains", 13));
         registry.register(new SBiomeType("minecraft:mushroom_island", "Mushroom Island", 14));
         registry.register(new SBiomeType("minecraft:mushroom_island_shore", "Mushroom Island Shore", 15));
@@ -100,7 +100,7 @@ public class SBiomeType extends AbstractCatalogType implements BiomeType {
         registry.register(new SBiomeType("minecraft:mutated_birch_forest", "Birch Forest M", 155));
         registry.register(new SBiomeType("minecraft:mutated_birch_forest_hills", "Birch Forest Hills M", 156));
         registry.register(new SBiomeType("minecraft:mutated_roofed_forest", "Roofed Forest M", 157));
-        registry.register(new SBiomeType("minecraft:mtuated_taiga_cold", "Cold Taiga M", 158));
+        registry.register(new SBiomeType("minecraft:mutated_taiga_cold", "Cold Taiga M", 158));
         registry.register(new SBiomeType("minecraft:mutated_redwood_taiga", "Mega Spruce Taiga", 160));
         registry.register(new SBiomeType("minecraft:mutated_redwood_taiga_hills", "Redwood Taiga Hills M", 161));
         registry.register(new SBiomeType("minecraft:mutated_extreme_hills_with_trees", "Extreme Hills+ M", 162));
@@ -109,6 +109,39 @@ public class SBiomeType extends AbstractCatalogType implements BiomeType {
         registry.register(new SBiomeType("minecraft:mutated_mesa", "Mesa (Bryce)", 165));
         registry.register(new SBiomeType("minecraft:mutated_mesa_rock", "Mesa Plateau F M", 166));
         registry.register(new SBiomeType("minecraft:mutated_mesa_clear_rock", "Mesa Plateau M", 167));
+        
+        registry.registerAlias("minecraft:beach", "minecraft:beaches");
+        registry.registerAlias("minecraft:cold_taiga", "minecraft:taiga_cold");
+        registry.registerAlias("minecraft:cold_taiga_hills", "minecraft:taiga_cold_hills");
+        registry.registerAlias("minecraft:extreme_hills_edge", "minecraft:smaller_extreme_hills");
+        registry.registerAlias("minecraft:extreme_hills_plus", "minecraft:extreme_hills_with_trees");
+        registry.registerAlias("minecraft:ice_plains", "minecraft:ice_flats");
+        registry.registerAlias("minecraft:mega_taiga", "minecraft:redwood_taiga");
+        registry.registerAlias("minecraft:mega_taiga_hills", "minecraft:redwood_taiga_hills");
+        registry.registerAlias("minecraft:mesa_plateau", "minecraft:mesa_clear_rock");
+        registry.registerAlias("minecraft:mesa_plateau_forest", "minecraft:mesa_rock");
+        registry.registerAlias("minecraft:savanna_plateau", "minecraft:savanna_rock");
+        registry.registerAlias("minecraft:birch_forest_hills_mountains", "minecraft:mutated_birch_forest_hills");
+        registry.registerAlias("minecraft:birch_forest_mountains", "minecraft:mutated_birch_forest");
+        registry.registerAlias("minecraft:cold_taiga_mountains", "minecraft:mutated_taiga_cold");
+        registry.registerAlias("minecraft:desert_mountains", "minecraft:mutated_desert");
+        registry.registerAlias("minecraft:extreme_hills_mountains", "minecraft:mutated_extreme_hills");
+        registry.registerAlias("minecraft:extreme_hills_plus_mountains", "minecraft:mutated_extreme_hills_with_trees");
+        registry.registerAlias("minecraft:flower_forest", "minecraft:mutated_forest");
+        registry.registerAlias("minecraft:ice_plains_spikes", "minecraft:mutated_ice_flats");
+        registry.registerAlias("minecraft:jungle_edge_mountains", "minecraft:mutated_jungle_edge");
+        registry.registerAlias("minecraft:jungle_mountains", "minecraft:mutated_jungle");
+        registry.registerAlias("minecraft:mega_spruce_taiga", "minecraft:mutated_redwood_taiga");
+        registry.registerAlias("minecraft:mega_spruce_taiga_hills", "minecraft:mutated_redwood_taiga_hills");
+        registry.registerAlias("minecraft:mesa_bryce", "minecraft:mutated_mesa");
+        registry.registerAlias("minecraft:mesa_plateau_forest_mountains", "minecraft:mutated_mesa_rock");
+        registry.registerAlias("minecraft:mesa_plateau_mountains", "minecraft:mutated_mesa_clear_rock");
+        registry.registerAlias("minecraft:roofed_forest_mountains", "minecraft:mutated_roofed_forest");
+        registry.registerAlias("minecraft:savanna_mountains", "minecraft:mutated_savanna");
+        registry.registerAlias("minecraft:savanna_plateau_mountains", "minecraft:mutated_savanna_rock");
+        registry.registerAlias("minecraft:sunflower_plains", "minecraft:mutated_plains");
+        registry.registerAlias("minecraft:swampland_mountains", "minecraft:mutated_swampland");
+        registry.registerAlias("minecraft:taiga_mountains", "minecraft:mutated_taiga");
     }
 
 }

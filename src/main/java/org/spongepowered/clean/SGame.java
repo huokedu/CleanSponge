@@ -89,6 +89,10 @@ public class SGame implements Game {
         }
     }
 
+    public Path getWorldsDir() {
+        return this.worldsDir;
+    }
+
     @Override
     public GameState getState() {
         return this.state;

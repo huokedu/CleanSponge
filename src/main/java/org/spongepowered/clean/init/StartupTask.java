@@ -63,6 +63,8 @@ public class StartupTask extends Task {
 
         System.out.println("Air: " + BlockTypes.AIR);
 
+        ((SServer) Sponge.getServer()).findAllWorlds();
+        SGame.getLogger().info("Located " + Sponge.getServer().getUnloadedWorlds().size() + " worlds");
         // Load startup worlds
         // TODO actually locate startup worlds
         Sponge.getServer().loadWorld("world");
