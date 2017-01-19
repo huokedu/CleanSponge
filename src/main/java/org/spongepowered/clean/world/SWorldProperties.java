@@ -22,27 +22,16 @@ import java.util.UUID;
 
 public class SWorldProperties implements WorldProperties {
 
-    private static final int CURRENT_CONTENT_VERSION = 0;
-
     private final SaveHandler save;
+    private final String name;
 
     public SWorldProperties(SaveHandler save) {
         this.save = save;
+        this.name = save.getWorldName();
     }
 
     public SaveHandler getSaveHandler() {
         return this.save;
-    }
-
-    @Override
-    public int getContentVersion() {
-        return CURRENT_CONTENT_VERSION;
-    }
-
-    @Override
-    public DataContainer toContainer() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override
@@ -53,8 +42,7 @@ public class SWorldProperties implements WorldProperties {
 
     @Override
     public String getWorldName() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.name;
     }
 
     @Override
@@ -457,6 +445,17 @@ public class SWorldProperties implements WorldProperties {
     public void setSerializationBehavior(SerializationBehavior behavior) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public int getContentVersion() {
+        return SaveHandler.CURRENT_CONTENT_VERSION;
+    }
+
+    @Override
+    public DataContainer toContainer() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

@@ -1,8 +1,13 @@
 package org.spongepowered.clean.world;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Predicate;
+
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
@@ -67,14 +72,10 @@ import org.spongepowered.clean.world.gen.SWorldGenerator;
 import org.spongepowered.clean.world.storage.SaveHandler;
 import org.spongepowered.clean.world.tasks.WorldTickTask;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.Predicate;
+import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
+
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 public class SWorld implements World {
 
@@ -119,14 +120,12 @@ public class SWorld implements World {
 
     @Override
     public Location<World> getLocation(Vector3i position) {
-        // TODO Auto-generated method stub
-        return null;
+        return new Location<World>(this, position);
     }
 
     @Override
     public Location<World> getLocation(Vector3d position) {
-        // TODO Auto-generated method stub
-        return null;
+        return new Location<World>(this, position);
     }
 
     @Override
@@ -173,8 +172,7 @@ public class SWorld implements World {
 
     @Override
     public boolean isLoaded() {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
