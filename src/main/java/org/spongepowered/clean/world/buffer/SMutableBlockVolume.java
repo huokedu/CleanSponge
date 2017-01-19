@@ -16,54 +16,22 @@ import org.spongepowered.api.world.schematic.BlockPalette;
 
 import com.flowpowered.math.vector.Vector3i;
 
-public class SMutableBlockVolume implements MutableBlockVolume {
+public class SMutableBlockVolume extends AbstractVolume implements MutableBlockVolume {
 
     private final BlockPalette palette;
-    private final Vector3i min;
-    private final Vector3i max;
-    private final Vector3i size;
 
     private final char[] data;
 
     public SMutableBlockVolume(BlockPalette palette, Vector3i min, Vector3i size) {
+        super(min, size);
         this.palette = palette;
-        this.min = min;
-        this.size = size;
-        this.max = this.min.add(size).sub(1, 1, 1);
         this.data = new char[this.size.getX() * this.size.getY() * this.size.getZ()];
         Arrays.fill(this.data, (char) (this.palette.getOrAssign(BlockTypes.AIR.getDefaultState()) & 0xFFFF));
     }
 
     @Override
-    public Vector3i getBlockMin() {
-        return this.min;
-    }
-
-    @Override
-    public Vector3i getBlockMax() {
-        return this.max;
-    }
-
-    @Override
-    public Vector3i getBlockSize() {
-        return this.size;
-    }
-
-    @Override
     public boolean containsBlock(int x, int y, int z) {
-        return this.min.getX() <= x && this.max.getX() >= x && this.min.getY() <= y && this.max.getY() >= y && this.min.getZ() <= z
-                && this.max.getZ() >= z;
-    }
-
-    private void checkRange(int x, int y, int z) {
-        if (!containsBlock(x, y, z)) {
-            throw new ArrayIndexOutOfBoundsException(
-                    "Block position (" + x + ", " + y + ", " + z + ") was outside of volume min " + this.min + " max " + this.max);
-        }
-    }
-
-    private int getIndex(int x, int y, int z) {
-        return (x - this.min.getX()) + (y - this.min.getY()) * this.size.getX() + (z - this.min.getZ()) * this.size.getX() * this.size.getZ();
+        return contains(x, y, z);
     }
 
     @Override

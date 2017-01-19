@@ -38,6 +38,7 @@ import org.spongepowered.api.world.extent.StorageType;
 import org.spongepowered.api.world.extent.UnmodifiableBiomeVolume;
 import org.spongepowered.api.world.extent.worker.MutableBiomeVolumeWorker;
 import org.spongepowered.api.world.extent.worker.MutableBlockVolumeWorker;
+import org.spongepowered.clean.world.biome.SBiomeType;
 import org.spongepowered.clean.world.buffer.SMutableBlockVolume;
 import org.spongepowered.clean.world.palette.GlobalPalette;
 
@@ -50,9 +51,15 @@ import java.util.function.Predicate;
 public class SChunk extends SMutableBlockVolume implements Chunk {
 
     public static final Vector3i CHUNK_SIZE = new Vector3i(16, 256, 16);
+    public static final Vector3i BIOME_SIZE = new Vector3i(16, 1, 16);
 
-    public SChunk(int x, int z) {
+    private final SWorld world;
+    private final byte[] biomes;
+
+    public SChunk(SWorld world, int x, int z) {
         super(GlobalPalette.instance, new Vector3i(x * 16, 0, z * 16), CHUNK_SIZE);
+        this.world = world;
+        this.biomes = new byte[16 * 16];
     }
 
     @Override
@@ -299,12 +306,6 @@ public class SChunk extends SMutableBlockVolume implements Chunk {
     }
 
     @Override
-    public void setBiome(int x, int y, int z, BiomeType biome) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public MutableBiomeVolume getBiomeView(Vector3i newMin, Vector3i newMax) {
         // TODO Auto-generated method stub
         return null;
@@ -318,32 +319,34 @@ public class SChunk extends SMutableBlockVolume implements Chunk {
 
     @Override
     public Vector3i getBiomeMin() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.min;
     }
 
     @Override
     public Vector3i getBiomeMax() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.min.add(15, 0, 15);
     }
 
     @Override
     public Vector3i getBiomeSize() {
-        // TODO Auto-generated method stub
-        return null;
+        return BIOME_SIZE;
     }
 
     @Override
     public boolean containsBiome(int x, int y, int z) {
-        // TODO Auto-generated method stub
-        return false;
+        return y == 0 && containsBlock(x, 0, z);
     }
 
     @Override
     public BiomeType getBiome(int x, int y, int z) {
-        // TODO Auto-generated method stub
-        return null;
+        int id = this.biomes[getIndex(x, y, z)] & 0xFF;
+        BiomeType type = SBiomeType.getBiome(id);
+        return type;
+    }
+
+    @Override
+    public void setBiome(int x, int y, int z, BiomeType biome) {
+        this.biomes[getIndex(x, y, z)] = (byte) ((SBiomeType) biome).getBiomeId();
     }
 
     @Override
@@ -528,8 +531,7 @@ public class SChunk extends SMutableBlockVolume implements Chunk {
 
     @Override
     public World getWorld() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.world;
     }
 
     @Override
