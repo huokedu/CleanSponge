@@ -109,7 +109,7 @@ public class SBiomeType extends AbstractCatalogType implements BiomeType {
         registry.register(new SBiomeType("minecraft:mutated_mesa", "Mesa (Bryce)", 165));
         registry.register(new SBiomeType("minecraft:mutated_mesa_rock", "Mesa Plateau F M", 166));
         registry.register(new SBiomeType("minecraft:mutated_mesa_clear_rock", "Mesa Plateau M", 167));
-        
+
         registry.registerAlias("minecraft:beach", "minecraft:beaches");
         registry.registerAlias("minecraft:cold_taiga", "minecraft:taiga_cold");
         registry.registerAlias("minecraft:cold_taiga_hills", "minecraft:taiga_cold_hills");

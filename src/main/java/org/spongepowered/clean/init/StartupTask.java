@@ -65,9 +65,7 @@ public class StartupTask extends Task {
 
         ((SServer) Sponge.getServer()).findAllWorlds();
         SGame.getLogger().info("Located " + Sponge.getServer().getUnloadedWorlds().size() + " worlds");
-        // Load startup worlds
-        // TODO actually locate startup worlds
-        Sponge.getServer().loadWorld("world");
+        ((SServer) Sponge.getServer()).loadStartupWorlds();
 
         SGame.game.updateState(GameState.SERVER_STARTED);
         CoreScheduler.addHighTask(new GameTickTask());

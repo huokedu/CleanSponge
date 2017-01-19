@@ -68,6 +68,11 @@ public class SServer implements Server {
         this.unloaded_worlds = builder.build();
     }
 
+    public void loadStartupWorlds() {
+        // TODO load startup worlds from sponge configs as well as the default
+        // world from the server.properties
+    }
+
     public ServerProperties getServerProperties() {
         return this.properties;
     }
@@ -159,6 +164,7 @@ public class SServer implements Server {
         }
         this.unloaded_worlds = builder.build();
         world = new SWorld(worldName, (SWorldProperties) props);
+        // TODO load world spawn if needed and other load operations
         this.worlds = ImmutableMap.<String, World>builder().putAll(this.worlds).put(worldName, world).build();
         return Optional.of(world);
     }
