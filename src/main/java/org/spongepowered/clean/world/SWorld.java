@@ -1,13 +1,8 @@
 package org.spongepowered.clean.world;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.Predicate;
-
+import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
@@ -68,10 +63,16 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.api.world.storage.WorldStorage;
 import org.spongepowered.api.world.weather.Weather;
 import org.spongepowered.clean.scheduler.condition.ResourceMutex;
+import org.spongepowered.clean.world.gen.SWorldGenerator;
 import org.spongepowered.clean.world.tasks.WorldTickTask;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Predicate;
 
 public class SWorld implements World {
 
@@ -80,8 +81,12 @@ public class SWorld implements World {
 
     private final String name;
 
+    private final Long2ObjectOpenHashMap<SChunk> chunks = new Long2ObjectOpenHashMap<>();
+    private SWorldGenerator generator = new SWorldGenerator(this);
+
     public SWorld(String name) {
         this.name = name;
+        // TODO setup generator based on worldtype
     }
 
     @Override
@@ -99,6 +104,11 @@ public class SWorld implements World {
 
     public void update() {
 
+    }
+
+    private void loadChunk(int x, int z) {
+        // TODO check for chunk from disk
+        // else generator with generator
     }
 
     @Override

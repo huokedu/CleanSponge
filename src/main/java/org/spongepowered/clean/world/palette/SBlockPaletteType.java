@@ -23,8 +23,8 @@ public class SBlockPaletteType extends AbstractCatalogType implements BlockPalet
 
     public static void registerTypes(FixedCatalogRegistryModule<BlockPaletteType> registry) {
         registry.setDefaultNamespace("sponge");
-        registry.register(new SBlockPaletteType("global", "Global", () -> GlobalPalette.instance));
-        registry.register(new SBlockPaletteType("local", "Local", LocalBlockPalette::new));
+        registry.register(new SBlockPaletteType("sponge:global", "Global", () -> GlobalPalette.instance));
+        registry.register(new SBlockPaletteType("sponge:local", "Local", LocalBlockPalette::new));
     }
 
 }

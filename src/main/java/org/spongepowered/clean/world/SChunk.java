@@ -1,14 +1,9 @@
 package org.spongepowered.clean.world;
 
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.Predicate;
-
+import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
-import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.ScheduledBlockUpdate;
 import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.data.DataContainer;
@@ -38,32 +33,28 @@ import org.spongepowered.api.world.biome.BiomeType;
 import org.spongepowered.api.world.extent.ArchetypeVolume;
 import org.spongepowered.api.world.extent.Extent;
 import org.spongepowered.api.world.extent.ImmutableBiomeVolume;
-import org.spongepowered.api.world.extent.ImmutableBlockVolume;
 import org.spongepowered.api.world.extent.MutableBiomeVolume;
-import org.spongepowered.api.world.extent.MutableBlockVolume;
 import org.spongepowered.api.world.extent.StorageType;
 import org.spongepowered.api.world.extent.UnmodifiableBiomeVolume;
-import org.spongepowered.api.world.extent.UnmodifiableBlockVolume;
 import org.spongepowered.api.world.extent.worker.MutableBiomeVolumeWorker;
 import org.spongepowered.api.world.extent.worker.MutableBlockVolumeWorker;
+import org.spongepowered.clean.world.buffer.SMutableBlockVolume;
+import org.spongepowered.clean.world.palette.GlobalPalette;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Predicate;
 
-public class SChunk implements Chunk {
+public class SChunk extends SMutableBlockVolume implements Chunk {
 
     public static final Vector3i CHUNK_SIZE = new Vector3i(16, 256, 16);
-    
-    private final Vector3i min;
-    private final Vector3i max;
-    private final Vector3i size;
-    
+
     public SChunk(int x, int z) {
-        this.min = new Vector3i(x * 16, 0, z * 16);
-        this.max = new Vector3i(x * 16 + 15, 255, z * 16 + 15);
-        this.size = CHUNK_SIZE;
+        super(GlobalPalette.instance, new Vector3i(x * 16, 0, z * 16), CHUNK_SIZE);
     }
-    
+
     @Override
     public Location<Chunk> getLocation(Vector3i position) {
         return new Location<Chunk>(this, position);
@@ -77,7 +68,7 @@ public class SChunk implements Chunk {
     @Override
     public boolean setBlock(int x, int y, int z, BlockState blockState, BlockChangeFlag flag, Cause cause) {
         // TODO Auto-generated method stub
-        return false;
+        return setBlock(x, y, z, blockState, cause);
     }
 
     @Override
@@ -113,7 +104,7 @@ public class SChunk implements Chunk {
     @Override
     public void removeScheduledUpdate(int x, int y, int z, ScheduledBlockUpdate update) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -142,13 +133,13 @@ public class SChunk implements Chunk {
     @Override
     public void setCreator(int x, int y, int z, UUID uuid) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void setNotifier(int x, int y, int z, UUID uuid) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -266,78 +257,6 @@ public class SChunk implements Chunk {
     }
 
     @Override
-    public boolean setBlock(int x, int y, int z, BlockState block, Cause cause) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public MutableBlockVolume getBlockView(Vector3i newMin, Vector3i newMax) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public MutableBlockVolume getBlockView(DiscreteTransform3 transform) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Vector3i getBlockMin() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Vector3i getBlockMax() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Vector3i getBlockSize() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public boolean containsBlock(int x, int y, int z) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public BlockState getBlock(int x, int y, int z) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public BlockType getBlockType(int x, int y, int z) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public UnmodifiableBlockVolume getUnmodifiableBlockView() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public MutableBlockVolume getBlockCopy(StorageType type) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ImmutableBlockVolume getImmutableBlockCopy() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public boolean hitBlock(int x, int y, int z, Direction side, Cause cause) {
         // TODO Auto-generated method stub
         return false;
@@ -382,7 +301,7 @@ public class SChunk implements Chunk {
     @Override
     public void setBiome(int x, int y, int z, BiomeType biome) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -568,7 +487,7 @@ public class SChunk implements Chunk {
     @Override
     public void setRawData(int x, int y, int z, DataView container) throws InvalidDataException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override

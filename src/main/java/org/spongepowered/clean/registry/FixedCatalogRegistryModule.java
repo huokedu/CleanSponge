@@ -52,7 +52,7 @@ public class FixedCatalogRegistryModule<T extends CatalogType> implements Catalo
         }
         String id = type.getId();
         if (!id.contains(":")) {
-            id = this.defaultNamespace + ":" + id;
+            throw new IllegalArgumentException("catalog type id had no namespace");
         }
         this.types.put(id, type);
     }
