@@ -24,19 +24,29 @@
  */
 package org.spongepowered.clean.network.packet.play.clientbound;
 
-import org.spongepowered.api.world.difficulty.Difficulty;
+import java.util.List;
+
+import org.spongepowered.clean.block.SBlockState;
+import org.spongepowered.clean.block.SBlockType;
 import org.spongepowered.clean.network.packet.Packet;
-import org.spongepowered.clean.network.packet.PacketIds;
+import org.spongepowered.clean.util.ByteBufUtil;
+
+import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
 
-public class ServerDifficultyPacket extends Packet {
+public class MultiBlockChangePacket extends Packet {
 
-    public Difficulty difficulty;
+    public int chunkx, chunkz;
+    public final List<Record> records = Lists.newArrayList();
 
-    public ServerDifficultyPacket(Difficulty difficulty) {
-        this.id = 0x0D;
-        this.difficulty = difficulty;
+    public MultiBlockChangePacket(int cx, int cz, Record... records) {
+        this.id = 0x10;
+        this.chunkx = cx;
+        this.chunkz = cz;
+        for (Record r : records) {
+            this.records.add(r);
+        }
     }
 
     @Override
@@ -46,7 +56,31 @@ public class ServerDifficultyPacket extends Packet {
 
     @Override
     public void write(ByteBuf buffer) {
-        buffer.writeByte(PacketIds.getDifficultyId(this.difficulty));
+        buffer.writeInt(this.chunkx);
+        buffer.writeInt(this.chunkz);
+        ByteBufUtil.writeVarInt(buffer, this.records.size());
+        for (Record r : this.records) {
+            int xz = ((r.x - this.chunkx) << 4) | (r.z - this.chunkz);
+            buffer.writeByte(xz);
+            buffer.writeByte(r.y);
+            int id = ((SBlockType) r.block.getType()).getBlockId();
+            id = (id << 4) | r.block.getMetaId();
+            ByteBufUtil.writeVarInt(buffer, id);
+        }
+    }
+
+    public static class Record {
+
+        public int x, y, z;
+        public SBlockState block;
+
+        public Record(int x, int y, int z, SBlockState block) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.block = block;
+        }
+
     }
 
 }

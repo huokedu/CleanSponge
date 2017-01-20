@@ -22,31 +22,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.network.packet.play.clientbound;
+package org.spongepowered.clean.network.packet.play.serverbound;
 
-import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.clean.network.packet.Packet;
-import org.spongepowered.clean.network.packet.PacketIds;
+import org.spongepowered.clean.util.ByteBufUtil;
+
+import com.flowpowered.math.vector.Vector3i;
 
 import io.netty.buffer.ByteBuf;
 
-public class ServerDifficultyPacket extends Packet {
+public class PlayerBlockPlacementPacket extends Packet {
 
-    public Difficulty difficulty;
-
-    public ServerDifficultyPacket(Difficulty difficulty) {
-        this.id = 0x0D;
-        this.difficulty = difficulty;
+    public Vector3i position;
+    public int face;
+    public int hand;
+    public float cursorx, cursory, cursorz;
+    
+    public PlayerBlockPlacementPacket() {
+        this.id = 0x1C;
     }
 
     @Override
     public void read(ByteBuf buffer) {
-        throw new UnsupportedOperationException();
+        this.position = ByteBufUtil.readPosition(buffer);
+        this.face = ByteBufUtil.readVarInt(buffer);
+        this.hand = ByteBufUtil.readVarInt(buffer);
+        this.cursorx = buffer.readFloat();
+        this.cursory = buffer.readFloat();
+        this.cursorz = buffer.readFloat();
     }
 
     @Override
     public void write(ByteBuf buffer) {
-        buffer.writeByte(PacketIds.getDifficultyId(this.difficulty));
+        throw new UnsupportedOperationException();
     }
 
 }

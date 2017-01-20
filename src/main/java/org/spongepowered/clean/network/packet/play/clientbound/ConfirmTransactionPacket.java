@@ -24,19 +24,20 @@
  */
 package org.spongepowered.clean.network.packet.play.clientbound;
 
-import org.spongepowered.api.world.difficulty.Difficulty;
-import org.spongepowered.clean.network.packet.Packet;
-import org.spongepowered.clean.network.packet.PacketIds;
-
 import io.netty.buffer.ByteBuf;
+import org.spongepowered.clean.network.packet.Packet;
 
-public class ServerDifficultyPacket extends Packet {
+public class ConfirmTransactionPacket extends Packet {
 
-    public Difficulty difficulty;
+    public byte windowid;
+    public short transactionid;
+    public boolean state;
 
-    public ServerDifficultyPacket(Difficulty difficulty) {
-        this.id = 0x0D;
-        this.difficulty = difficulty;
+    public ConfirmTransactionPacket(byte window, short transaction, boolean state) {
+        this.id = 0x11;
+        this.windowid = window;
+        this.transactionid = transaction;
+        this.state = state;
     }
 
     @Override
@@ -46,7 +47,9 @@ public class ServerDifficultyPacket extends Packet {
 
     @Override
     public void write(ByteBuf buffer) {
-        buffer.writeByte(PacketIds.getDifficultyId(this.difficulty));
+        buffer.writeByte(this.windowid);
+        buffer.writeShort(this.transactionid);
+        buffer.writeBoolean(this.state);
     }
 
 }

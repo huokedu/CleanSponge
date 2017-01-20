@@ -22,31 +22,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.network.packet.play.clientbound;
-
-import org.spongepowered.api.world.difficulty.Difficulty;
-import org.spongepowered.clean.network.packet.Packet;
-import org.spongepowered.clean.network.packet.PacketIds;
+package org.spongepowered.clean.network.packet.play.serverbound;
 
 import io.netty.buffer.ByteBuf;
+import org.spongepowered.clean.network.packet.Packet;
 
-public class ServerDifficultyPacket extends Packet {
+public class PlayerAbilitiesPacket extends Packet {
 
-    public Difficulty difficulty;
-
-    public ServerDifficultyPacket(Difficulty difficulty) {
-        this.id = 0x0D;
-        this.difficulty = difficulty;
+    public byte flags;
+    public float fly_speed;
+    public float walk_speed;
+    
+    public PlayerAbilitiesPacket() {
+        this.id = 0x12;
     }
 
     @Override
     public void read(ByteBuf buffer) {
-        throw new UnsupportedOperationException();
+        this.flags = buffer.readByte();
+        this.fly_speed = buffer.readFloat();
+        this.walk_speed = buffer.readFloat();
     }
 
     @Override
     public void write(ByteBuf buffer) {
-        buffer.writeByte(PacketIds.getDifficultyId(this.difficulty));
+        throw new UnsupportedOperationException();
     }
 
 }

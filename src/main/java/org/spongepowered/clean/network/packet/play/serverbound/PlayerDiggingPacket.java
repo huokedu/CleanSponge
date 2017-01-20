@@ -22,31 +22,60 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.network.packet.play.clientbound;
+package org.spongepowered.clean.network.packet.play.serverbound;
 
-import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.clean.network.packet.Packet;
-import org.spongepowered.clean.network.packet.PacketIds;
+import org.spongepowered.clean.util.ByteBufUtil;
+
+import com.flowpowered.math.vector.Vector3i;
 
 import io.netty.buffer.ByteBuf;
 
-public class ServerDifficultyPacket extends Packet {
+public class PlayerDiggingPacket extends Packet {
 
-    public Difficulty difficulty;
+    public static enum Status {
+        START_DIGGING,
+        CANCEL_DIGGING,
+        FINISH_DIGGING,
+        DROP_ITEM_STACK,
+        DROP_ITEM,
+        SHOOT_ARROW,
+        SWAP_ITEM_IN_HAND,
+    }
 
-    public ServerDifficultyPacket(Difficulty difficulty) {
-        this.id = 0x0D;
-        this.difficulty = difficulty;
+    public static enum Face {
+        NEG_Y,
+        POS_Y,
+        NEG_Z,
+        POS_Z,
+        NEG_X,
+        POS_X,
+        SPECIAL,
+    }
+
+    public Status status;
+    public Vector3i position;
+    public Face face;
+
+    public PlayerDiggingPacket() {
+        this.id = 0x13;
     }
 
     @Override
     public void read(ByteBuf buffer) {
-        throw new UnsupportedOperationException();
+        this.status = Status.values()[ByteBufUtil.readVarInt(buffer)];
+        this.position = ByteBufUtil.readPosition(buffer);
+        int next = buffer.readByte() & 0xFF;
+        if (next == 255) {
+            this.face = Face.SPECIAL;
+        } else {
+            this.face = Face.values()[next];
+        }
     }
 
     @Override
     public void write(ByteBuf buffer) {
-        buffer.writeByte(PacketIds.getDifficultyId(this.difficulty));
+        throw new UnsupportedOperationException();
     }
 
 }

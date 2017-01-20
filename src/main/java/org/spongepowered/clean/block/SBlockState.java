@@ -51,14 +51,20 @@ import org.spongepowered.clean.registry.AbstractCatalogType;
 public class SBlockState extends AbstractCatalogType implements BlockState {
 
     private final SBlockType type;
+    private int metaId;
 
-    public SBlockState(SBlockType type, String name) {
+    public SBlockState(SBlockType type, String name, int metaId) {
         super(generateId(type), name);
         this.type = type;
+        this.metaId = metaId;
     }
 
     private static String generateId(SBlockType type) {
         return type.getId() + "[]";
+    }
+
+    public int getMetaId() {
+        return this.metaId;
     }
 
     @Override

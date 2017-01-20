@@ -47,7 +47,7 @@ public class SBlockType extends AbstractCatalogType implements BlockType {
     public SBlockType(String id, String name, int blockId) {
         super(id, name);
         this.blockId = blockId;
-        this.defaultState = new SBlockState(this, name);
+        this.defaultState = new SBlockState(this, name, 0);
 
         GlobalPalette.instance.set(this.blockId << 4, this.defaultState);
     }

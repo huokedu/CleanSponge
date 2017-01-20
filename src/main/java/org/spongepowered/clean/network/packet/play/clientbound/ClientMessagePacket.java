@@ -24,19 +24,28 @@
  */
 package org.spongepowered.clean.network.packet.play.clientbound;
 
-import org.spongepowered.api.world.difficulty.Difficulty;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.clean.network.packet.Packet;
-import org.spongepowered.clean.network.packet.PacketIds;
+import org.spongepowered.clean.util.ByteBufUtil;
 
 import io.netty.buffer.ByteBuf;
 
-public class ServerDifficultyPacket extends Packet {
+public class ClientMessagePacket extends Packet {
 
-    public Difficulty difficulty;
+    public static enum Position {
+        CHAT,
+        SYSTEM,
+        HOTBAR,
+    }
 
-    public ServerDifficultyPacket(Difficulty difficulty) {
-        this.id = 0x0D;
-        this.difficulty = difficulty;
+    public Position position;
+    public Text message;
+
+    public ClientMessagePacket(Text msg, Position pos) {
+        this.id = 0x0F;
+        this.message = msg;
+        this.position = pos;
     }
 
     @Override
@@ -46,7 +55,8 @@ public class ServerDifficultyPacket extends Packet {
 
     @Override
     public void write(ByteBuf buffer) {
-        buffer.writeByte(PacketIds.getDifficultyId(this.difficulty));
+        ByteBufUtil.writeString(buffer, TextSerializers.JSON.serialize(this.message));
+        buffer.writeByte(this.position.ordinal());
     }
 
 }

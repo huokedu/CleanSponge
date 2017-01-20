@@ -24,19 +24,13 @@
  */
 package org.spongepowered.clean.network.packet.play.clientbound;
 
-import org.spongepowered.api.world.difficulty.Difficulty;
-import org.spongepowered.clean.network.packet.Packet;
-import org.spongepowered.clean.network.packet.PacketIds;
-
 import io.netty.buffer.ByteBuf;
+import org.spongepowered.clean.network.packet.Packet;
 
-public class ServerDifficultyPacket extends Packet {
+public class WorldBorderPacket extends Packet {
 
-    public Difficulty difficulty;
-
-    public ServerDifficultyPacket(Difficulty difficulty) {
-        this.id = 0x0D;
-        this.difficulty = difficulty;
+    public WorldBorderPacket() {
+        this.id = 0x35;
     }
 
     @Override
@@ -46,7 +40,7 @@ public class ServerDifficultyPacket extends Packet {
 
     @Override
     public void write(ByteBuf buffer) {
-        buffer.writeByte(PacketIds.getDifficultyId(this.difficulty));
+        // TODO Auto-generated method stub
     }
 
 }

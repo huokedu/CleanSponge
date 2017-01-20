@@ -22,31 +22,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.network.packet.play.clientbound;
+package org.spongepowered.clean.network.packet.play.serverbound;
 
-import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.clean.network.packet.Packet;
-import org.spongepowered.clean.network.packet.PacketIds;
+import org.spongepowered.clean.util.ByteBufUtil;
 
 import io.netty.buffer.ByteBuf;
 
-public class ServerDifficultyPacket extends Packet {
+public class UseEntityPacket extends Packet {
 
-    public Difficulty difficulty;
+    public static enum Type {
+        ATTACK,
+        INTERACT,
+        INTERACT_AT;
+    }
 
-    public ServerDifficultyPacket(Difficulty difficulty) {
-        this.id = 0x0D;
-        this.difficulty = difficulty;
+    // TODO hand pojo
+    public int target;
+    public Type type;
+    public float x, y, z;
+    public int hand;
+
+    public UseEntityPacket() {
+        this.id = 0x0A;
     }
 
     @Override
     public void read(ByteBuf buffer) {
-        throw new UnsupportedOperationException();
+        this.target = ByteBufUtil.readVarInt(buffer);
+        this.type = Type.values()[ByteBufUtil.readVarInt(buffer)];
+        if (this.type == Type.INTERACT_AT) {
+            this.x = buffer.readFloat();
+            this.y = buffer.readFloat();
+            this.z = buffer.readFloat();
+        }
+        if (this.type != Type.ATTACK) {
+            this.hand = ByteBufUtil.readVarInt(buffer);
+        }
     }
 
     @Override
     public void write(ByteBuf buffer) {
-        buffer.writeByte(PacketIds.getDifficultyId(this.difficulty));
+        throw new UnsupportedOperationException();
     }
 
 }

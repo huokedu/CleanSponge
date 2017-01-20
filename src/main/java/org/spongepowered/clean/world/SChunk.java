@@ -81,6 +81,9 @@ import com.google.common.collect.Lists;
 
 public class SChunk extends SMutableBlockVolume implements Chunk {
 
+    // TODO don't extend SMutableBlockVolume and track blocks in chunk sections
+    // (to make the packets more efficient to build)
+
     public static final Vector3i CHUNK_SIZE = new Vector3i(16, 256, 16);
     public static final Vector3i BIOME_SIZE = new Vector3i(16, 1, 16);
 

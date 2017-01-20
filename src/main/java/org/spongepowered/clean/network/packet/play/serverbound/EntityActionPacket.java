@@ -22,31 +22,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.network.packet.play.clientbound;
-
-import org.spongepowered.api.world.difficulty.Difficulty;
-import org.spongepowered.clean.network.packet.Packet;
-import org.spongepowered.clean.network.packet.PacketIds;
+package org.spongepowered.clean.network.packet.play.serverbound;
 
 import io.netty.buffer.ByteBuf;
+import org.spongepowered.clean.network.packet.Packet;
+import org.spongepowered.clean.util.ByteBufUtil;
 
-public class ServerDifficultyPacket extends Packet {
+public class EntityActionPacket extends Packet {
 
-    public Difficulty difficulty;
+    public static enum Action {
+        START_SNEAKING,
+        STOP_SNEAKING,
+        LEAVE_BED,
+        START_SPRINTING,
+        STOP_SPRINTING,
+        START_JUMP_WITH_HORSE,
+        STOP_JUMP_WITH_HORSE,
+        OPEN_HORSE_INV,
+        START_FLYING_WITH_ELYTRA,
+    }
 
-    public ServerDifficultyPacket(Difficulty difficulty) {
-        this.id = 0x0D;
-        this.difficulty = difficulty;
+    public int entityid;
+    public Action action;
+    public int jumpBoost;
+
+    public EntityActionPacket() {
+        this.id = 0x14;
     }
 
     @Override
     public void read(ByteBuf buffer) {
-        throw new UnsupportedOperationException();
+        this.entityid = ByteBufUtil.readVarInt(buffer);
+        this.action = Action.values()[ByteBufUtil.readVarInt(buffer)];
+        this.jumpBoost = ByteBufUtil.readVarInt(buffer);
     }
 
     @Override
     public void write(ByteBuf buffer) {
-        buffer.writeByte(PacketIds.getDifficultyId(this.difficulty));
+        throw new UnsupportedOperationException();
     }
 
 }

@@ -22,31 +22,55 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.network.packet.play.clientbound;
+package org.spongepowered.clean.network.packet.play.serverbound;
 
-import org.spongepowered.api.world.difficulty.Difficulty;
+import org.spongepowered.api.data.DataView;
 import org.spongepowered.clean.network.packet.Packet;
-import org.spongepowered.clean.network.packet.PacketIds;
+import org.spongepowered.clean.util.ByteBufUtil;
 
 import io.netty.buffer.ByteBuf;
 
-public class ServerDifficultyPacket extends Packet {
+public class ClickWindowPacket extends Packet {
 
-    public Difficulty difficulty;
+    public byte windowid;
+    public short slot;
+    public byte button;
+    public short actionNumber;
+    public int mode;
 
-    public ServerDifficultyPacket(Difficulty difficulty) {
-        this.id = 0x0D;
-        this.difficulty = difficulty;
+    public short slotBlockId;
+    public byte slotCount;
+    public short slotDamage;
+    public DataView slotNbt;
+
+    public ClickWindowPacket() {
+        this.id = 0x07;
     }
 
     @Override
     public void read(ByteBuf buffer) {
-        throw new UnsupportedOperationException();
+        this.windowid = buffer.readByte();
+        this.slot = buffer.readShort();
+        this.button = buffer.readByte();
+        this.actionNumber = buffer.readShort();
+        this.mode = ByteBufUtil.readVarInt(buffer);
+
+        this.slotBlockId = buffer.readShort();
+        if (this.slotBlockId != -1) {
+            this.slotCount = buffer.readByte();
+            this.slotDamage = buffer.readShort();
+            int mark = buffer.readerIndex();
+            byte next = buffer.readByte();
+            if (next != 0) {
+                buffer.readerIndex(mark);
+                this.slotNbt = ByteBufUtil.readNBT(buffer);
+            }
+        }
     }
 
     @Override
     public void write(ByteBuf buffer) {
-        buffer.writeByte(PacketIds.getDifficultyId(this.difficulty));
+        throw new UnsupportedOperationException();
     }
 
 }

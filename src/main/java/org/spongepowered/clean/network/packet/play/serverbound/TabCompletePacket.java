@@ -22,31 +22,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.network.packet.play.clientbound;
+package org.spongepowered.clean.network.packet.play.serverbound;
 
-import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.clean.network.packet.Packet;
-import org.spongepowered.clean.network.packet.PacketIds;
+import org.spongepowered.clean.util.ByteBufUtil;
+
+import com.flowpowered.math.vector.Vector3i;
 
 import io.netty.buffer.ByteBuf;
 
-public class ServerDifficultyPacket extends Packet {
+public class TabCompletePacket extends Packet {
 
-    public Difficulty difficulty;
+    public String text;
+    public boolean command;
+    public boolean hasPosition;
+    public Vector3i position;
 
-    public ServerDifficultyPacket(Difficulty difficulty) {
-        this.id = 0x0D;
-        this.difficulty = difficulty;
+    public TabCompletePacket() {
+        this.id = 0x01;
     }
 
     @Override
     public void read(ByteBuf buffer) {
-        throw new UnsupportedOperationException();
+        this.text = ByteBufUtil.readString(buffer);
+        this.command = buffer.readBoolean();
+        this.hasPosition = buffer.readBoolean();
+        if (this.hasPosition) {
+            this.position = ByteBufUtil.readPosition(buffer);
+        }
     }
 
     @Override
     public void write(ByteBuf buffer) {
-        buffer.writeByte(PacketIds.getDifficultyId(this.difficulty));
+        throw new UnsupportedOperationException();
     }
 
 }

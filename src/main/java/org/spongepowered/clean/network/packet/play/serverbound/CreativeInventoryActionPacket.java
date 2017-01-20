@@ -22,31 +22,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.network.packet.play.clientbound;
-
-import org.spongepowered.api.world.difficulty.Difficulty;
-import org.spongepowered.clean.network.packet.Packet;
-import org.spongepowered.clean.network.packet.PacketIds;
+package org.spongepowered.clean.network.packet.play.serverbound;
 
 import io.netty.buffer.ByteBuf;
 
-public class ServerDifficultyPacket extends Packet {
+import org.spongepowered.api.data.DataView;
+import org.spongepowered.clean.network.packet.Packet;
+import org.spongepowered.clean.util.ByteBufUtil;
 
-    public Difficulty difficulty;
+public class CreativeInventoryActionPacket extends Packet {
 
-    public ServerDifficultyPacket(Difficulty difficulty) {
-        this.id = 0x0D;
-        this.difficulty = difficulty;
+    public short slot;
+
+    public short slotBlockId;
+    public byte slotCount;
+    public short slotDamage;
+    public DataView slotNbt;
+
+    public CreativeInventoryActionPacket() {
+        this.id = 0x18;
     }
 
     @Override
     public void read(ByteBuf buffer) {
-        throw new UnsupportedOperationException();
+        this.slot = buffer.readShort();
+        this.slotBlockId = buffer.readShort();
+        if (this.slotBlockId != -1) {
+            this.slotCount = buffer.readByte();
+            this.slotDamage = buffer.readShort();
+            int mark = buffer.readerIndex();
+            byte next = buffer.readByte();
+            if (next != 0) {
+                buffer.readerIndex(mark);
+                this.slotNbt = ByteBufUtil.readNBT(buffer);
+            }
+        }
     }
 
     @Override
     public void write(ByteBuf buffer) {
-        buffer.writeByte(PacketIds.getDifficultyId(this.difficulty));
+        throw new UnsupportedOperationException();
     }
 
 }

@@ -24,19 +24,24 @@
  */
 package org.spongepowered.clean.network.packet.play.clientbound;
 
-import org.spongepowered.api.world.difficulty.Difficulty;
+import org.spongepowered.clean.block.SBlockState;
+import org.spongepowered.clean.block.SBlockType;
 import org.spongepowered.clean.network.packet.Packet;
-import org.spongepowered.clean.network.packet.PacketIds;
+import org.spongepowered.clean.util.ByteBufUtil;
+
+import com.flowpowered.math.vector.Vector3i;
 
 import io.netty.buffer.ByteBuf;
 
-public class ServerDifficultyPacket extends Packet {
+public class BlockChangePacket extends Packet {
 
-    public Difficulty difficulty;
+    public Vector3i position;
+    public SBlockState newBlock;
 
-    public ServerDifficultyPacket(Difficulty difficulty) {
-        this.id = 0x0D;
-        this.difficulty = difficulty;
+    public BlockChangePacket(Vector3i pos, SBlockState block) {
+        this.id = 0x07;
+        this.position = pos;
+        this.newBlock = block;
     }
 
     @Override
@@ -46,7 +51,10 @@ public class ServerDifficultyPacket extends Packet {
 
     @Override
     public void write(ByteBuf buffer) {
-        buffer.writeByte(PacketIds.getDifficultyId(this.difficulty));
+        ByteBufUtil.writePosition(buffer, this.position);
+        int id = ((SBlockType) this.newBlock.getType()).getBlockId();
+        id = (id << 4) | this.newBlock.getMetaId();
+        ByteBufUtil.writeVarInt(buffer, id);
     }
 
 }

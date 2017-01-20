@@ -22,31 +22,50 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.network.packet.play.clientbound;
-
-import org.spongepowered.api.world.difficulty.Difficulty;
-import org.spongepowered.clean.network.packet.Packet;
-import org.spongepowered.clean.network.packet.PacketIds;
+package org.spongepowered.clean.network.packet.play.serverbound;
 
 import io.netty.buffer.ByteBuf;
+import org.spongepowered.clean.network.packet.Packet;
+import org.spongepowered.clean.util.ByteBufUtil;
 
-public class ServerDifficultyPacket extends Packet {
+public class ClientSettingsPacket extends Packet {
 
-    public Difficulty difficulty;
+    public static enum ChatMode {
+        ENABLED,
+        COMMANDS_ONLY,
+        HIDDEN,
+    }
 
-    public ServerDifficultyPacket(Difficulty difficulty) {
-        this.id = 0x0D;
-        this.difficulty = difficulty;
+    public static enum MainHand {
+        LEFT,
+        RIGHT,
+    }
+
+    // TODO translate to pojo
+    public String locale;
+    public byte viewDistance;
+    public ChatMode chatmode;
+    public boolean chatcolors;
+    public byte skinparts;
+    public MainHand mainhand;
+
+    public ClientSettingsPacket() {
+        this.id = 0x04;
     }
 
     @Override
     public void read(ByteBuf buffer) {
-        throw new UnsupportedOperationException();
+        this.locale = ByteBufUtil.readString(buffer);
+        this.viewDistance = buffer.readByte();
+        this.chatmode = ChatMode.values()[ByteBufUtil.readVarInt(buffer)];
+        this.chatcolors = buffer.readBoolean();
+        this.skinparts = buffer.readByte();
+        this.mainhand = MainHand.values()[ByteBufUtil.readVarInt(buffer)];
     }
 
     @Override
     public void write(ByteBuf buffer) {
-        buffer.writeByte(PacketIds.getDifficultyId(this.difficulty));
+        throw new UnsupportedOperationException();
     }
 
 }

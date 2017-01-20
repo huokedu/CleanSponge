@@ -24,22 +24,27 @@
  */
 package org.spongepowered.clean.network.packet.play.clientbound;
 
-import io.netty.buffer.ByteBuf;
-
+import org.spongepowered.api.entity.living.player.gamemode.GameMode;
+import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.clean.network.packet.Packet;
+import org.spongepowered.clean.network.packet.PacketIds;
 import org.spongepowered.clean.util.ByteBufUtil;
+
+import io.netty.buffer.ByteBuf;
 
 public class JoinGamePacket extends Packet {
 
-    public int     entity_id;
-    public byte    gamemode;
-    public int     dimension;
-    public byte    difficulty;
-    public byte    max_players;
-    public String  level_type;
+    // TODO represent dimension and level type with pojos
+    public int entity_id;
+    public GameMode gamemode;
+    public int dimension;
+    public Difficulty difficulty;
+    public byte max_players;
+    public String level_type;
     public boolean reduced_debug;
 
-    public JoinGamePacket(int id, byte gamemode, int dimension, byte difficulty, byte max_players, String level_type, boolean reduced_debug) {
+    public JoinGamePacket(int id, GameMode gamemode, int dimension, Difficulty difficulty, byte max_players, String level_type,
+            boolean reduced_debug) {
         this.id = 0x23;
         this.entity_id = id;
         this.gamemode = gamemode;
@@ -58,9 +63,9 @@ public class JoinGamePacket extends Packet {
     @Override
     public void write(ByteBuf buffer) {
         buffer.writeInt(this.entity_id);
-        buffer.writeByte(this.gamemode);
+        buffer.writeByte(PacketIds.getGameModeId(this.gamemode));
         buffer.writeInt(this.dimension);
-        buffer.writeByte(this.difficulty);
+        buffer.writeByte(PacketIds.getDifficultyId(this.difficulty));
         buffer.writeByte(this.max_players);
         ByteBufUtil.writeString(buffer, this.level_type);
         buffer.writeBoolean(this.reduced_debug);
