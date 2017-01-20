@@ -20,5 +20,6 @@
             <AppenderRef ref="Console" level="debug"/>
             <AppenderRef ref="File"/>
         </Root>
+        <logger name="io.netty" level="warn"/>
     </Loggers>
 </Configuration>

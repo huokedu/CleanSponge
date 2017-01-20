@@ -1,13 +1,9 @@
 package org.spongepowered.clean.world;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.Predicate;
-
+import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
+import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
@@ -67,15 +63,21 @@ import org.spongepowered.api.world.gen.WorldGenerator;
 import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.api.world.storage.WorldStorage;
 import org.spongepowered.api.world.weather.Weather;
+import org.spongepowered.clean.entity.player.SPlayer;
 import org.spongepowered.clean.scheduler.condition.ResourceMutex;
 import org.spongepowered.clean.world.gen.SWorldGenerator;
 import org.spongepowered.clean.world.storage.SaveHandler;
 import org.spongepowered.clean.world.tasks.WorldTickTask;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
-
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Predicate;
 
 public class SWorld implements World {
 
@@ -89,13 +91,17 @@ public class SWorld implements World {
     private final Long2ObjectOpenHashMap<SChunk> chunks = new Long2ObjectOpenHashMap<>();
     private final SWorldGenerator generator = new SWorldGenerator(this);
 
-    private Vector3i worldSpawn;
+    private final List<SPlayer> joiningPlayers = Collections.<SPlayer>synchronizedList(Lists.newArrayList());
 
     public SWorld(String name, SWorldProperties props) {
         this.name = name;
         this.properties = props;
         this.saveHandler = props.getSaveHandler();
         // TODO setup generator based on worldtype
+    }
+
+    public void addJoiningPlayer(SPlayer player) {
+        this.joiningPlayers.add(player);
     }
 
     @Override

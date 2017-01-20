@@ -1,12 +1,5 @@
 package org.spongepowered.clean;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.api.Game;
@@ -32,6 +25,7 @@ import org.spongepowered.clean.block.SPropertyRegistry;
 import org.spongepowered.clean.command.SCommandManager;
 import org.spongepowered.clean.data.SDataManager;
 import org.spongepowered.clean.event.SEventManager;
+import org.spongepowered.clean.network.NetworkManager;
 import org.spongepowered.clean.plugin.SPluginManager;
 import org.spongepowered.clean.registry.SGameDictionary;
 import org.spongepowered.clean.registry.SGameRegistry;
@@ -40,6 +34,13 @@ import org.spongepowered.clean.scheduler.game.SScheduler;
 import org.spongepowered.clean.server.SPlatform;
 import org.spongepowered.clean.service.SServiceManager;
 import org.spongepowered.clean.world.DimensionManager;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class SGame implements Game {
 
@@ -63,6 +64,7 @@ public class SGame implements Game {
     private PropertyRegistry propertyRegistry = new SPropertyRegistry();
     private CommandManager commandManager = new SCommandManager();
     private DimensionManager dimManager = new DimensionManager();
+    private NetworkManager network = new NetworkManager();
 
     private final Logger logger = LogManager.getLogger("Sponge");
 
@@ -203,6 +205,10 @@ public class SGame implements Game {
 
     public DimensionManager getDimensionManager() {
         return this.dimManager;
+    }
+
+    public NetworkManager getNetworkManager() {
+        return this.network;
     }
 
     public void setGameObject() {

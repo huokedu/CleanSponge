@@ -86,6 +86,7 @@ public class SChunk extends SMutableBlockVolume implements Chunk {
     @Override
     public boolean setBlock(int x, int y, int z, BlockState blockState, BlockChangeFlag flag, Cause cause) {
         // TODO Auto-generated method stub
+        // TODO update physics and lighting if flags set
         return setBlock(x, y, z, blockState, cause);
     }
 

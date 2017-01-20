@@ -33,7 +33,10 @@ public class RegistryModules {
         reg.registerModule(GameMode.class, new FixedCatalogRegistryModule<>(GameMode.class, SGameMode::registerTypes));
         reg.registerModule(GeneratorType.class, new FixedCatalogRegistryModule<>(GeneratorType.class, SGeneratorType::registerTypes));
         reg.registerModule(TileEntityType.class, new FixedCatalogRegistryModule<>(TileEntityType.class, STileEntityType::registerTypes));
+    }
 
+    public static void registerLateModules() {
+        GameRegistry reg = Sponge.getRegistry();
         reg.registerModule(ItemType.class, new FixedCatalogRegistryModule<>(ItemType.class, SItemType::registerTypes));
     }
 

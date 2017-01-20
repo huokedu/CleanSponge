@@ -1,9 +1,6 @@
 package org.spongepowered.clean.entity.player;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
+import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.type.HandType;
@@ -37,15 +34,25 @@ import org.spongepowered.api.text.chat.ChatVisibility;
 import org.spongepowered.api.text.title.Title;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.clean.entity.living.SLiving;
+import org.spongepowered.clean.network.NetworkConnection;
 import org.spongepowered.clean.world.SWorld;
 
-import com.flowpowered.math.vector.Vector3d;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 public class SPlayer extends SLiving implements Player {
 
-    public SPlayer(SWorld world) {
+    private final NetworkConnection connection;
+
+    public SPlayer(SWorld world, UUID uid, NetworkConnection conn) {
         super(world);
-        // TODO Auto-generated constructor stub
+        this.connection = conn;
+    }
+
+    public NetworkConnection getNetConnection() {
+        return this.connection;
     }
 
     @Override
@@ -69,7 +76,7 @@ public class SPlayer extends SLiving implements Player {
     @Override
     public void setHelmet(ItemStack helmet) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -81,7 +88,7 @@ public class SPlayer extends SLiving implements Player {
     @Override
     public void setChestplate(ItemStack chestplate) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -93,7 +100,7 @@ public class SPlayer extends SLiving implements Player {
     @Override
     public void setLeggings(ItemStack leggings) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -105,7 +112,7 @@ public class SPlayer extends SLiving implements Player {
     @Override
     public void setBoots(ItemStack boots) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -117,7 +124,7 @@ public class SPlayer extends SLiving implements Player {
     @Override
     public void setItemInHand(HandType hand, ItemStack itemInHand) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -237,7 +244,7 @@ public class SPlayer extends SLiving implements Player {
     @Override
     public void sendMessage(Text message) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -249,67 +256,67 @@ public class SPlayer extends SLiving implements Player {
     @Override
     public void setMessageChannel(MessageChannel channel) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void spawnParticles(ParticleEffect particleEffect, Vector3d position) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void spawnParticles(ParticleEffect particleEffect, Vector3d position, int radius) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void playSound(SoundType sound, SoundCategory category, Vector3d position, double volume) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void playSound(SoundType sound, SoundCategory category, Vector3d position, double volume, double pitch) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void playSound(SoundType sound, SoundCategory category, Vector3d position, double volume, double pitch, double minVolume) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void sendTitle(Title title) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void sendBookView(BookView bookView) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void sendBlockChange(int x, int y, int z, BlockState state) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void resetBlockChange(int x, int y, int z) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void sendMessage(ChatType type, Text message) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -363,7 +370,7 @@ public class SPlayer extends SLiving implements Player {
     @Override
     public void sendResourcePack(ResourcePack pack) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -375,13 +382,13 @@ public class SPlayer extends SLiving implements Player {
     @Override
     public void kick() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void kick(Text reason) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -393,7 +400,7 @@ public class SPlayer extends SLiving implements Player {
     @Override
     public void setScoreboard(Scoreboard scoreboard) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -405,7 +412,7 @@ public class SPlayer extends SLiving implements Player {
     @Override
     public void setSleepingIgnored(boolean sleepingIgnored) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override

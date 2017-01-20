@@ -23,6 +23,7 @@ public class FixedCatalogRegistryModule<T extends CatalogType> implements Catalo
     private boolean closed = false;
     private Class<?>[] catalog;
     private String defaultNamespace = "minecraft";
+    private boolean defaultsRegistered = false;
 
     public FixedCatalogRegistryModule(Class<T> type, Consumer<FixedCatalogRegistryModule<T>> reg) {
         this.type = type;
@@ -41,9 +42,13 @@ public class FixedCatalogRegistryModule<T extends CatalogType> implements Catalo
 
     @Override
     public void registerDefaults() {
+        if (this.defaultsRegistered) {
+            return;
+        }
         this.registration.accept(this);
         this.closed = true;
         fillCatalog();
+        this.defaultsRegistered = true;
     }
 
     public void register(T type) {

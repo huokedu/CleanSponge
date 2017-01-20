@@ -18,7 +18,8 @@ public class PluginInitTask extends Task {
     @Override
     protected void execute() {
         RegistryModules.registerModules();
-
+        ((SGameRegistry) Sponge.getRegistry()).performDefaultRegistrations();
+        RegistryModules.registerLateModules();
         ((SGameRegistry) Sponge.getRegistry()).performDefaultRegistrations();
 
         SPluginManager plugins = (SPluginManager) Sponge.getPluginManager();
