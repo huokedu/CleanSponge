@@ -8,6 +8,7 @@ import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.clean.data.DataQueries;
 import org.spongepowered.clean.nbt.NbtIO;
+import org.spongepowered.clean.world.SChunk;
 import org.spongepowered.clean.world.SWorldProperties;
 
 public class SaveHandler {
@@ -28,13 +29,19 @@ public class SaveHandler {
     public WorldProperties loadProperties() throws IOException {
         File levelDatFile = new File(this.worldDir, "level.dat");
         if (!levelDatFile.exists()) {
-            return new SWorldProperties(this);
+            throw new IllegalStateException("Cannot load properties of world " + this.worldDir.getAbsolutePath());
         }
-        SWorldProperties props = new SWorldProperties(this);
         DataView levelDat = NbtIO.read(levelDatFile).getView(DataQuery.of("Data")).get();
-        // TODO load data from level.dat
+        SWorldProperties props = new SWorldProperties(this, levelDat);
         this.name = levelDat.getString(DataQueries.LEVEL_NAME).get();
         return props;
+    }
+
+    public SChunk loadChunk(int x, int z) {
+        // TODO make sure a not world-synced load for this chunk is not already
+        // in flight or queued
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

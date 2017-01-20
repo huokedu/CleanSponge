@@ -39,6 +39,7 @@ import org.spongepowered.clean.scheduler.CoreScheduler;
 import org.spongepowered.clean.scheduler.game.SScheduler;
 import org.spongepowered.clean.server.SPlatform;
 import org.spongepowered.clean.service.SServiceManager;
+import org.spongepowered.clean.world.DimensionManager;
 
 public class SGame implements Game {
 
@@ -61,6 +62,7 @@ public class SGame implements Game {
     private DataManager dataManager = new SDataManager();
     private PropertyRegistry propertyRegistry = new SPropertyRegistry();
     private CommandManager commandManager = new SCommandManager();
+    private DimensionManager dimManager = new DimensionManager();
 
     private final Logger logger = LogManager.getLogger("Sponge");
 
@@ -96,7 +98,6 @@ public class SGame implements Game {
     public Path getPluginsDir() {
         return this.pluginsDir;
     }
-
 
     @Override
     public GameState getState() {
@@ -186,20 +187,22 @@ public class SGame implements Game {
 
     @Override
     public Path getGameDirectory() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.rootDir;
     }
 
     @Override
     public Path getSavesDirectory() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.worldsDir;
     }
 
     @Override
     public ChannelRegistrar getChannelRegistrar() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    public DimensionManager getDimensionManager() {
+        return this.dimManager;
     }
 
     public void setGameObject() {

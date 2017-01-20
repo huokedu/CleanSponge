@@ -56,10 +56,21 @@ public class SChunk extends SMutableBlockVolume implements Chunk {
     private final SWorld world;
     private final byte[] biomes;
 
+    private boolean physics;
+    private boolean lighting;
+
     public SChunk(SWorld world, int x, int z) {
         super(GlobalPalette.instance, new Vector3i(x * 16, 0, z * 16), CHUNK_SIZE);
         this.world = world;
         this.biomes = new byte[16 * 16];
+    }
+
+    public void setPhysics(boolean state) {
+        this.physics = state;
+    }
+
+    public void setLighting(boolean state) {
+        this.lighting = state;
     }
 
     @Override

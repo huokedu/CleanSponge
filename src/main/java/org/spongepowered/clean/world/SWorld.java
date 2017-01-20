@@ -89,6 +89,8 @@ public class SWorld implements World {
     private final Long2ObjectOpenHashMap<SChunk> chunks = new Long2ObjectOpenHashMap<>();
     private final SWorldGenerator generator = new SWorldGenerator(this);
 
+    private Vector3i worldSpawn;
+
     public SWorld(String name, SWorldProperties props) {
         this.name = name;
         this.properties = props;
@@ -109,13 +111,35 @@ public class SWorld implements World {
         return this.world_mutex;
     }
 
+    public void init() {
+        if (this.properties.doesKeepSpawnLoaded() || this.properties.doesGenerateSpawnOnLoad()) {
+
+        }
+    }
+
     public void update() {
 
     }
 
-    private void loadChunk(int x, int z) {
-        // TODO check for chunk from disk
-        // else generator with generator
+    private SChunk loadChunk(int x, int z) {
+        SChunk chunk = getLoadedChunk(x, z);
+        if (chunk != null) {
+            return chunk;
+        }
+        chunk = this.saveHandler.loadChunk(x, z);
+        long key = (x << 32) | z;
+        if (chunk != null) {
+            this.chunks.put(key, chunk);
+            return chunk;
+        }
+        chunk = this.generator.generateChunk(x, z);
+        this.chunks.put(key, chunk);
+        return chunk;
+    }
+
+    private SChunk getLoadedChunk(int x, int z) {
+        long key = (x << 32) | z;
+        return this.chunks.get(key);
     }
 
     @Override
@@ -126,12 +150,6 @@ public class SWorld implements World {
     @Override
     public Location<World> getLocation(Vector3d position) {
         return new Location<World>(this, position);
-    }
-
-    @Override
-    public boolean setBlock(int x, int y, int z, BlockState blockState, BlockChangeFlag flag, Cause cause) {
-        // TODO Auto-generated method stub
-        return false;
     }
 
     @Override
@@ -357,14 +375,19 @@ public class SWorld implements World {
 
     @Override
     public BlockState getBlock(int x, int y, int z) {
-        // TODO Auto-generated method stub
-        return null;
+        SChunk chunk = loadChunk(x >> 4, z >> 4);
+        return chunk.getBlock(x, y, z);
     }
 
     @Override
     public BlockType getBlockType(int x, int y, int z) {
-        // TODO Auto-generated method stub
-        return null;
+        return getBlock(x, y, z).getType();
+    }
+
+    @Override
+    public boolean setBlock(int x, int y, int z, BlockState blockState, BlockChangeFlag flag, Cause cause) {
+        SChunk chunk = loadChunk(x >> 4, z >> 4);
+        return chunk.setBlock(x, y, z, blockState, flag, cause);
     }
 
     @Override
@@ -428,12 +451,6 @@ public class SWorld implements World {
     }
 
     @Override
-    public void setBiome(int x, int y, int z, BiomeType biome) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public MutableBiomeVolume getBiomeView(Vector3i newMin, Vector3i newMax) {
         // TODO Auto-generated method stub
         return null;
@@ -473,6 +490,12 @@ public class SWorld implements World {
     public BiomeType getBiome(int x, int y, int z) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public void setBiome(int x, int y, int z, BiomeType biome) {
+        // TODO Auto-generated method stub
+
     }
 
     @Override
@@ -621,8 +644,7 @@ public class SWorld implements World {
 
     @Override
     public UUID getUniqueId() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.properties.getUniqueId();
     }
 
     @Override
@@ -771,8 +793,7 @@ public class SWorld implements World {
 
     @Override
     public Optional<Chunk> getChunk(int cx, int cy, int cz) {
-        // TODO Auto-generated method stub
-        return null;
+        return Optional.ofNullable(getLoadedChunk(cx, cz));
     }
 
     @Override
@@ -788,9 +809,9 @@ public class SWorld implements World {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Iterable<Chunk> getLoadedChunks() {
-        // TODO Auto-generated method stub
-        return null;
+        return (Collection) this.chunks.values();
     }
 
     @Override

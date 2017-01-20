@@ -1,7 +1,12 @@
 package org.spongepowered.clean.world;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
@@ -13,21 +18,95 @@ import org.spongepowered.api.world.SerializationBehavior;
 import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.api.world.gen.WorldGeneratorModifier;
 import org.spongepowered.api.world.storage.WorldProperties;
+import org.spongepowered.clean.data.DataQueries;
+import org.spongepowered.clean.entity.player.SGameMode;
 import org.spongepowered.clean.world.storage.SaveHandler;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
+import com.google.common.collect.Lists;
 
 public class SWorldProperties implements WorldProperties {
 
     private final SaveHandler save;
     private final String name;
 
-    public SWorldProperties(SaveHandler save) {
+    private boolean enabled;
+    private boolean loadsOnStartup;
+    private boolean keepsSpawnLoaded;
+    private boolean generateSpawnOnLoad;
+    private long seed;
+    private GameMode gamemode;
+    private GeneratorType generatorType;
+    private List<WorldGeneratorModifier> modifiers;
+    private DimensionType dimension;
+    private Difficulty difficulty;
+    private boolean mapFeatures;
+    private boolean hardcore;
+    private DataContainer customSettings;
+    private PortalAgentType portalAgent;
+    private boolean pvp;
+    private boolean commandsAllowed;
+    private boolean generateBonusChest;
+    private SerializationBehavior serialization;
+
+    private int version;
+    private boolean initialized;
+    private long lastload;
+    private long time;
+    private long daytime;
+    private Vector3i worldSpawn;
+    private boolean raining;
+    private int raintime;
+    private boolean thundering;
+    private int thundertime;
+    private int clearWeatherTime;
+
+    public SWorldProperties(SaveHandler save, DataView levelDat) {
         this.save = save;
         this.name = save.getWorldName();
+
+        this.version = levelDat.getInt(DataQueries.LEVEL_VERSION).orElse(19133);
+        this.initialized = levelDat.getBoolean(DataQueries.LEVEL_INITIALIZED).orElse(true);
+        String generatorName = levelDat.getString(DataQueries.LEVEL_GENERATOR_NAME).orElse("default");
+        this.generatorType = Sponge.getRegistry().getType(GeneratorType.class, generatorName).get();
+        // TODO int generatorVersion =
+        // levelDat.getInt(DataQueries.LEVEL_GENERATOR_VERSION).orElse(0);
+        // TODO String generatorSettings =
+        // levelDat.getString(DataQueries.LEVEL_GENERATOR_OPTIONS).orElse("");
+        this.seed = levelDat.getLong(DataQueries.LEVEL_RANDOM_SEED).get();
+        this.mapFeatures = levelDat.getBoolean(DataQueries.LEVEL_MAP_FEATURES).orElse(true);
+        this.lastload = levelDat.getLong(DataQueries.LEVEL_LAST_PLAYED).orElse(System.currentTimeMillis());
+        // TODO size on disk?
+        this.commandsAllowed = levelDat.getBoolean(DataQueries.LEVEL_ALLOW_COMMANDS).orElse(true);
+        this.hardcore = levelDat.getBoolean(DataQueries.LEVEL_HARDCORE).orElse(false);
+        int gametype = levelDat.getInt(DataQueries.LEVEL_GAME_TYPE).orElse(0);
+        this.gamemode = SGameMode.getById(gametype);
+        byte difficultyId = levelDat.getByte(DataQueries.LEVEL_DIFFICULTY).orElse((byte) 2);
+        this.difficulty = SDifficulty.getById(difficultyId);
+//         TODO boolean difficultyLocked = levelDat.getBoolean(DataQueries.LEVEL_DIFFICULTY_LOCKED).orElse(false);
+        this.time = levelDat.getLong(DataQueries.LEVEL_TIME).orElse(0L);
+        this.daytime = levelDat.getLong(DataQueries.LEVEL_DAY_TIME).orElse(0L);
+        int spawnx = levelDat.getInt(DataQueries.LEVEL_SPAWN_X).orElse(0);
+        int spawny = levelDat.getInt(DataQueries.LEVEL_SPAWN_Y).orElse(64);
+        int spawnz = levelDat.getInt(DataQueries.LEVEL_SPAWN_Z).orElse(0);
+        this.worldSpawn = new Vector3i(spawnx, spawny, spawnz);
+        // TODO world border props
+        this.raining = levelDat.getBoolean(DataQueries.LEVEL_RAINING).orElse(false);
+        this.raintime = levelDat.getInt(DataQueries.LEVEL_RAIN_TIME).orElse(0);
+        this.thundering = levelDat.getBoolean(DataQueries.LEVEL_THUNDERING).orElse(false);
+        this.thundertime = levelDat.getInt(DataQueries.LEVEL_THUNDER_TIME).orElse(0);
+        this.clearWeatherTime = levelDat.getInt(DataQueries.LEVEL_CLEAR_WEATHER_TIME).orElse(0);
+
+        // TODO gamerules
+        // TODO additional version info
+
+        // TODO load sponge level dat
+
+        // TODO load from sponge conf
+        this.enabled = true;
+        // TODO end has extra data that needs to be loaded here
+
     }
 
     public SaveHandler getSaveHandler() {
@@ -36,8 +115,7 @@ public class SWorldProperties implements WorldProperties {
 
     @Override
     public boolean isInitialized() {
-        // TODO Auto-generated method stub
-        return false;
+        return this.initialized;
     }
 
     @Override
@@ -53,236 +131,197 @@ public class SWorldProperties implements WorldProperties {
 
     @Override
     public boolean isEnabled() {
-        // TODO Auto-generated method stub
-        return false;
+        return this.enabled;
     }
 
     @Override
     public void setEnabled(boolean state) {
-        // TODO Auto-generated method stub
-
+        this.enabled = state;
     }
 
     @Override
     public boolean loadOnStartup() {
-        // TODO Auto-generated method stub
-        return false;
+        return this.loadsOnStartup;
     }
 
     @Override
     public void setLoadOnStartup(boolean state) {
-        // TODO Auto-generated method stub
-
+        this.loadsOnStartup = state;
     }
 
     @Override
     public boolean doesKeepSpawnLoaded() {
-        // TODO Auto-generated method stub
-        return false;
+        return this.keepsSpawnLoaded;
     }
 
     @Override
     public void setKeepSpawnLoaded(boolean state) {
-        // TODO Auto-generated method stub
-
+        this.keepsSpawnLoaded = state;
     }
 
     @Override
     public boolean doesGenerateSpawnOnLoad() {
-        // TODO Auto-generated method stub
-        return false;
+        return this.generateSpawnOnLoad;
     }
 
     @Override
     public void setGenerateSpawnOnLoad(boolean state) {
-        // TODO Auto-generated method stub
-
+        this.generateSpawnOnLoad = state;
     }
 
     @Override
     public Vector3i getSpawnPosition() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.worldSpawn;
     }
 
     @Override
     public void setSpawnPosition(Vector3i position) {
-        // TODO Auto-generated method stub
-
+        this.worldSpawn = position;
     }
 
     @Override
     public GeneratorType getGeneratorType() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.generatorType;
     }
 
     @Override
     public void setGeneratorType(GeneratorType type) {
-        // TODO Auto-generated method stub
-
+        this.generatorType = type;
     }
 
     @Override
     public long getSeed() {
-        // TODO Auto-generated method stub
-        return 0;
+        return this.seed;
     }
 
     @Override
     public long getTotalTime() {
-        // TODO Auto-generated method stub
-        return 0;
+        return this.time;
     }
 
     @Override
     public long getWorldTime() {
-        // TODO Auto-generated method stub
-        return 0;
+        return this.daytime;
     }
 
     @Override
     public void setWorldTime(long time) {
-        // TODO Auto-generated method stub
-
+        this.daytime = time;
     }
 
     @Override
     public DimensionType getDimensionType() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.dimension;
     }
 
     @Override
     public PortalAgentType getPortalAgentType() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.portalAgent;
     }
 
     @Override
     public boolean isPVPEnabled() {
-        // TODO Auto-generated method stub
-        return false;
+        return this.pvp;
     }
 
     @Override
     public void setPVPEnabled(boolean enabled) {
-        // TODO Auto-generated method stub
-
+        this.pvp = enabled;
     }
 
     @Override
     public boolean isRaining() {
-        // TODO Auto-generated method stub
-        return false;
+        return this.raining;
     }
 
     @Override
     public void setRaining(boolean state) {
-        // TODO Auto-generated method stub
-
+        this.raining = state;
     }
 
     @Override
     public int getRainTime() {
-        // TODO Auto-generated method stub
-        return 0;
+        return this.raintime;
     }
 
     @Override
     public void setRainTime(int time) {
-        // TODO Auto-generated method stub
-
+        this.raintime = time;
     }
 
     @Override
     public boolean isThundering() {
-        // TODO Auto-generated method stub
-        return false;
+        return this.thundering;
     }
 
     @Override
     public void setThundering(boolean state) {
-        // TODO Auto-generated method stub
-
+        this.thundering = state;
     }
 
     @Override
     public int getThunderTime() {
-        // TODO Auto-generated method stub
-        return 0;
+        return this.thundertime;
     }
 
     @Override
     public void setThunderTime(int time) {
-        // TODO Auto-generated method stub
-
+        this.thundertime = time;
     }
 
     @Override
     public GameMode getGameMode() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.gamemode;
     }
 
     @Override
     public void setGameMode(GameMode gamemode) {
-        // TODO Auto-generated method stub
-
+        this.gamemode = gamemode;
     }
 
     @Override
     public boolean usesMapFeatures() {
-        // TODO Auto-generated method stub
-        return false;
+        return this.mapFeatures;
     }
 
     @Override
     public void setMapFeaturesEnabled(boolean state) {
-        // TODO Auto-generated method stub
-
+        this.mapFeatures = state;
     }
 
     @Override
     public boolean isHardcore() {
-        // TODO Auto-generated method stub
-        return false;
+        return this.hardcore;
     }
 
     @Override
     public void setHardcore(boolean state) {
-        // TODO Auto-generated method stub
-
+        this.hardcore = state;
     }
 
     @Override
     public boolean areCommandsAllowed() {
-        // TODO Auto-generated method stub
-        return false;
+        return this.commandsAllowed;
     }
 
     @Override
     public void setCommandsAllowed(boolean state) {
-        // TODO Auto-generated method stub
-
+        this.commandsAllowed = state;
     }
 
     @Override
     public Difficulty getDifficulty() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.difficulty;
     }
 
     @Override
     public void setDifficulty(Difficulty difficulty) {
-        // TODO Auto-generated method stub
-
+        this.difficulty = difficulty;
     }
 
     @Override
     public boolean doesGenerateBonusChest() {
-        // TODO Auto-generated method stub
-        return false;
+        return this.generateBonusChest;
     }
 
     @Override
@@ -419,32 +458,27 @@ public class SWorldProperties implements WorldProperties {
 
     @Override
     public Collection<WorldGeneratorModifier> getGeneratorModifiers() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.modifiers;
     }
 
     @Override
     public void setGeneratorModifiers(Collection<WorldGeneratorModifier> modifiers) {
-        // TODO Auto-generated method stub
-
+        this.modifiers = Lists.newArrayList(modifiers);
     }
 
     @Override
     public DataContainer getGeneratorSettings() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.customSettings;
     }
 
     @Override
     public SerializationBehavior getSerializationBehavior() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.serialization;
     }
 
     @Override
     public void setSerializationBehavior(SerializationBehavior behavior) {
-        // TODO Auto-generated method stub
-
+        this.serialization = behavior;
     }
 
     @Override
