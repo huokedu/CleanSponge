@@ -1,7 +1,12 @@
 package org.spongepowered.clean.world;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Predicate;
+
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.ScheduledBlockUpdate;
@@ -38,15 +43,14 @@ import org.spongepowered.api.world.extent.StorageType;
 import org.spongepowered.api.world.extent.UnmodifiableBiomeVolume;
 import org.spongepowered.api.world.extent.worker.MutableBiomeVolumeWorker;
 import org.spongepowered.api.world.extent.worker.MutableBlockVolumeWorker;
+import org.spongepowered.clean.entity.SEntity;
 import org.spongepowered.clean.world.biome.SBiomeType;
 import org.spongepowered.clean.world.buffer.SMutableBlockVolume;
 import org.spongepowered.clean.world.palette.GlobalPalette;
 
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.Predicate;
+import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
+import com.google.common.collect.Lists;
 
 public class SChunk extends SMutableBlockVolume implements Chunk {
 
@@ -55,6 +59,7 @@ public class SChunk extends SMutableBlockVolume implements Chunk {
 
     private final SWorld world;
     private final byte[] biomes;
+    private final List<SEntity> entities = Lists.newArrayList();
 
     private boolean physics;
     private boolean lighting;
@@ -63,6 +68,18 @@ public class SChunk extends SMutableBlockVolume implements Chunk {
         super(GlobalPalette.instance, new Vector3i(x * 16, 0, z * 16), CHUNK_SIZE);
         this.world = world;
         this.biomes = new byte[16 * 16];
+    }
+
+    public void serialUpdate() {
+        for (SEntity entity : this.entities) {
+            entity.serialUpdate();
+        }
+    }
+
+    public void parallelUpdate() {
+        for (SEntity entity : this.entities) {
+            entity.parallelUpdate();
+        }
     }
 
     public void setPhysics(boolean state) {
@@ -192,9 +209,21 @@ public class SChunk extends SMutableBlockVolume implements Chunk {
     }
 
     @Override
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public Collection<Entity> getEntities() {
-        // TODO Auto-generated method stub
-        return null;
+        return (Collection) this.entities;
+    }
+
+    public Collection<SEntity> getSEntities() {
+        return this.entities;
+    }
+
+    public void addEntity(SEntity entity) {
+        this.entities.add(entity);
+    }
+
+    public void removeEntity(SEntity entity) {
+        this.entities.remove(entity);
     }
 
     @Override

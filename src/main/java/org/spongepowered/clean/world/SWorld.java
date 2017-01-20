@@ -1,9 +1,15 @@
 package org.spongepowered.clean.world;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
-import com.google.common.collect.Lists;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Predicate;
+
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
@@ -63,21 +69,19 @@ import org.spongepowered.api.world.gen.WorldGenerator;
 import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.api.world.storage.WorldStorage;
 import org.spongepowered.api.world.weather.Weather;
+import org.spongepowered.clean.entity.SEntity;
 import org.spongepowered.clean.entity.player.SPlayer;
 import org.spongepowered.clean.scheduler.condition.ResourceMutex;
+import org.spongepowered.clean.scheduler.condition.TaskCondition;
 import org.spongepowered.clean.world.gen.SWorldGenerator;
 import org.spongepowered.clean.world.storage.SaveHandler;
 import org.spongepowered.clean.world.tasks.WorldTickTask;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.Predicate;
+import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
+import com.google.common.collect.Lists;
+
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 public class SWorld implements World {
 
@@ -89,8 +93,10 @@ public class SWorld implements World {
 
     private final SaveHandler saveHandler;
     private final Long2ObjectOpenHashMap<SChunk> chunks = new Long2ObjectOpenHashMap<>();
+    private final List<SChunk> chunkList = Lists.newArrayList();
     private final SWorldGenerator generator = new SWorldGenerator(this);
 
+    private final List<SEntity> allEntities = Lists.newArrayList();
     private final List<SPlayer> joiningPlayers = Collections.<SPlayer>synchronizedList(Lists.newArrayList());
 
     public SWorld(String name, SWorldProperties props) {
@@ -123,10 +129,6 @@ public class SWorld implements World {
         }
     }
 
-    public void update() {
-
-    }
-
     private SChunk loadChunk(int x, int z) {
         SChunk chunk = getLoadedChunk(x, z);
         if (chunk != null) {
@@ -136,10 +138,12 @@ public class SWorld implements World {
         long key = (x << 32) | z;
         if (chunk != null) {
             this.chunks.put(key, chunk);
+            this.chunkList.add(chunk);
             return chunk;
         }
         chunk = this.generator.generateChunk(x, z);
         this.chunks.put(key, chunk);
+        this.chunkList.add(chunk);
         return chunk;
     }
 
@@ -254,9 +258,13 @@ public class SWorld implements World {
     }
 
     @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Collection<Entity> getEntities() {
-        // TODO Auto-generated method stub
-        return null;
+        return (Collection) this.allEntities;
+    }
+
+    public Collection<SEntity> getSEntities() {
+        return this.allEntities;
     }
 
     @Override
@@ -818,6 +826,10 @@ public class SWorld implements World {
     @SuppressWarnings("unchecked")
     public Iterable<Chunk> getLoadedChunks() {
         return (Collection) this.chunks.values();
+    }
+
+    public List<SChunk> getSChunks() {
+        return this.chunkList;
     }
 
     @Override

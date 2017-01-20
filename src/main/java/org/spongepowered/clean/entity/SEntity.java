@@ -31,19 +31,71 @@ import org.spongepowered.api.util.AABB;
 import org.spongepowered.api.util.RelativePositions;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import org.spongepowered.clean.world.SChunk;
 import org.spongepowered.clean.world.SWorld;
 
 import com.flowpowered.math.vector.Vector3d;
 
-public class SEntity implements Entity {
+public abstract class SEntity implements Entity {
 
     private UUID uuid;
     private SWorld world;
+    private SChunk chunk;
     private double x, y, z;
+    private int bx, by, bz;
+    private double vx, vy, vz;
 
     public SEntity(SWorld world) {
         this.uuid = UUID.randomUUID();
         this.world = world;
+    }
+
+    public void serialUpdate() {
+        int px = this.bx >> 4;
+        int pz = this.bz >> 4;
+
+        this.x += this.vx;
+        this.y += this.vy;
+        this.z += this.vz;
+
+        this.bx = (int) Math.floor(this.x);
+        this.by = (int) Math.floor(this.y);
+        this.bz = (int) Math.floor(this.z);
+
+        if ((this.bx >> 4) != px || (this.bz >> 4) != pz) {
+            this.chunk.removeEntity(this);
+            SChunk chunk = (SChunk) this.world.loadChunk(this.bx >> 4, 0, this.bz >> 4, true).get();
+            this.chunk = chunk;
+            this.chunk.addEntity(this);
+        }
+    }
+
+    public void parallelUpdate() {
+
+    }
+
+    public double getX() {
+        return this.x;
+    }
+
+    public double getY() {
+        return this.y;
+    }
+
+    public double getZ() {
+        return this.z;
+    }
+
+    public int getBlockX() {
+        return this.bx;
+    }
+
+    public int getBlockY() {
+        return this.by;
+    }
+
+    public int getBlockZ() {
+        return this.bz;
     }
 
     @Override
