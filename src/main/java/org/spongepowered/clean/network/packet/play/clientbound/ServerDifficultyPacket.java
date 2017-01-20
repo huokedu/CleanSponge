@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.network.packet.play;
+package org.spongepowered.clean.network.packet.play.clientbound;
 
 import io.netty.buffer.ByteBuf;
 import org.spongepowered.api.world.difficulty.Difficulties;

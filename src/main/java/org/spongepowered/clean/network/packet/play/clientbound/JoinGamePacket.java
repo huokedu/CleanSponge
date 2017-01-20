@@ -22,30 +22,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.network.packet.play;
+package org.spongepowered.clean.network.packet.play.clientbound;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.spongepowered.clean.network.netty.ByteBufUtil;
 import org.spongepowered.clean.network.packet.Packet;
 
-public class PluginMessagePacket extends Packet {
+public class JoinGamePacket extends Packet {
 
-    public static PluginMessagePacket createBrandPacket(String brand) {
-        ByteBuf buf = Unpooled.buffer();
-        ByteBufUtil.writeString(buf, brand);
-        byte[] data = new byte[buf.readableBytes()];
-        buf.readBytes(data);
-        return new PluginMessagePacket("MC|Brand", data);
-    }
+    public int     entity_id;
+    public byte    gamemode;
+    public int     dimension;
+    public byte    difficulty;
+    public byte    max_players;
+    public String  level_type;
+    public boolean reduced_debug;
 
-    public String channel;
-    public byte[] data;
-
-    public PluginMessagePacket(String channel, byte[] data) {
-        this.id = 0x18;
-        this.channel = channel;
-        this.data = data;
+    public JoinGamePacket(int id, byte gamemode, int dimension, byte difficulty, byte max_players, String level_type, boolean reduced_debug) {
+        this.id = 0x23;
+        this.entity_id = id;
+        this.gamemode = gamemode;
+        this.dimension = dimension;
+        this.difficulty = difficulty;
+        this.max_players = max_players;
+        this.level_type = level_type;
+        this.reduced_debug = reduced_debug;
     }
 
     @Override
@@ -55,8 +56,13 @@ public class PluginMessagePacket extends Packet {
 
     @Override
     public void write(ByteBuf buffer) {
-        ByteBufUtil.writeString(buffer, this.channel);
-        buffer.writeBytes(this.data);
+        buffer.writeInt(this.entity_id);
+        buffer.writeByte(this.gamemode);
+        buffer.writeInt(this.dimension);
+        buffer.writeByte(this.difficulty);
+        buffer.writeByte(this.max_players);
+        ByteBufUtil.writeString(buffer, this.level_type);
+        buffer.writeBoolean(this.reduced_debug);
     }
 
 }

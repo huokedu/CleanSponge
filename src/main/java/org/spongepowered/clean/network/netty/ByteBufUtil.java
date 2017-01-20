@@ -24,8 +24,11 @@
  */
 package org.spongepowered.clean.network.netty;
 
+import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Charsets;
 import io.netty.buffer.ByteBuf;
+import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.util.Direction;
 
 public class ByteBufUtil {
 
@@ -92,5 +95,46 @@ public class ByteBufUtil {
         byte[] data = str.getBytes(Charsets.UTF_8);
         writeVarInt(buf, data.length);
         buf.writeBytes(data);
+    }
+
+    public static void writePosition(ByteBuf buffer, Vector3i location) {
+        int x = location.getX();
+        int y = location.getY();
+        int z = location.getZ();
+        buffer.writeLong(((x & 0x3FFFFFF) << 38) | ((y & 0xFFF) << 26) | (z & 0x3FFFFFF));
+    }
+
+    public static Vector3i readPosition(ByteBuf buffer) {
+        long val = buffer.readLong();
+        int x = (int) (val >> 38);
+        int y = (int) ((val >> 26) & 0xFFF);
+        int z = (int) (val & 0x3FFFFFF);
+        return new Vector3i(x, y, z);
+    }
+
+    public static void writeDirection(ByteBuf buffer, Direction direction) {
+        // TODO should be more robust and find the closest cardinal direction
+        // would be nice to have an api method for that though
+        switch (direction) {
+            case NORTH:
+                buffer.writeByte(2);
+                break;
+            case EAST:
+                buffer.writeByte(3);
+                break;
+            case WEST:
+                buffer.writeByte(1);
+                break;
+            case SOUTH:
+            default:
+                buffer.writeByte(0);
+                break;
+        }
+    }
+
+    public static void writeNBT(ByteBuf buffer, DataContainer data) {
+        // TODO Auto-generated method stub
+        // this is an empty nbt compound with the name 'h' as a placeholder
+        buffer.writeBytes(new byte[]{0x0A, 0x00, 0x01, 0x68, 0x00});
     }
 }
