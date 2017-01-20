@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
@@ -67,7 +68,9 @@ import org.spongepowered.api.world.extent.StorageType;
 import org.spongepowered.api.world.extent.UnmodifiableBiomeVolume;
 import org.spongepowered.api.world.extent.worker.MutableBiomeVolumeWorker;
 import org.spongepowered.api.world.extent.worker.MutableBlockVolumeWorker;
+import org.spongepowered.clean.block.SBlockSnapshot;
 import org.spongepowered.clean.entity.SEntity;
+import org.spongepowered.clean.entity.SEntityType;
 import org.spongepowered.clean.world.biome.SBiomeType;
 import org.spongepowered.clean.world.buffer.SMutableBlockVolume;
 import org.spongepowered.clean.world.palette.GlobalPalette;
@@ -133,8 +136,8 @@ public class SChunk extends SMutableBlockVolume implements Chunk {
 
     @Override
     public BlockSnapshot createSnapshot(int x, int y, int z) {
-        // TODO Auto-generated method stub
-        return null;
+        BlockState state = getBlock(x, y, z);
+        return new SBlockSnapshot(this.world, new Vector3i(x, y, z), state);
     }
 
     @Override
@@ -228,8 +231,12 @@ public class SChunk extends SMutableBlockVolume implements Chunk {
 
     @Override
     public Optional<Entity> getEntity(UUID uuid) {
-        // TODO Auto-generated method stub
-        return null;
+        for (SEntity entity : this.entities) {
+            if (entity.getUniqueId().equals(uuid)) {
+                return Optional.of(entity);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -252,14 +259,17 @@ public class SChunk extends SMutableBlockVolume implements Chunk {
 
     @Override
     public Collection<Entity> getEntities(Predicate<Entity> filter) {
-        // TODO Auto-generated method stub
-        return null;
+        return this.entities.stream().filter(filter).collect(Collectors.toList());
     }
 
     @Override
     public Entity createEntity(EntityType type, Vector3d position) throws IllegalArgumentException, IllegalStateException {
-        // TODO Auto-generated method stub
-        return null;
+        SEntityType stype = (SEntityType) type;
+        if (!stype.canCreate()) {
+            throw new IllegalArgumentException("Cannot create an entity of type " + type.getId());
+        }
+        Entity entity = stype.createEntity(this.world, position);
+        return entity;
     }
 
     @Override

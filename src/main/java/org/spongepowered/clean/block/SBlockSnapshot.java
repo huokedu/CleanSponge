@@ -24,7 +24,14 @@
  */
 package org.spongepowered.clean.block;
 
-import com.flowpowered.math.vector.Vector3i;
+import java.lang.ref.WeakReference;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Function;
+
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.tileentity.TileEntityArchetype;
@@ -38,38 +45,53 @@ import org.spongepowered.api.data.value.immutable.ImmutableValue;
 import org.spongepowered.api.world.BlockChangeFlag;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import org.spongepowered.clean.world.SWorld;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.Function;
+import com.flowpowered.math.vector.Vector3i;
 
 public class SBlockSnapshot implements BlockSnapshot {
 
+    private final Vector3i position;
+    private final UUID worldUuid;
+    private final WeakReference<SWorld> world;
+    private final BlockState state;
+
+    public SBlockSnapshot(SWorld world, Vector3i pos, BlockState state) {
+        this.position = pos;
+        this.world = new WeakReference<>(world);
+        this.worldUuid = world.getUniqueId();
+        this.state = state;
+    }
+
+    private SBlockSnapshot(WeakReference<SWorld> world, UUID uid, Vector3i pos, BlockState state) {
+        this.position = pos;
+        this.world = world;
+        this.worldUuid = uid;
+        this.state = state;
+    }
+
     @Override
     public UUID getWorldUniqueId() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.worldUuid;
     }
 
     @Override
     public Vector3i getPosition() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.position;
     }
 
     @Override
     public Optional<Location<World>> getLocation() {
-        // TODO Auto-generated method stub
-        return null;
+        SWorld world = this.world.get();
+        if (world == null) {
+            return Optional.empty();
+        }
+        return Optional.of(world.getLocation(this.position));
     }
 
     @Override
     public BlockSnapshot withLocation(Location<World> location) {
-        // TODO Auto-generated method stub
-        return null;
+        return new SBlockSnapshot((SWorld) location.getExtent(), location.getBlockPosition(), this.state);
     }
 
     @Override
@@ -212,8 +234,7 @@ public class SBlockSnapshot implements BlockSnapshot {
 
     @Override
     public BlockState getState() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.state;
     }
 
     @Override
@@ -224,8 +245,7 @@ public class SBlockSnapshot implements BlockSnapshot {
 
     @Override
     public BlockSnapshot withState(BlockState blockState) {
-        // TODO Auto-generated method stub
-        return null;
+        return new SBlockSnapshot(this.world, this.worldUuid, this.position, blockState);
     }
 
     @Override

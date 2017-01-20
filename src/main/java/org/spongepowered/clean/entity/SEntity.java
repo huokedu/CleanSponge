@@ -306,6 +306,12 @@ public abstract class SEntity implements Entity {
         return false;
     }
 
+    public void setPosition(Vector3d position) {
+        this.x = position.getX();
+        this.y = position.getY();
+        this.z = position.getZ();
+    }
+
     @Override
     public Vector3d getRotation() {
         // TODO Auto-generated method stub
