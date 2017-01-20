@@ -25,8 +25,9 @@
 package org.spongepowered.clean.network.packet.status;
 
 import io.netty.buffer.ByteBuf;
-import org.spongepowered.clean.network.netty.ByteBufUtil;
+
 import org.spongepowered.clean.network.packet.Packet;
+import org.spongepowered.clean.util.ByteBufUtil;
 
 public class ResponsePacket extends Packet {
 

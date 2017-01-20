@@ -32,6 +32,8 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import java.util.List;
 import java.util.zip.Inflater;
 
+import org.spongepowered.clean.util.ByteBufUtil;
+
 public class PacketDecompressor extends ByteToMessageDecoder {
 
     private final Inflater inflator    = new Inflater();

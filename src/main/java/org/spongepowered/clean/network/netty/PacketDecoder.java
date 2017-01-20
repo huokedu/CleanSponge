@@ -30,6 +30,7 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import org.spongepowered.clean.network.NetworkConnection;
 import org.spongepowered.clean.network.packet.InboundPackets;
 import org.spongepowered.clean.network.packet.Packet;
+import org.spongepowered.clean.util.ByteBufUtil;
 
 import java.util.List;
 

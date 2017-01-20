@@ -30,6 +30,8 @@ import io.netty.handler.codec.MessageToByteEncoder;
 
 import java.util.zip.Deflater;
 
+import org.spongepowered.clean.util.ByteBufUtil;
+
 public class PacketCompressor extends MessageToByteEncoder<ByteBuf> {
 
     private final Deflater deflator   = new Deflater();

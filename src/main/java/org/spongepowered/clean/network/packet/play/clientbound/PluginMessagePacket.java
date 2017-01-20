@@ -26,8 +26,9 @@ package org.spongepowered.clean.network.packet.play.clientbound;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.spongepowered.clean.network.netty.ByteBufUtil;
+
 import org.spongepowered.clean.network.packet.Packet;
+import org.spongepowered.clean.util.ByteBufUtil;
 
 public class PluginMessagePacket extends Packet {
 

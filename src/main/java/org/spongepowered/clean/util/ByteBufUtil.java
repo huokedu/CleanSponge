@@ -22,13 +22,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.network.netty;
+package org.spongepowered.clean.util;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
+import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.util.Direction;
+import org.spongepowered.clean.SGame;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Charsets;
+
 import io.netty.buffer.ByteBuf;
-import org.spongepowered.api.data.DataContainer;
-import org.spongepowered.api.util.Direction;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
 
 public class ByteBufUtil {
 
@@ -97,6 +107,14 @@ public class ByteBufUtil {
         buf.writeBytes(data);
     }
 
+    public static Vector3i readPosition(ByteBuf buffer) {
+        long val = buffer.readLong();
+        int x = (int) (val >> 38);
+        int y = (int) ((val >> 26) & 0xFFF);
+        int z = (int) (val & 0x3FFFFFF);
+        return new Vector3i(x, y, z);
+    }
+
     public static void writePosition(ByteBuf buffer, Vector3i location) {
         int x = location.getX();
         int y = location.getY();
@@ -104,12 +122,18 @@ public class ByteBufUtil {
         buffer.writeLong(((x & 0x3FFFFFF) << 38) | ((y & 0xFFF) << 26) | (z & 0x3FFFFFF));
     }
 
-    public static Vector3i readPosition(ByteBuf buffer) {
-        long val = buffer.readLong();
-        int x = (int) (val >> 38);
-        int y = (int) ((val >> 26) & 0xFFF);
-        int z = (int) (val & 0x3FFFFFF);
-        return new Vector3i(x, y, z);
+    public static Direction readDirection(ByteBuf buffer) {
+        byte dir = buffer.readByte();
+        if (dir == 0) {
+            return Direction.SOUTH;
+        } else if (dir == 1) {
+            return Direction.WEST;
+        } else if (dir == 2) {
+            return Direction.NORTH;
+        } else if (dir == 3) {
+            return Direction.EAST;
+        }
+        return Direction.NONE;
     }
 
     public static void writeDirection(ByteBuf buffer, Direction direction) {
@@ -132,9 +156,24 @@ public class ByteBufUtil {
         }
     }
 
-    public static void writeNBT(ByteBuf buffer, DataContainer data) {
-        // TODO Auto-generated method stub
-        // this is an empty nbt compound with the name 'h' as a placeholder
-        buffer.writeBytes(new byte[]{0x0A, 0x00, 0x01, 0x68, 0x00});
+    public static DataContainer readNBT(ByteBuf buffer) {
+        DataInputStream in = new DataInputStream(new ByteBufInputStream(buffer));
+        try {
+            return NbtIO.read(in);
+        } catch (IOException e) {
+            SGame.getLogger().error("Error reading nbt from network stream");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static void writeNBT(ByteBuf buffer, DataView data) {
+        DataOutputStream out = new DataOutputStream(new ByteBufOutputStream(buffer));
+        try {
+            NbtIO.write(data, out);
+        } catch (IOException e) {
+            SGame.getLogger().error("Error writing nbt to network stream");
+            e.printStackTrace();
+        }
     }
 }

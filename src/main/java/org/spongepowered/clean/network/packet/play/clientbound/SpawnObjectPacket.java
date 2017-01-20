@@ -3,8 +3,8 @@ package org.spongepowered.clean.network.packet.play.clientbound;
 import io.netty.buffer.ByteBuf;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.clean.entity.SEntityType;
-import org.spongepowered.clean.network.netty.ByteBufUtil;
 import org.spongepowered.clean.network.packet.Packet;
+import org.spongepowered.clean.util.ByteBufUtil;
 
 import java.util.UUID;
 

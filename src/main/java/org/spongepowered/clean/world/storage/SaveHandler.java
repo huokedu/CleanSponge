@@ -7,7 +7,7 @@ import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.clean.data.DataQueries;
-import org.spongepowered.clean.nbt.NbtIO;
+import org.spongepowered.clean.util.NbtIO;
 import org.spongepowered.clean.world.SChunk;
 import org.spongepowered.clean.world.SWorldProperties;
 
