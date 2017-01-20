@@ -1,11 +1,9 @@
 package org.spongepowered.clean.world;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
+import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
@@ -15,21 +13,27 @@ import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.GeneratorType;
 import org.spongepowered.api.world.PortalAgentType;
 import org.spongepowered.api.world.SerializationBehavior;
+import org.spongepowered.api.world.WorldArchetype;
 import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.api.world.gen.WorldGeneratorModifier;
 import org.spongepowered.api.world.storage.WorldProperties;
+import org.spongepowered.clean.SGame;
 import org.spongepowered.clean.data.DataQueries;
 import org.spongepowered.clean.entity.player.SGameMode;
 import org.spongepowered.clean.world.storage.SaveHandler;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
-import com.google.common.collect.Lists;
+import java.io.File;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 public class SWorldProperties implements WorldProperties {
 
     private final SaveHandler save;
     private final String name;
+    private UUID uuid;
 
     private boolean enabled;
     private boolean loadsOnStartup;
@@ -96,7 +100,7 @@ public class SWorldProperties implements WorldProperties {
         this.raintime = levelDat.getInt(DataQueries.LEVEL_RAIN_TIME).orElse(0);
         this.thundering = levelDat.getBoolean(DataQueries.LEVEL_THUNDERING).orElse(false);
         this.thundertime = levelDat.getInt(DataQueries.LEVEL_THUNDER_TIME).orElse(0);
-        this.clearWeatherTime = levelDat.getInt(DataQueries.LEVEL_CLEAR_WEATHER_TIME).orElse(0);
+        this.clearWeatherTime = levelDat.getInt(DataQueries.LEVEL_CLEAR_WEATHER_TIME).orElse(1500);
 
         // TODO gamerules
         // TODO additional version info
@@ -107,6 +111,44 @@ public class SWorldProperties implements WorldProperties {
         this.enabled = true;
         // TODO end has extra data that needs to be loaded here
 
+    }
+
+    public SWorldProperties(String name, WorldArchetype archetype) {
+        File dir = SGame.game.getWorldsDir().resolve(name).toFile();
+        this.save = new SaveHandler(dir);
+        this.name = name;
+
+        this.enabled = archetype.isEnabled();
+        this.loadsOnStartup = archetype.loadOnStartup();
+        this.keepsSpawnLoaded = archetype.doesKeepSpawnLoaded();
+        this.generateSpawnOnLoad = archetype.doesGenerateSpawnOnLoad();
+        this.seed = archetype.getSeed();
+        this.gamemode = archetype.getGameMode();
+        this.generatorType = archetype.getGeneratorType();
+        this.modifiers = ImmutableList.copyOf(archetype.getGeneratorModifiers());
+        this.dimension = archetype.getDimensionType();
+        this.difficulty = archetype.getDifficulty();
+        this.mapFeatures = archetype.usesMapFeatures();
+        this.hardcore = archetype.isHardcore();
+        this.customSettings = archetype.getGeneratorSettings();
+        this.portalAgent = archetype.getPortalAgentType();
+        this.pvp = archetype.isPVPEnabled();
+        this.commandsAllowed = archetype.areCommandsAllowed();
+        this.generateBonusChest = archetype.doesGenerateBonusChest();
+        this.serialization = archetype.getSerializationBehavior();
+
+        this.version = 19133;
+        this.initialized = true;
+        this.lastload = System.currentTimeMillis();
+        this.time = 0;
+        this.daytime = 0;
+        this.raining = false;
+        this.raintime = 0;
+        this.thundering = false;
+        this.thundertime = 0;
+        this.clearWeatherTime = 1500;
+        
+        this.uuid = UUID.randomUUID();
     }
 
     public SaveHandler getSaveHandler() {
@@ -125,8 +167,7 @@ public class SWorldProperties implements WorldProperties {
 
     @Override
     public UUID getUniqueId() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.uuid;
     }
 
     @Override

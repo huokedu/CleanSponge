@@ -12,6 +12,8 @@ public class Semver {
     private final int minor;
     private final int patch;
 
+    // TODO parse out extra information off end of version
+
     public Semver(String version) {
         this.version = version;
         Matcher m = SEMVER.matcher(version);
