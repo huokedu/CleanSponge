@@ -38,6 +38,7 @@ import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.GeneratorType;
 import org.spongepowered.api.world.biome.BiomeType;
 import org.spongepowered.api.world.difficulty.Difficulty;
+import org.spongepowered.api.world.gen.PopulatorType;
 import org.spongepowered.api.world.schematic.BlockPaletteType;
 import org.spongepowered.clean.block.SBlockType;
 import org.spongepowered.clean.block.tileentity.STileEntityType;
@@ -51,6 +52,7 @@ import org.spongepowered.clean.world.SDifficulty;
 import org.spongepowered.clean.world.SDimensionType;
 import org.spongepowered.clean.world.biome.SBiomeType;
 import org.spongepowered.clean.world.gen.SGeneratorType;
+import org.spongepowered.clean.world.gen.SPopulatorType;
 import org.spongepowered.clean.world.palette.SBlockPaletteType;
 
 public class RegistryModules {
@@ -68,6 +70,7 @@ public class RegistryModules {
         reg.registerModule(GameMode.class, new FixedCatalogRegistryModule<>(GameMode.class, SGameMode::registerTypes));
         reg.registerModule(GeneratorType.class, new FixedCatalogRegistryModule<>(GeneratorType.class, SGeneratorType::registerTypes));
         reg.registerModule(HandType.class, new FixedCatalogRegistryModule<>(HandType.class, SHandType::registerTypes));
+        reg.registerModule(PopulatorType.class, new FixedCatalogRegistryModule<>(PopulatorType.class, SPopulatorType::registerTypes));
         reg.registerModule(TileEntityType.class, new FixedCatalogRegistryModule<>(TileEntityType.class, STileEntityType::registerTypes));
     }
 
