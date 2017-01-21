@@ -22,38 +22,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.network.packet;
+package org.spongepowered.clean.data.type;
 
-import org.spongepowered.api.entity.living.player.gamemode.GameMode;
-import org.spongepowered.api.entity.living.player.gamemode.GameModes;
-import org.spongepowered.api.world.difficulty.Difficulties;
-import org.spongepowered.api.world.difficulty.Difficulty;
+import java.util.Optional;
 
-public class PacketIds {
+import org.spongepowered.api.data.type.ArmorType;
+import org.spongepowered.api.item.ItemType;
+import org.spongepowered.clean.registry.AbstractCatalogType;
+import org.spongepowered.clean.registry.FixedCatalogRegistryModule;
 
-    public static byte getGameModeId(GameMode gamemode) {
-        if (gamemode == GameModes.SURVIVAL) {
-            return 0;
-        } else if (gamemode == GameModes.CREATIVE) {
-            return 1;
-        } else if (gamemode == GameModes.ADVENTURE) {
-            return 2;
-        } else if (gamemode == GameModes.SPECTATOR) {
-            return 3;
-        }
-        return 0;
+public class SArmorType extends AbstractCatalogType implements ArmorType {
+
+    public SArmorType(String id, String name) {
+        super(id, name);
     }
 
-    public static byte getDifficultyId(Difficulty difficulty) {
-        if (difficulty == Difficulties.PEACEFUL) {
-            return 0;
-        } else if (difficulty == Difficulties.EASY) {
-            return 1;
-        } else if (difficulty == Difficulties.NORMAL) {
-            return 2;
-        } else if (difficulty == Difficulties.HARD) {
-            return 3;
-        }
-        return 0;
+    @Override
+    public Optional<ItemType> getRepairItemType() {
+        // TODO Auto-generated method stub
+        return null;
     }
+
+    public static void registerTypes(FixedCatalogRegistryModule<ArmorType> registry) {
+        registry.register(new SArmorType("minecraft:chain", "Chain"));
+        registry.register(new SArmorType("minecraft:diamond", "Diamond"));
+        registry.register(new SArmorType("minecraft:gold", "Gold"));
+        registry.register(new SArmorType("minecraft:iron", "Iron"));
+        registry.register(new SArmorType("minecraft:leather", "Leather"));
+    }
+
 }

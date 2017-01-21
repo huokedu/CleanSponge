@@ -28,6 +28,9 @@ import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.tileentity.TileEntityType;
+import org.spongepowered.api.data.type.ArmorType;
+import org.spongepowered.api.data.type.Art;
+import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.item.ItemType;
@@ -38,8 +41,11 @@ import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.api.world.schematic.BlockPaletteType;
 import org.spongepowered.clean.block.SBlockType;
 import org.spongepowered.clean.block.tileentity.STileEntityType;
+import org.spongepowered.clean.data.type.SArmorType;
+import org.spongepowered.clean.data.type.SArt;
 import org.spongepowered.clean.entity.SEntityType;
 import org.spongepowered.clean.entity.player.SGameMode;
+import org.spongepowered.clean.entity.player.SHandType;
 import org.spongepowered.clean.item.SItemType;
 import org.spongepowered.clean.world.SDifficulty;
 import org.spongepowered.clean.world.SDimensionType;
@@ -51,6 +57,8 @@ public class RegistryModules {
 
     public static void registerModules() {
         GameRegistry reg = Sponge.getRegistry();
+        reg.registerModule(ArmorType.class, new FixedCatalogRegistryModule<>(ArmorType.class, SArmorType::registerTypes));
+        reg.registerModule(Art.class, new FixedCatalogRegistryModule<>(Art.class, SArt::registerTypes));
         reg.registerModule(BiomeType.class, new FixedCatalogRegistryModule<>(BiomeType.class, SBiomeType::registerTypes));
         reg.registerModule(BlockType.class, new FixedCatalogRegistryModule<>(BlockType.class, SBlockType::registerTypes));
         reg.registerModule(BlockPaletteType.class, new FixedCatalogRegistryModule<>(BlockPaletteType.class, SBlockPaletteType::registerTypes));
@@ -59,6 +67,7 @@ public class RegistryModules {
         reg.registerModule(EntityType.class, new FixedCatalogRegistryModule<>(EntityType.class, SEntityType::registerTypes));
         reg.registerModule(GameMode.class, new FixedCatalogRegistryModule<>(GameMode.class, SGameMode::registerTypes));
         reg.registerModule(GeneratorType.class, new FixedCatalogRegistryModule<>(GeneratorType.class, SGeneratorType::registerTypes));
+        reg.registerModule(HandType.class, new FixedCatalogRegistryModule<>(HandType.class, SHandType::registerTypes));
         reg.registerModule(TileEntityType.class, new FixedCatalogRegistryModule<>(TileEntityType.class, STileEntityType::registerTypes));
     }
 

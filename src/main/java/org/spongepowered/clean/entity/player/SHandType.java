@@ -22,38 +22,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.network.packet;
+package org.spongepowered.clean.entity.player;
 
-import org.spongepowered.api.entity.living.player.gamemode.GameMode;
-import org.spongepowered.api.entity.living.player.gamemode.GameModes;
-import org.spongepowered.api.world.difficulty.Difficulties;
-import org.spongepowered.api.world.difficulty.Difficulty;
+import org.spongepowered.api.data.type.HandType;
+import org.spongepowered.api.text.translation.Translation;
+import org.spongepowered.clean.registry.AbstractCatalogType;
+import org.spongepowered.clean.registry.FixedCatalogRegistryModule;
 
-public class PacketIds {
+public class SHandType extends AbstractCatalogType implements HandType {
 
-    public static byte getGameModeId(GameMode gamemode) {
-        if (gamemode == GameModes.SURVIVAL) {
-            return 0;
-        } else if (gamemode == GameModes.CREATIVE) {
-            return 1;
-        } else if (gamemode == GameModes.ADVENTURE) {
-            return 2;
-        } else if (gamemode == GameModes.SPECTATOR) {
-            return 3;
-        }
-        return 0;
+    public SHandType(String id, String name) {
+        super(id, name);
     }
 
-    public static byte getDifficultyId(Difficulty difficulty) {
-        if (difficulty == Difficulties.PEACEFUL) {
-            return 0;
-        } else if (difficulty == Difficulties.EASY) {
-            return 1;
-        } else if (difficulty == Difficulties.NORMAL) {
-            return 2;
-        } else if (difficulty == Difficulties.HARD) {
-            return 3;
-        }
-        return 0;
+    @Override
+    public Translation getTranslation() {
+        // TODO Auto-generated method stub
+        return null;
     }
+
+    public static void registerTypes(FixedCatalogRegistryModule<HandType> registry) {
+        registry.register(new SHandType("minecraft:main_hand", "Main Hand"));
+        registry.register(new SHandType("minecraft:off_hand", "Off Hand"));
+    }
+
 }
