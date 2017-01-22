@@ -24,16 +24,11 @@
  */
 package org.spongepowered.clean.world;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.Predicate;
-
+import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
+import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
@@ -93,19 +88,39 @@ import org.spongepowered.api.world.gen.WorldGenerator;
 import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.api.world.storage.WorldStorage;
 import org.spongepowered.api.world.weather.Weather;
+import org.spongepowered.clean.Constants;
+import org.spongepowered.clean.SGame;
 import org.spongepowered.clean.entity.SEntity;
 import org.spongepowered.clean.entity.player.SPlayer;
+import org.spongepowered.clean.network.NetworkConnection.ConnectionState;
+import org.spongepowered.clean.network.packet.play.clientbound.ChatMessagePacket;
+import org.spongepowered.clean.network.packet.play.clientbound.ChunkDataPacket;
+import org.spongepowered.clean.network.packet.play.clientbound.HeldItemChangePacket;
+import org.spongepowered.clean.network.packet.play.clientbound.JoinGamePacket;
+import org.spongepowered.clean.network.packet.play.clientbound.PlayerAbilitiesPacket;
+import org.spongepowered.clean.network.packet.play.clientbound.PlayerPositionAndLookPacket;
+import org.spongepowered.clean.network.packet.play.clientbound.PluginMessagePacket;
+import org.spongepowered.clean.network.packet.play.clientbound.ServerDifficultyPacket;
+import org.spongepowered.clean.network.packet.play.clientbound.SetExperiencePacket;
+import org.spongepowered.clean.network.packet.play.clientbound.SpawnPositionPacket;
+import org.spongepowered.clean.network.packet.play.clientbound.TimeUpdatePacket;
+import org.spongepowered.clean.network.packet.play.clientbound.UpdateHealthPacket;
+import org.spongepowered.clean.network.packet.play.clientbound.WindowItemsPacket;
 import org.spongepowered.clean.scheduler.condition.ResourceMutex;
-import org.spongepowered.clean.scheduler.condition.TaskCondition;
 import org.spongepowered.clean.world.gen.SWorldGenerator;
 import org.spongepowered.clean.world.storage.SaveHandler;
 import org.spongepowered.clean.world.tasks.WorldTickTask;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
-import com.google.common.collect.Lists;
-
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Predicate;
 
 public class SWorld implements World {
 
@@ -118,15 +133,20 @@ public class SWorld implements World {
     private final SaveHandler saveHandler;
     private final Long2ObjectOpenHashMap<SChunk> chunks = new Long2ObjectOpenHashMap<>();
     private final List<SChunk> chunkList = Lists.newArrayList();
-    private final SWorldGenerator generator = new SWorldGenerator(this);
+    private final SWorldGenerator generator;
+    private final SDimension dimension;
 
     private final List<SEntity> allEntities = Lists.newArrayList();
     private final List<SPlayer> joiningPlayers = Collections.<SPlayer>synchronizedList(Lists.newArrayList());
 
+    private int entityid = 0;
+
     public SWorld(String name, SWorldProperties props) {
         this.name = name;
         this.properties = props;
+        this.generator = (SWorldGenerator) this.properties.getGeneratorType().createGenerator(this);
         this.saveHandler = props.getSaveHandler();
+        this.dimension = SGame.game.getDimensionManager().getDimension(this.properties.getDimensionType());
         // TODO setup generator based on worldtype
     }
 
@@ -150,6 +170,39 @@ public class SWorld implements World {
     public void init() {
         if (this.properties.doesKeepSpawnLoaded() || this.properties.doesGenerateSpawnOnLoad()) {
 
+        }
+    }
+
+    public void serialUpdate() {
+        for (Iterator<SPlayer> it = this.joiningPlayers.iterator(); it.hasNext();) {
+            SPlayer player = it.next();
+            it.remove();
+            System.out.println("Adding player to world");
+            player.getNetConnection().updateConnState(ConnectionState.PLAYING);
+            this.allEntities.add(player);
+            SChunk chunk = loadChunk(player.getChunkX(), player.getChunkZ());
+            chunk.addEntity(player);
+            player.setEntityId(this.entityid++);
+            // TODO use actual values
+            player.sendPacket(new JoinGamePacket(player.getEntityId(), player.getGameMode(), 0, this.properties.getDifficulty(),
+                    (byte) Sponge.getServer().getMaxPlayers(), "default", false));
+            player.sendPacket(PluginMessagePacket.createBrandPacket(Constants.SERVER_BRAND));
+            player.sendPacket(new ServerDifficultyPacket(this.properties.getDifficulty()));
+            player.sendPacket(new PlayerAbilitiesPacket((byte) 0, 1, 0));
+            player.sendPacket(new HeldItemChangePacket((byte) 0));
+            player.sendPacket(new ChatMessagePacket("{\"text\":\"Welcome!\"}", ChatMessagePacket.Position.CHAT));
+            for(int x = -3; x <= 3; x++) {
+                for(int z = -3; z <= 3; z++) {
+                    SChunk c = loadChunk(x, z);
+                    player.sendPacket(new ChunkDataPacket(c, true, 0));
+                }
+            }
+            player.sendPacket(new PlayerPositionAndLookPacket(5, 10, 5, 0, 0, (byte) 0, 1));
+            player.sendPacket(new TimeUpdatePacket(this.properties.getTotalTime(), this.properties.getWorldTime()));
+            player.sendPacket(new SpawnPositionPacket(5, 10, 5));
+            player.sendPacket(new WindowItemsPacket((byte) 0, (short) 46));
+            player.sendPacket(new UpdateHealthPacket(20, 20, 4));
+            player.sendPacket(new SetExperiencePacket(0, 0, 0));
         }
     }
 
@@ -876,20 +929,17 @@ public class SWorld implements World {
 
     @Override
     public Dimension getDimension() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.dimension;
     }
 
     @Override
     public WorldGenerator getWorldGenerator() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.generator;
     }
 
     @Override
     public WorldProperties getProperties() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.properties;
     }
 
     @Override

@@ -49,10 +49,9 @@ public class PacketCompressor extends MessageToByteEncoder<ByteBuf> {
         if (msg.readableBytes() < this.threshold) {
             ByteBufUtil.writeVarInt(out, 0);
             out.writeBytes(msg);
-            System.out.println("not compressed " + length);
             return;
         }
-        System.out.println("compressed " + length);
+        System.out.println("compressing");
         if (length > this.dataBuffer.length) {
             this.dataBuffer = new byte[length];
         }

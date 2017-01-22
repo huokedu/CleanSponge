@@ -29,15 +29,19 @@ import java.util.List;
 
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.world.DimensionType;
+import org.spongepowered.api.world.DimensionTypes;
 import org.spongepowered.api.world.GeneratorType;
+import org.spongepowered.api.world.GeneratorTypes;
 import org.spongepowered.api.world.PortalAgentType;
 import org.spongepowered.api.world.SerializationBehavior;
 import org.spongepowered.api.world.WorldArchetype;
+import org.spongepowered.api.world.difficulty.Difficulties;
 import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.api.world.gen.WorldGeneratorModifier;
 import org.spongepowered.clean.registry.AbstractCatalogType;
-
+import org.spongepowered.clean.registry.FixedCatalogRegistryModule;
 import com.google.common.collect.ImmutableList;
 
 public class SWorldArchetype extends AbstractCatalogType implements WorldArchetype {
@@ -171,6 +175,23 @@ public class SWorldArchetype extends AbstractCatalogType implements WorldArchety
     @Override
     public SerializationBehavior getSerializationBehavior() {
         return this.serialization;
+    }
+
+    public static void registerTypes(FixedCatalogRegistryModule<WorldArchetype> registry) {
+        registry.register(new SWorldArchetypeBuilder()
+                .commandsAllowed(true)
+                .difficulty(Difficulties.NORMAL)
+                .dimension(DimensionTypes.OVERWORLD)
+                .enabled(true)
+                .gameMode(GameModes.SURVIVAL)
+                .generateBonusChest(false)
+                .generateSpawnOnLoad(true)
+                .generator(GeneratorTypes.FLAT)
+                .hardcore(false)
+                .loadsOnStartup(true)
+                .pvp(false)
+                .seed(-1)
+                .build("minecraft:overworld", "Overworld"));
     }
 
 }

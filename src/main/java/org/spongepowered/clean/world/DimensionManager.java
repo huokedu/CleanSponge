@@ -24,11 +24,29 @@
  */
 package org.spongepowered.clean.world;
 
+import com.google.common.collect.Maps;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.world.Dimension;
+import org.spongepowered.api.world.DimensionType;
+
+import java.util.Map;
 
 public class DimensionManager {
 
+    private final Map<DimensionType, SDimension> dims = Maps.newHashMap();
+
     public DimensionManager() {
-        
+
     }
-    
+
+    public void init() {
+        for (DimensionType type : Sponge.getRegistry().getAllOf(DimensionType.class)) {
+            this.dims.put(type, new SDimension(type));
+        }
+    }
+
+    public SDimension getDimension(DimensionType dimensionType) {
+        return this.dims.get(dimensionType);
+    }
+
 }

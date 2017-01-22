@@ -29,7 +29,9 @@ import org.spongepowered.clean.network.packet.Packet;
 
 public class HeldItemChangePacket extends Packet {
 
-    public HeldItemChangePacket() {
+    public byte slot;
+
+    public HeldItemChangePacket(byte slot) {
         this.id = 0x37;
     }
 
@@ -40,7 +42,7 @@ public class HeldItemChangePacket extends Packet {
 
     @Override
     public void write(ByteBuf buffer) {
-        // TODO Auto-generated method stub
+        buffer.writeByte(this.slot);
     }
 
 }

@@ -37,6 +37,7 @@ public class PacketLengthAppender extends MessageToByteEncoder<ByteBuf> {
     @Override
     protected void encode(ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) throws Exception {
         int length = msg.readableBytes();
+        System.out.println("length " + length);
         do {
             byte temp = (byte) (length & 0b01111111);
             length >>>= 7;
@@ -46,7 +47,6 @@ public class PacketLengthAppender extends MessageToByteEncoder<ByteBuf> {
             out.writeByte(temp);
         } while (length != 0);
         out.writeBytes(msg);
-        System.out.println("length " + length);
     }
 
 }

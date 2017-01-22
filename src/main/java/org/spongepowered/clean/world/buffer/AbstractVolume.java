@@ -63,6 +63,6 @@ public class AbstractVolume {
     }
 
     protected int getIndex(int x, int y, int z) {
-        return (x - this.min.getX()) + (y - this.min.getY()) * this.size.getX() + (z - this.min.getZ()) * this.size.getX() * this.size.getZ();
+        return (x - this.min.getX()) + (y - this.min.getY()) * this.size.getX() + (z - this.min.getZ()) * this.size.getX() * this.size.getY();
     }
 }

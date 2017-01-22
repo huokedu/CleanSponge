@@ -26,11 +26,19 @@ package org.spongepowered.clean.network.packet.play.clientbound;
 
 import io.netty.buffer.ByteBuf;
 import org.spongepowered.clean.network.packet.Packet;
+import org.spongepowered.clean.util.ByteBufUtil;
 
 public class SetExperiencePacket extends Packet {
 
-    public SetExperiencePacket() {
+    public float bar;
+    public int level;
+    public int total;
+    
+    public SetExperiencePacket(float bar, int level, int total) {
         this.id = 0x3D;
+        this.bar = bar;
+        this.level = level;
+        this.total = total;
     }
 
     @Override
@@ -40,7 +48,9 @@ public class SetExperiencePacket extends Packet {
 
     @Override
     public void write(ByteBuf buffer) {
-        // TODO Auto-generated method stub
+        buffer.writeFloat(this.bar);
+        ByteBufUtil.writeVarInt(buffer, this.level);
+        ByteBufUtil.writeVarInt(buffer, this.total);
     }
 
 }

@@ -77,6 +77,7 @@ import org.spongepowered.clean.world.palette.GlobalPalette;
 import org.spongepowered.clean.world.palette.LocalBlockPalette;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -395,8 +396,7 @@ public class SChunk implements Chunk {
 
     @Override
     public Collection<TileEntity> getTileEntities() {
-        // TODO Auto-generated method stub
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -478,6 +478,10 @@ public class SChunk implements Chunk {
     @Override
     public Vector3i getBiomeSize() {
         return BIOME_SIZE;
+    }
+
+    public byte[] getBiomeArray() {
+        return this.biomes;
     }
 
     @Override
@@ -775,7 +779,7 @@ public class SChunk implements Chunk {
         private BlockPalette palette;
         private long[] data;
         private int bitsPerBlock;
-        private int currentMax;
+        private long currentMax;
         private int airCount;
 
         public ChunkSection(int y) {
@@ -801,12 +805,16 @@ public class SChunk implements Chunk {
             return this.airCount;
         }
 
+        public long[] getData() {
+            return this.data;
+        }
+
         public BlockState getBlock(int x, int y, int z) {
             return this.palette.get(get(x, y, z)).get();
         }
 
         private int get(int x, int y, int z) {
-            int bit = this.bitsPerBlock * (x + y * 16 + z * 256);
+            int bit = this.bitsPerBlock * (x + z * 16 + y * 256);
             if ((bit / 64) != ((bit + this.bitsPerBlock - 1) / 64)) {
                 // id is split
                 int id = (int) (this.data[bit / 64] >>> (bit % 64));
@@ -828,8 +836,10 @@ public class SChunk implements Chunk {
             if (this.palette.getHighestId() > this.currentMax) {
                 checkSize(this.palette.getHighestId());
             }
-            int bit = this.bitsPerBlock * (x + y * 16 + z * 256);
-            this.data[bit / 64] = (this.data[bit / 64] & ~(this.currentMax << (bit % 64))) | ((long) newId << (bit % 64));
+            int bit = this.bitsPerBlock * (x + z * 16 + y * 256);
+            long existing = (this.data[bit / 64] & ~(this.currentMax << (bit % 64)));
+            long newd = ((long) newId << (bit % 64));
+            this.data[bit / 64] = existing | newd;
             if ((bit / 64) != ((bit + this.bitsPerBlock - 1) / 64)) {
                 // id is split
                 int rem = (64 - (bit % 64));
@@ -859,9 +869,9 @@ public class SChunk implements Chunk {
                 long[] newData = new long[(4096 * bits) / 64];
                 int bit = 0;
                 // iterate in this order to match the indexing of
-                // x + y * 16 + z * 256
-                for (int z = 0; z < 16; z++) {
-                    for (int y = 0; y < 16; y++) {
+                // x + x * 16 + y * 256
+                for (int y = 0; y < 16; y++) {
+                    for (int z = 0; z < 16; z++) {
                         for (int x = 0; x < 16; x++) {
                             int newId = 0;
                             if (this.data != null) {

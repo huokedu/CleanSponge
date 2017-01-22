@@ -26,11 +26,19 @@ package org.spongepowered.clean.network.packet.play.clientbound;
 
 import io.netty.buffer.ByteBuf;
 import org.spongepowered.clean.network.packet.Packet;
+import org.spongepowered.clean.util.ByteBufUtil;
 
 public class UpdateHealthPacket extends Packet {
 
-    public UpdateHealthPacket() {
+    public float health;
+    public int food;
+    public float saturation;
+
+    public UpdateHealthPacket(float health, int food, float sat) {
         this.id = 0x3E;
+        this.health = health;
+        this.food = food;
+        this.saturation = sat;
     }
 
     @Override
@@ -40,7 +48,9 @@ public class UpdateHealthPacket extends Packet {
 
     @Override
     public void write(ByteBuf buffer) {
-        // TODO Auto-generated method stub
+        buffer.writeFloat(this.health);
+        ByteBufUtil.writeVarInt(buffer, this.food);
+        buffer.writeFloat(this.saturation);
     }
 
 }

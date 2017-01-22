@@ -52,8 +52,10 @@ public class SWorldGenerator implements WorldGenerator {
     private GenerationPopulator basePopulator;
     private BiomeGenerator biomeGen;
 
-    public SWorldGenerator(SWorld world) {
+    public SWorldGenerator(SWorld world, BiomeGenerator biomes, GenerationPopulator base) {
         this.world = world;
+        this.biomeGen = biomes;
+        this.basePopulator = base;
     }
 
     public SChunk generateChunk(int x, int z) {

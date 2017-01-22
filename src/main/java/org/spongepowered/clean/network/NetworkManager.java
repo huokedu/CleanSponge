@@ -36,6 +36,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.spongepowered.clean.SGame;
 import org.spongepowered.clean.entity.player.SPlayer;
+import org.spongepowered.clean.network.NetworkConnection.ConnectionState;
 import org.spongepowered.clean.network.netty.PacketDecoder;
 import org.spongepowered.clean.network.netty.PacketEncoder;
 import org.spongepowered.clean.network.netty.PacketHandler;
@@ -106,6 +107,15 @@ public class NetworkManager {
         SGame.getLogger().info("Now listening on port " + port);
     }
 
+    public void update() {
+        for (NetworkConnection conn : this.activeConnections) {
+            if (conn.getConnectionState() == ConnectionState.PLAYING) {
+                continue;
+            }
+            conn.update();
+        }
+    }
+
     public void shutdown() {
         try {
             this.bossGroup.shutdownGracefully().sync();
@@ -115,7 +125,7 @@ public class NetworkManager {
             e.printStackTrace();
         }
     }
-    
+
     public Collection<SPlayer> getConnectedPlayers() {
         if (this.players == null) {
             ImmutableList.Builder<SPlayer> bld = ImmutableList.builder();

@@ -40,6 +40,7 @@ public class WorldTickTask extends Task {
 
     @Override
     public void execute() {
+        this.world.serialUpdate();
         for (SChunk chunk : this.world.getSChunks()) {
             chunk.serialUpdate();
         }

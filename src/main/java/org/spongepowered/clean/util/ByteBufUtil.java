@@ -122,6 +122,10 @@ public class ByteBufUtil {
         buffer.writeLong(((x & 0x3FFFFFF) << 38) | ((y & 0xFFF) << 26) | (z & 0x3FFFFFF));
     }
 
+    public static void writePosition(ByteBuf buffer, int x, int y, int z) {
+        buffer.writeLong(((x & 0x3FFFFFF) << 38) | ((y & 0xFFF) << 26) | (z & 0x3FFFFFF));
+    }
+
     public static Direction readDirection(ByteBuf buffer) {
         byte dir = buffer.readByte();
         if (dir == 0) {

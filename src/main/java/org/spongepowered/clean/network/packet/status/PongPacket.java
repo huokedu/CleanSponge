@@ -30,9 +30,10 @@ import org.spongepowered.clean.network.packet.Packet;
 public class PongPacket extends Packet {
 
     public long nonce;
-    
-    public PongPacket() {
+
+    public PongPacket(long nounce) {
         this.id = 0x01;
+        this.nonce = nounce;
     }
 
     @Override

@@ -46,9 +46,11 @@ import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.world.ChunkTicketManager;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.WorldArchetype;
+import org.spongepowered.api.world.WorldArchetypes;
 import org.spongepowered.api.world.storage.ChunkLayout;
 import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.clean.config.ServerProperties;
+import org.spongepowered.clean.scheduler.CoreScheduler;
 import org.spongepowered.clean.scheduler.condition.TaskCondition;
 import org.spongepowered.clean.scheduler.condition.TasksCompleteCondition;
 import org.spongepowered.clean.world.SWorld;
@@ -98,6 +100,13 @@ public class SServer implements Server {
     public TaskCondition loadStartupWorlds() {
         // TODO load startup worlds from sponge configs as well as the default
         // world from the server.properties
+
+        try {
+            createWorldProperties("world", WorldArchetypes.OVERWORLD);
+            loadWorld("world");
+        } catch (IOException e) {
+            CoreScheduler.emergencyShutdown(e);
+        }
 
         return new TasksCompleteCondition();
     }
@@ -230,8 +239,13 @@ public class SServer implements Server {
 
     @Override
     public WorldProperties createWorldProperties(String folderName, WorldArchetype archetype) throws IOException {
-        // TODO Auto-generated method stub
-        return null;
+        // TODO check for duplicates
+        WorldProperties props = new SWorldProperties(folderName, archetype);
+        ImmutableMap.Builder<String, WorldProperties> builder = ImmutableMap.builder();
+        builder.putAll(this.unloaded_worlds);
+        builder.put(folderName, props);
+        this.unloaded_worlds = builder.build();
+        return props;
     }
 
     @Override

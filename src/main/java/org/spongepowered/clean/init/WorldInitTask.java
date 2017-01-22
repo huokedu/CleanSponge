@@ -35,7 +35,7 @@ public class WorldInitTask extends Task {
 
     @Override
     protected void execute() {
-
+        SGame.game.getDimensionManager().init();
         ((SServer) Sponge.getServer()).findAllWorlds();
         SGame.getLogger().info("Located " + Sponge.getServer().getUnloadedWorlds().size() + " worlds");
         TaskCondition condition = ((SServer) Sponge.getServer()).loadStartupWorlds();

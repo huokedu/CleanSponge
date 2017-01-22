@@ -36,6 +36,7 @@ import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.GeneratorType;
+import org.spongepowered.api.world.WorldArchetype;
 import org.spongepowered.api.world.biome.BiomeType;
 import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.api.world.gen.PopulatorType;
@@ -50,6 +51,7 @@ import org.spongepowered.clean.entity.player.SHandType;
 import org.spongepowered.clean.item.SItemType;
 import org.spongepowered.clean.world.SDifficulty;
 import org.spongepowered.clean.world.SDimensionType;
+import org.spongepowered.clean.world.SWorldArchetype;
 import org.spongepowered.clean.world.biome.SBiomeType;
 import org.spongepowered.clean.world.gen.SGeneratorType;
 import org.spongepowered.clean.world.gen.SPopulatorType;
@@ -77,6 +79,7 @@ public class RegistryModules {
     public static void registerLateModules() {
         GameRegistry reg = Sponge.getRegistry();
         reg.registerModule(ItemType.class, new FixedCatalogRegistryModule<>(ItemType.class, SItemType::registerTypes));
+        reg.registerModule(WorldArchetype.class, new FixedCatalogRegistryModule<>(WorldArchetype.class, SWorldArchetype::registerTypes));
     }
 
 }

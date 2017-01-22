@@ -117,9 +117,10 @@ public class NetworkConnection {
                 });
             }
             sendPacket(new LoginSuccessPacket(this.uid, this.name));
-            this.state = ProtocolState.PLAY;
+            changeState(ProtocolState.PLAY);
             this.conn_state = ConnectionState.JOINING;
 
+            System.out.println("Joining world");
             SWorld world = (SWorld) Sponge.getServer().getWorld(Sponge.getServer().getDefaultWorldName()).get();
             this.playerEntity = new SPlayer(world, this.uid, this);
             world.addJoiningPlayer(this.playerEntity);

@@ -63,6 +63,7 @@ import com.flowpowered.math.vector.Vector3d;
 public abstract class SEntity implements Entity {
 
     private UUID uuid;
+    private int entityId;
     private SWorld world;
     private SChunk chunk;
     private double x, y, z;
@@ -120,6 +121,22 @@ public abstract class SEntity implements Entity {
 
     public int getBlockZ() {
         return this.bz;
+    }
+
+    public int getChunkX() {
+        return this.bx >> 4;
+    }
+
+    public int getChunkZ() {
+        return this.bz >> 4;
+    }
+
+    public int getEntityId() {
+        return this.entityId;
+    }
+
+    public void setEntityId(int id) {
+        this.entityId = id;
     }
 
     @Override

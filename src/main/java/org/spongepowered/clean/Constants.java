@@ -30,5 +30,6 @@ public class Constants {
     public static final String SERVER_VERSION = "0.1.0";
     public static final String API_VERSION = "6.0.0-SNAPSHOT";
     public static final int PROTOCOL_VERSION = 316;
+    public static final String SERVER_BRAND = "Sponge";
 
 }

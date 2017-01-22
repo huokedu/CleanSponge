@@ -66,6 +66,7 @@ public class SMutableBiomeVolume extends AbstractVolume implements MutableBiomeV
 
     @Override
     public BiomeType getBiome(int x, int y, int z) {
+        checkRange(x, y, z);
         int id = this.data[getIndex(x, y, z)] & 0xFF;
         BiomeType type = SBiomeType.getBiome(id);
         return type;
@@ -73,6 +74,7 @@ public class SMutableBiomeVolume extends AbstractVolume implements MutableBiomeV
 
     @Override
     public void setBiome(int x, int y, int z, BiomeType biome) {
+        checkRange(x, y, z);
         this.data[getIndex(x, y, z)] = (byte) ((SBiomeType) biome).getBiomeId();
     }
 

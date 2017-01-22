@@ -29,14 +29,8 @@ import static org.spongepowered.clean.network.packet.ProtocolState.LOGIN;
 import static org.spongepowered.clean.network.packet.ProtocolState.PLAY;
 import static org.spongepowered.clean.network.packet.ProtocolState.STATUS;
 
-import java.security.PrivateKey;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
-
-import javax.crypto.Cipher;
-
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.clean.Constants;
 import org.spongepowered.clean.SGame;
@@ -74,26 +68,33 @@ import org.spongepowered.clean.network.packet.play.serverbound.TabCompletePacket
 import org.spongepowered.clean.network.packet.play.serverbound.TeleportConfirmPacket;
 import org.spongepowered.clean.network.packet.play.serverbound.UpdateSignPacket;
 import org.spongepowered.clean.network.packet.play.serverbound.UseEntityPacket;
+import org.spongepowered.clean.network.packet.play.serverbound.UseItemPacket;
 import org.spongepowered.clean.network.packet.play.serverbound.VehicleMovePacket;
 import org.spongepowered.clean.network.packet.status.PingPacket;
 import org.spongepowered.clean.network.packet.status.PongPacket;
 import org.spongepowered.clean.network.packet.status.RequestPacket;
 import org.spongepowered.clean.network.packet.status.ResponsePacket;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import java.security.PrivateKey;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
+
+import javax.crypto.Cipher;
 
 public enum InboundPackets {
 
     HANDSHAKE(HANDSHAKING, 0x00, () -> new HandshakePacket(), (p, c) -> {
         HandshakePacket packet = (HandshakePacket) p;
-        if (packet.protocol_version != Constants.PROTOCOL_VERSION) {
-            c.close();
-        }
         if (packet.next_state == HandshakePacket.NextState.STATUS) {
             c.changeState(STATUS);
         } else if (packet.next_state == HandshakePacket.NextState.LOGIN) {
-            c.changeState(LOGIN);
+            if (packet.protocol_version != Constants.PROTOCOL_VERSION) {
+                c.close();
+            } else {
+                c.changeState(LOGIN);
+            }
         }
     }),
 
@@ -116,8 +117,7 @@ public enum InboundPackets {
     }),
 
     STATUS_PING(STATUS, 0x01, () -> new PingPacket(), (p, c) -> {
-        PongPacket response = (PongPacket) p;
-        response.nonce = ((PingPacket) p).nonce;
+        PongPacket response = new PongPacket(((PingPacket) p).nonce);
         c.sendPacket(response);
         c.close();
     }),
@@ -125,7 +125,7 @@ public enum InboundPackets {
     LOGIN_START(LOGIN, 0x00, () -> new LoginStartPacket(), (p, c) -> {
         LoginStartPacket packet = (LoginStartPacket) p;
         c.setName(packet.name);
-        if (Sponge.getServer().getOnlineMode()) {
+        if (Sponge.getServer().getOnlineMode() && false) {
             c.sendPacket(new EncryptionRequestPacket("", SGame.game.getNetworkManager().getServerKeyPair().getPublic(), c.getVerifyToken()));
             c.updateConnState(ConnectionState.AUTHENTICATING);
         } else {
@@ -235,6 +235,9 @@ public enum InboundPackets {
     }),
 
     PLAYER_BLOCK_PLACEMENT(PLAY, 0x1C, () -> new PlayerBlockPlacementPacket(), (p, c) -> {
+    }),
+
+    USE_ITEM(PLAY, 0x1D, () -> new UseItemPacket(), (p, c) -> {
     });
 
     private ProtocolState state;
@@ -280,7 +283,37 @@ public enum InboundPackets {
         login_packets[0] = InboundPackets.LOGIN_START;
         login_packets[1] = InboundPackets.LOGIN_ENCRYPTION_RESPONSE;
         states.put(LOGIN, login_packets);
-        InboundPackets[] play_packets = new InboundPackets[0];
+        InboundPackets[] play_packets = new InboundPackets[30];
+        play_packets[0] = InboundPackets.TELEPORT_CONFIRM;
+        play_packets[1] = InboundPackets.TAB_COMPLETE;
+        play_packets[2] = InboundPackets.CHAT_MESSAGE;
+        play_packets[3] = InboundPackets.CLIENT_STATUS;
+        play_packets[4] = InboundPackets.CLIENT_SETTINGS;
+        play_packets[5] = InboundPackets.CONFIRM_TRANSACTION;
+        play_packets[6] = InboundPackets.ENCHANT_ITEM;
+        play_packets[7] = InboundPackets.CLICK_WINDOW;
+        play_packets[8] = InboundPackets.CLOSE_WINDOW;
+        play_packets[9] = InboundPackets.PLUGIN_MESSAGE;
+        play_packets[10] = InboundPackets.USE_ENTITY;
+        play_packets[11] = InboundPackets.KEEP_ALIVE;
+        play_packets[12] = InboundPackets.PLAYER_POSITION;
+        play_packets[13] = InboundPackets.PLAYER_POSITION_AND_LOOK;
+        play_packets[14] = InboundPackets.PLAYER_LOOK;
+        play_packets[15] = InboundPackets.PLAYER;
+        play_packets[16] = InboundPackets.VEHICLE_MOVE;
+        play_packets[17] = InboundPackets.STEER_BOAT;
+        play_packets[18] = InboundPackets.PLAYER_ABILITIES;
+        play_packets[19] = InboundPackets.PLAYER_DIGGING;
+        play_packets[20] = InboundPackets.ENTITY_ACTION;
+        play_packets[21] = InboundPackets.STEER_VEHICLE;
+        play_packets[22] = InboundPackets.RESOURCE_PACK_STATUS;
+        play_packets[23] = InboundPackets.HELD_ITEM_CHANGE;
+        play_packets[24] = InboundPackets.CREATIVE_INVENTORY_ACTION;
+        play_packets[25] = InboundPackets.UPDATE_SIGN;
+        play_packets[26] = InboundPackets.ANIMATION;
+        play_packets[27] = InboundPackets.SPECTATE;
+        play_packets[28] = InboundPackets.PLAYER_BLOCK_PLACEMENT;
+        play_packets[29] = InboundPackets.USE_ITEM;
         states.put(PLAY, play_packets);
     }
 

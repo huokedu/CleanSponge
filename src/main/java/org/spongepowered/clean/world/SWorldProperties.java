@@ -171,8 +171,13 @@ public class SWorldProperties implements WorldProperties {
         this.thundering = false;
         this.thundertime = 0;
         this.clearWeatherTime = 1500;
-        
+
         this.uuid = UUID.randomUUID();
+    }
+
+    public void updateTime() {
+        this.time++;
+        this.daytime++;
     }
 
     public SaveHandler getSaveHandler() {

@@ -35,12 +35,19 @@ public class PacketEncoder extends MessageToByteEncoder<Packet>{
     public PacketEncoder() {
         
     }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        cause.printStackTrace();
+        ctx.close();
+    }
     
     @Override
     protected void encode(ChannelHandlerContext ctx, Packet msg, ByteBuf out) throws Exception {
         ByteBufUtil.writeVarInt(out, msg.id);
         System.out.println("Writing out " + msg.id + " " + out.readableBytes());
         msg.write(out);
+        System.out.println("Written");
     }
 
 }

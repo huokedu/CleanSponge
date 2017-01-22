@@ -22,42 +22,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.network.netty;
+package org.spongepowered.clean.network.packet.play.clientbound;
 
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
-import org.spongepowered.clean.network.NetworkConnection;
-import org.spongepowered.clean.network.packet.InboundPackets;
+import io.netty.buffer.ByteBuf;
+import org.spongepowered.clean.util.ByteBufUtil;
 import org.spongepowered.clean.network.packet.Packet;
 
-public class PacketHandler extends SimpleChannelInboundHandler<Packet> {
+public class ChatMessagePacket extends Packet {
 
-    private NetworkConnection conn;
+    public static enum Position {
+        CHAT,
+        SYSTEM_MSG,
+        ABOVE_HOTBAR,
+    }
 
-    public PacketHandler(NetworkConnection conn) {
-        this.conn = conn;
+    public String chat;
+    public Position position;
+
+    public ChatMessagePacket(String json, Position pos) {
+        this.id = 0x0F;
+        this.chat = json;
+        this.position = pos;
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
-        this.conn.setChannel(ctx.channel());
+    public void read(ByteBuf buffer) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
-        ctx.close();
-    }
-
-    @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Packet msg) throws Exception {
-        InboundPackets packetType = InboundPackets.get(ctx.channel().attr(NetworkConnection.PROTOCOL_STATE_KEY).get(), msg.id);
-        System.out.println("Packet in: " + Integer.toHexString(msg.id));
-        if (packetType == null) {
-            return;
-        }
-        packetType.getHandler().accept(msg, this.conn);
+    public void write(ByteBuf buffer) {
+        ByteBufUtil.writeString(buffer, this.chat);
+        buffer.writeByte(this.position.ordinal());
     }
 
 }

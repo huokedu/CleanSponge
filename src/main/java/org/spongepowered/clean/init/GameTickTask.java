@@ -47,6 +47,7 @@ public class GameTickTask extends Task {
     @Override
     public void execute() {
         this.task_condition.clear();
+        SGame.game.getNetworkManager().update();
         for (World world : Sponge.getServer().getWorlds()) {
             SWorld sp_world = (SWorld) world;
             this.task_condition.addTask(sp_world.getTickTask());
@@ -61,7 +62,7 @@ public class GameTickTask extends Task {
         @Override
         protected void execute() {
             GameTickTask.this.last = System.currentTimeMillis();
-            if (SGame.game.getState() != GameState.SERVER_STARTED || getTaskCount() > 20) {
+            if (SGame.game.getState() != GameState.SERVER_STARTED) {
                 CoreScheduler.addHighTask(new ShutdownTask());
             } else {
                 CoreScheduler.addHighTask(GameTickTask.this);

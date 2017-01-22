@@ -31,8 +31,15 @@ import org.spongepowered.clean.registry.FixedCatalogRegistryModule;
 
 public class SDimensionType extends AbstractCatalogType implements DimensionType {
 
-    public SDimensionType(String id, String name) {
+    private int dimid;
+
+    public SDimensionType(String id, String name, int dimid) {
         super(id, name);
+        this.dimid = dimid;
+    }
+
+    public int getDimensionId() {
+        return this.dimid;
     }
 
     @Override
@@ -42,9 +49,9 @@ public class SDimensionType extends AbstractCatalogType implements DimensionType
     }
 
     public static void registerTypes(FixedCatalogRegistryModule<DimensionType> registry) {
-        registry.register(new SDimensionType("minecraft:nether", "Nether"));
-        registry.register(new SDimensionType("minecraft:overworld", "Overworld"));
-        registry.register(new SDimensionType("minecraft:the_end", "The End"));
+        registry.register(new SDimensionType("minecraft:nether", "Nether", 1));
+        registry.register(new SDimensionType("minecraft:overworld", "Overworld", 0));
+        registry.register(new SDimensionType("minecraft:the_end", "The End", -1));
     }
 
 }

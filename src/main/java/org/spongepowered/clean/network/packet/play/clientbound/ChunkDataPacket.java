@@ -26,11 +26,15 @@ package org.spongepowered.clean.network.packet.play.clientbound;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.spongepowered.api.block.BlockState;
+import org.spongepowered.api.block.tileentity.TileEntity;
+import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.world.DimensionTypes;
 import org.spongepowered.clean.network.packet.Packet;
 import org.spongepowered.clean.util.ByteBufUtil;
 import org.spongepowered.clean.world.SChunk;
 import org.spongepowered.clean.world.SChunk.ChunkSection;
-import org.spongepowered.clean.world.palette.LocalBlockPalette;
+import org.spongepowered.clean.world.palette.GlobalPalette;
 
 public class ChunkDataPacket extends Packet {
 
@@ -59,7 +63,7 @@ public class ChunkDataPacket extends Packet {
             this.mask = 0;
             for (int i = 0; i < 16; i++) {
                 if (this.chunk.getSections()[i] != null) {
-                    this.mask &= (1 << i);
+                    this.mask |= (1 << i);
                 }
             }
         } else {
@@ -73,22 +77,43 @@ public class ChunkDataPacket extends Packet {
         ByteBuf chunkdata = Unpooled.buffer();
         for (int i = 0; i < 16; i++) {
             if (((this.mask >> i) & 1) != 0) {
-                LocalBlockPalette palette = new LocalBlockPalette();
                 ChunkSection section = this.chunk.getSections()[i];
-                for (int x = 0; x < 16; x++) {
-                    for (int y = 0; y < 16; y++) {
-                        for (int z = 0; z < 16; z++) {
-                            palette.getOrAssign(section.getBlock(x, y, z));
-                        }
+                chunkdata.writeByte(section.getBitsPerBlock());
+                if (section.getPalette() == GlobalPalette.instance) {
+                    ByteBufUtil.writeVarInt(chunkdata, 0);
+                } else {
+                    ByteBufUtil.writeVarInt(chunkdata, section.getPalette().getHighestId());
+                    for (int p = 0; p < section.getPalette().getHighestId(); p++) {
+                        BlockState block = section.getPalette().get(p).get();
+                        ByteBufUtil.writeVarInt(chunkdata, GlobalPalette.instance.getOrAssign(block));
                     }
                 }
-                int bitsPerBlock = Integer.highestOneBit(palette.getHighestId());
-                if (bitsPerBlock < 4) {
-                    bitsPerBlock = 4;
-                } else if (bitsPerBlock > 8) {
-                    bitsPerBlock = -1;
+                long[] data = section.getData();
+                ByteBufUtil.writeVarInt(chunkdata, data.length);
+                for (int l = 0; l < data.length; l++) {
+                    chunkdata.writeLong(data[l]);
+                }
+                // block light
+                chunkdata.writeZero(2048);
+                if (this.chunk.getWorld().getDimension().getType() == DimensionTypes.OVERWORLD) {
+                    // sky light
+                    chunkdata.writeZero(2048);
                 }
             }
+        }
+        int size = chunkdata.readableBytes();
+        if (this.full) {
+            size += 256;
+        }
+        ByteBufUtil.writeVarInt(buffer, size);
+        buffer.writeBytes(chunkdata);
+        if (this.full) {
+            buffer.writeBytes(this.chunk.getBiomeArray());
+        }
+        ByteBufUtil.writeVarInt(buffer, this.chunk.getTileEntities().size());
+        for (TileEntity te : this.chunk.getTileEntities()) {
+            DataContainer data = te.toContainer();
+            ByteBufUtil.writeNBT(buffer, data);
         }
     }
 

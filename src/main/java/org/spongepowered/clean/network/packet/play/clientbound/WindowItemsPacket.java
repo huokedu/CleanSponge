@@ -29,8 +29,13 @@ import org.spongepowered.clean.network.packet.Packet;
 
 public class WindowItemsPacket extends Packet {
 
-    public WindowItemsPacket() {
+    public byte windowid;
+    public short count;
+
+    public WindowItemsPacket(byte window, short count) {
         this.id = 0x14;
+        this.windowid = window;
+        this.count = count;
     }
 
     @Override
@@ -40,7 +45,11 @@ public class WindowItemsPacket extends Packet {
 
     @Override
     public void write(ByteBuf buffer) {
-        // TODO Auto-generated method stub
+        buffer.writeByte(this.windowid);
+        buffer.writeShort(this.count);
+        for (int i = 0; i < this.count; i++) {
+            buffer.writeShort(-1);
+        }
     }
 
 }

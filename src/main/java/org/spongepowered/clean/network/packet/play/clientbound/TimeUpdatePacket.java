@@ -29,8 +29,13 @@ import org.spongepowered.clean.network.packet.Packet;
 
 public class TimeUpdatePacket extends Packet {
 
-    public TimeUpdatePacket() {
+    public long totalTicks;
+    public long time;
+
+    public TimeUpdatePacket(long total, long time) {
         this.id = 0x44;
+        this.totalTicks = total;
+        this.time = time;
     }
 
     @Override
@@ -40,7 +45,8 @@ public class TimeUpdatePacket extends Packet {
 
     @Override
     public void write(ByteBuf buffer) {
-        // TODO Auto-generated method stub
+        buffer.writeLong(this.totalTicks);
+        buffer.writeLong(this.time);
     }
 
 }

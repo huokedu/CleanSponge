@@ -25,12 +25,18 @@
 package org.spongepowered.clean.network.packet.play.clientbound;
 
 import io.netty.buffer.ByteBuf;
+import org.spongepowered.clean.util.ByteBufUtil;
 import org.spongepowered.clean.network.packet.Packet;
 
 public class SpawnPositionPacket extends Packet {
 
-    public SpawnPositionPacket() {
+    public int x, y, z;
+    
+    public SpawnPositionPacket(int x, int y, int z) {
         this.id = 0x43;
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
     @Override
@@ -40,7 +46,7 @@ public class SpawnPositionPacket extends Packet {
 
     @Override
     public void write(ByteBuf buffer) {
-        // TODO Auto-generated method stub
+        ByteBufUtil.writePosition(buffer, this.x, this.y, this.z);
     }
 
 }

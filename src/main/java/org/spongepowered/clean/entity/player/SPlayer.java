@@ -25,6 +25,7 @@
 package org.spongepowered.clean.entity.player;
 
 import com.flowpowered.math.vector.Vector3d;
+import io.netty.channel.ChannelFuture;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.type.HandType;
@@ -33,6 +34,8 @@ import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.sound.SoundCategory;
 import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameMode;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.entity.living.player.tab.TabList;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.event.cause.Cause;
@@ -59,6 +62,7 @@ import org.spongepowered.api.text.title.Title;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.clean.entity.living.SLiving;
 import org.spongepowered.clean.network.NetworkConnection;
+import org.spongepowered.clean.network.packet.Packet;
 import org.spongepowered.clean.world.SWorld;
 
 import java.util.List;
@@ -69,6 +73,7 @@ import java.util.UUID;
 public class SPlayer extends SLiving implements Player {
 
     private final NetworkConnection connection;
+    private GameMode gamemode = GameModes.SURVIVAL;
 
     public SPlayer(SWorld world, UUID uid, NetworkConnection conn) {
         super(world);
@@ -77,6 +82,14 @@ public class SPlayer extends SLiving implements Player {
 
     public NetworkConnection getNetConnection() {
         return this.connection;
+    }
+
+    public ChannelFuture sendPacket(Packet p) {
+        return this.connection.sendPacket(p);
+    }
+
+    public GameMode getGameMode() {
+        return this.gamemode;
     }
 
     @Override

@@ -25,12 +25,31 @@
 package org.spongepowered.clean.network.packet.play.clientbound;
 
 import io.netty.buffer.ByteBuf;
+import org.spongepowered.clean.util.ByteBufUtil;
 import org.spongepowered.clean.network.packet.Packet;
 
 public class PlayerPositionAndLookPacket extends Packet {
 
-    public PlayerPositionAndLookPacket() {
+    public static final int FLAG_X_REL = 0x01;
+    public static final int FLAG_Y_REL = 0x02;
+    public static final int FLAG_Z_REL = 0x04;
+    public static final int FLAG_PITCH_REL = 0x08;
+    public static final int FLAG_YAW_REL = 0x10;
+
+    public double x, y, z;
+    public float yaw, pitch;
+    public byte flags;
+    public int teleportId;
+
+    public PlayerPositionAndLookPacket(double x, double y, double z, float yaw, float pitch, byte flags, int teleportid) {
         this.id = 0x2E;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.yaw = yaw;
+        this.pitch = pitch;
+        this.flags = flags;
+        this.teleportId = teleportid;
     }
 
     @Override
@@ -40,7 +59,13 @@ public class PlayerPositionAndLookPacket extends Packet {
 
     @Override
     public void write(ByteBuf buffer) {
-        // TODO Auto-generated method stub
+        buffer.writeDouble(this.x);
+        buffer.writeDouble(this.y);
+        buffer.writeDouble(this.z);
+        buffer.writeFloat(this.yaw);
+        buffer.writeFloat(this.pitch);
+        buffer.writeByte(this.flags);
+        ByteBufUtil.writeVarInt(buffer, this.teleportId);
     }
 
 }
