@@ -24,10 +24,13 @@
  */
 package org.spongepowered.clean.network.packet.play.clientbound;
 
-import org.spongepowered.clean.network.packet.Packet;
-import org.spongepowered.clean.world.SChunk;
-
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import org.spongepowered.clean.network.packet.Packet;
+import org.spongepowered.clean.util.ByteBufUtil;
+import org.spongepowered.clean.world.SChunk;
+import org.spongepowered.clean.world.SChunk.ChunkSection;
+import org.spongepowered.clean.world.palette.LocalBlockPalette;
 
 public class ChunkDataPacket extends Packet {
 
@@ -49,7 +52,44 @@ public class ChunkDataPacket extends Packet {
 
     @Override
     public void write(ByteBuf buffer) {
-        // TODO Auto-generated method stub
+        buffer.writeInt(this.chunk.getBlockMin().getX() >> 4);
+        buffer.writeInt(this.chunk.getBlockMin().getZ() >> 4);
+        buffer.writeBoolean(this.full);
+        if (this.full) {
+            this.mask = 0;
+            for (int i = 0; i < 16; i++) {
+                if (this.chunk.getSections()[i] != null) {
+                    this.mask &= (1 << i);
+                }
+            }
+        } else {
+            for (int i = 0; i < 16; i++) {
+                if (this.chunk.getSections()[i] == null) {
+                    this.mask &= ~(1 << i);
+                }
+            }
+        }
+        ByteBufUtil.writeVarInt(buffer, this.mask);
+        ByteBuf chunkdata = Unpooled.buffer();
+        for (int i = 0; i < 16; i++) {
+            if (((this.mask >> i) & 1) != 0) {
+                LocalBlockPalette palette = new LocalBlockPalette();
+                ChunkSection section = this.chunk.getSections()[i];
+                for (int x = 0; x < 16; x++) {
+                    for (int y = 0; y < 16; y++) {
+                        for (int z = 0; z < 16; z++) {
+                            palette.getOrAssign(section.getBlock(x, y, z));
+                        }
+                    }
+                }
+                int bitsPerBlock = Integer.highestOneBit(palette.getHighestId());
+                if (bitsPerBlock < 4) {
+                    bitsPerBlock = 4;
+                } else if (bitsPerBlock > 8) {
+                    bitsPerBlock = -1;
+                }
+            }
+        }
     }
 
 }

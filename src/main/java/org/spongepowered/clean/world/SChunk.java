@@ -24,16 +24,13 @@
  */
 package org.spongepowered.clean.world;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
+import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
+import com.google.common.collect.Lists;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
+import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.block.ScheduledBlockUpdate;
 import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.data.DataContainer;
@@ -63,31 +60,40 @@ import org.spongepowered.api.world.biome.BiomeType;
 import org.spongepowered.api.world.extent.ArchetypeVolume;
 import org.spongepowered.api.world.extent.Extent;
 import org.spongepowered.api.world.extent.ImmutableBiomeVolume;
+import org.spongepowered.api.world.extent.ImmutableBlockVolume;
 import org.spongepowered.api.world.extent.MutableBiomeVolume;
+import org.spongepowered.api.world.extent.MutableBlockVolume;
 import org.spongepowered.api.world.extent.StorageType;
 import org.spongepowered.api.world.extent.UnmodifiableBiomeVolume;
+import org.spongepowered.api.world.extent.UnmodifiableBlockVolume;
 import org.spongepowered.api.world.extent.worker.MutableBiomeVolumeWorker;
 import org.spongepowered.api.world.extent.worker.MutableBlockVolumeWorker;
+import org.spongepowered.api.world.schematic.BlockPalette;
 import org.spongepowered.clean.block.SBlockSnapshot;
 import org.spongepowered.clean.entity.SEntity;
 import org.spongepowered.clean.entity.SEntityType;
 import org.spongepowered.clean.world.biome.SBiomeType;
-import org.spongepowered.clean.world.buffer.SMutableBlockVolume;
 import org.spongepowered.clean.world.palette.GlobalPalette;
+import org.spongepowered.clean.world.palette.LocalBlockPalette;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
-import com.google.common.collect.Lists;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-public class SChunk extends SMutableBlockVolume implements Chunk {
-
-    // TODO don't extend SMutableBlockVolume and track blocks in chunk sections
-    // (to make the packets more efficient to build)
+public class SChunk implements Chunk {
 
     public static final Vector3i CHUNK_SIZE = new Vector3i(16, 256, 16);
     public static final Vector3i BIOME_SIZE = new Vector3i(16, 1, 16);
 
+    private final Vector3i min;
+    private final Vector3i max;
+
     private final SWorld world;
+    private final ChunkSection[] blocks = new ChunkSection[16];
     private final byte[] biomes;
     private final List<SEntity> entities = Lists.newArrayList();
 
@@ -95,7 +101,8 @@ public class SChunk extends SMutableBlockVolume implements Chunk {
     private boolean lighting;
 
     public SChunk(SWorld world, int x, int z) {
-        super(GlobalPalette.instance, new Vector3i(x * 16, 0, z * 16), CHUNK_SIZE);
+        this.min = new Vector3i(x * 16, 0, z * 16);
+        this.max = new Vector3i(x * 16 + 15, 255, z * 16 + 15);
         this.world = world;
         this.biomes = new byte[16 * 16];
     }
@@ -110,6 +117,76 @@ public class SChunk extends SMutableBlockVolume implements Chunk {
         for (SEntity entity : this.entities) {
             entity.parallelUpdate();
         }
+    }
+
+    @Override
+    public Vector3i getBlockMin() {
+        return this.min;
+    }
+
+    @Override
+    public Vector3i getBlockMax() {
+        return this.max;
+    }
+
+    @Override
+    public Vector3i getBlockSize() {
+        return CHUNK_SIZE;
+    }
+
+    @Override
+    public boolean containsBlock(int x, int y, int z) {
+        return this.min.getX() <= x && this.max.getX() >= x && this.min.getY() <= y && this.max.getY() >= y && this.min.getZ() <= z
+                && this.max.getZ() >= z;
+    }
+
+    protected void checkRange(int x, int y, int z) {
+        if (!containsBlock(x, y, z)) {
+            throw new ArrayIndexOutOfBoundsException(
+                    "Position (" + x + ", " + y + ", " + z + ") was outside of volume min " + this.min + " max " + this.max);
+        }
+    }
+
+    public ChunkSection[] getSections() {
+        return this.blocks;
+    }
+
+    @Override
+    public BlockState getBlock(int x, int y, int z) {
+        checkRange(x, y, z);
+        ChunkSection section = this.blocks[y >> 4];
+        if (section == null) {
+            return BlockTypes.AIR.getDefaultState();
+        }
+        return section.getBlock(x - this.min.getX(), y & 0xFF, z - this.min.getZ());
+    }
+
+    @Override
+    public BlockType getBlockType(int x, int y, int z) {
+        return getBlock(x, y, z).getType();
+    }
+
+    @Override
+    public boolean setBlock(int x, int y, int z, BlockState block, Cause cause) {
+        checkRange(x, y, z);
+        ChunkSection section = this.blocks[y >> 4];
+        if (section == null) {
+            section = new ChunkSection(y >> 4);
+            this.blocks[y >> 4] = section;
+        }
+        section.setBlock(x - this.min.getX(), y & 0xFF, z - this.min.getZ(), block);
+        if (section.getAirCount() == 16 * 16 * 16) {
+            this.blocks[y >> 4] = null;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean setBlock(int x, int y, int z, BlockState blockState, BlockChangeFlag flag, Cause cause) {
+        checkRange(x, y, z);
+        // TODO Auto-generated method stub
+        // TODO update physics and lighting if flags set
+        return setBlock(x, y, z, blockState, cause);
     }
 
     public void setPhysics(boolean state) {
@@ -128,13 +205,6 @@ public class SChunk extends SMutableBlockVolume implements Chunk {
     @Override
     public Location<Chunk> getLocation(Vector3d position) {
         return new Location<Chunk>(this, position);
-    }
-
-    @Override
-    public boolean setBlock(int x, int y, int z, BlockState blockState, BlockChangeFlag flag, Cause cause) {
-        // TODO Auto-generated method stub
-        // TODO update physics and lighting if flags set
-        return setBlock(x, y, z, blockState, cause);
     }
 
     @Override
@@ -415,16 +485,25 @@ public class SChunk extends SMutableBlockVolume implements Chunk {
         return y == 0 && containsBlock(x, 0, z);
     }
 
+    protected void checkBiomeRange(int x, int y, int z) {
+        if (!containsBiome(x, y, z)) {
+            throw new ArrayIndexOutOfBoundsException(
+                    "Position (" + x + ", " + y + ", " + z + ") was outside of biome volume min " + this.min + " max " + this.max.sub(0, 255, 0));
+        }
+    }
+
     @Override
     public BiomeType getBiome(int x, int y, int z) {
-        int id = this.biomes[getIndex(x, y, z)] & 0xFF;
+        checkBiomeRange(x, y, z);
+        int id = this.biomes[(x - this.min.getX()) + (z - this.min.getZ()) * 16] & 0xFF;
         BiomeType type = SBiomeType.getBiome(id);
         return type;
     }
 
     @Override
     public void setBiome(int x, int y, int z, BiomeType biome) {
-        this.biomes[getIndex(x, y, z)] = (byte) ((SBiomeType) biome).getBiomeId();
+        checkBiomeRange(x, y, z);
+        this.biomes[(x - this.min.getX()) + (z - this.min.getZ()) * 16] = (byte) ((SBiomeType) biome).getBiomeId();
     }
 
     @Override
@@ -658,6 +737,157 @@ public class SChunk extends SMutableBlockVolume implements Chunk {
     public MutableBlockVolumeWorker<Chunk> getBlockWorker(Cause cause) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public MutableBlockVolume getBlockView(Vector3i newMin, Vector3i newMax) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public MutableBlockVolume getBlockView(DiscreteTransform3 transform) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public UnmodifiableBlockVolume getUnmodifiableBlockView() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public MutableBlockVolume getBlockCopy(StorageType type) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ImmutableBlockVolume getImmutableBlockCopy() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public static class ChunkSection {
+
+        private final int y;
+        private BlockPalette palette;
+        private long[] data;
+        private int bitsPerBlock;
+        private int currentMax;
+        private int airCount;
+
+        public ChunkSection(int y) {
+            this.y = y;
+            this.palette = new LocalBlockPalette();
+            this.airCount = 4096;
+            checkSize(8);
+        }
+
+        public BlockPalette getPalette() {
+            return this.palette;
+        }
+
+        public int getBitsPerBlock() {
+            return this.bitsPerBlock;
+        }
+
+        public int getY() {
+            return this.y;
+        }
+
+        public int getAirCount() {
+            return this.airCount;
+        }
+
+        public BlockState getBlock(int x, int y, int z) {
+            return this.palette.get(get(x, y, z)).get();
+        }
+
+        private int get(int x, int y, int z) {
+            int bit = this.bitsPerBlock * (x + y * 16 + z * 256);
+            if ((bit / 64) != ((bit + this.bitsPerBlock - 1) / 64)) {
+                // id is split
+                int id = (int) (this.data[bit / 64] >>> (bit % 64));
+                int rem = (64 - (bit % 64));
+                id |= ((this.data[bit / 64 + 1] << rem) & this.currentMax);
+                return id;
+            }
+            return (int) ((this.data[bit / 64] >>> (bit % 64)) & this.currentMax);
+        }
+
+        public void setBlock(int x, int y, int z, BlockState block) {
+            int newId = this.palette.getOrAssign(block);
+            BlockType oldBlock = getBlock(x, y, z).getType();
+            if (oldBlock == BlockTypes.AIR && block.getType() != BlockTypes.AIR) {
+                this.airCount--;
+            } else if (oldBlock != BlockTypes.AIR && block.getType() == BlockTypes.AIR) {
+                this.airCount++;
+            }
+            if (this.palette.getHighestId() > this.currentMax) {
+                checkSize(this.palette.getHighestId());
+            }
+            int bit = this.bitsPerBlock * (x + y * 16 + z * 256);
+            this.data[bit / 64] = (this.data[bit / 64] & ~(this.currentMax << (bit % 64))) | ((long) newId << (bit % 64));
+            if ((bit / 64) != ((bit + this.bitsPerBlock - 1) / 64)) {
+                // id is split
+                int rem = (64 - (bit % 64));
+                this.data[bit / 64 + 1] = (this.data[bit / 64 + 1] & ~(this.currentMax >>> rem)) | ((long) newId >>> rem);
+            }
+        }
+
+        private void checkSize(int size) {
+            if (size < 8) {
+                // both ensures that the size isn't negative
+                // and enforces a min bit count of 4
+                size = 8;
+            }
+            int max = Integer.highestOneBit(size << 1) - 1;
+            int bits = Integer.bitCount(max);
+            BlockPalette newpalette = this.palette;
+            if (bits != this.bitsPerBlock) {
+                if (bits > 8) {
+                    if (this.bitsPerBlock > 8) {
+                        return;
+                    }
+                    size = GlobalPalette.instance.getHighestId();
+                    max = Integer.highestOneBit(size << 1) - 1;
+                    bits = Integer.bitCount(max);
+                    newpalette = GlobalPalette.instance;
+                }
+                long[] newData = new long[(4096 * bits) / 64];
+                int bit = 0;
+                // iterate in this order to match the indexing of
+                // x + y * 16 + z * 256
+                for (int z = 0; z < 16; z++) {
+                    for (int y = 0; y < 16; y++) {
+                        for (int x = 0; x < 16; x++) {
+                            int newId = 0;
+                            if (this.data != null) {
+                                newId = get(x, y, z);
+                            }
+                            if (newpalette != this.palette) {
+                                BlockState state = this.palette.get(newId).get();
+                                newId = newpalette.getOrAssign(state);
+                            }
+                            newData[bit / 64] = (newData[bit / 64] & ~(max << (bit % 64))) | ((long) newId << (bit % 64));
+                            if ((bit / 64) != ((bit + bits - 1) / 64)) {
+                                // id is split
+                                int rem = (64 - (bit % 64));
+                                newData[bit / 64 + 1] = (newData[bit / 64 + 1] & ~(max >>> rem)) | ((long) newId >>> rem);
+                            }
+                            bit += bits;
+                        }
+                    }
+                }
+                this.data = newData;
+                this.bitsPerBlock = bits;
+                this.currentMax = max;
+                this.palette = newpalette;
+            }
+        }
+
     }
 
 }
