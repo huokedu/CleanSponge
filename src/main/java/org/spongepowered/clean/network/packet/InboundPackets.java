@@ -29,15 +29,9 @@ import static org.spongepowered.clean.network.packet.ProtocolState.LOGIN;
 import static org.spongepowered.clean.network.packet.ProtocolState.PLAY;
 import static org.spongepowered.clean.network.packet.ProtocolState.STATUS;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.clean.Constants;
 import org.spongepowered.clean.SGame;
 import org.spongepowered.clean.network.NetworkConnection;
-import org.spongepowered.clean.network.NetworkConnection.ConnectionState;
 import org.spongepowered.clean.network.packet.handshake.HandshakePacket;
-import org.spongepowered.clean.network.packet.login.EncryptionRequestPacket;
 import org.spongepowered.clean.network.packet.login.EncryptionResponsePacket;
 import org.spongepowered.clean.network.packet.login.LoginStartPacket;
 import org.spongepowered.clean.network.packet.play.serverbound.AnimationPacket;
@@ -71,174 +65,49 @@ import org.spongepowered.clean.network.packet.play.serverbound.UseEntityPacket;
 import org.spongepowered.clean.network.packet.play.serverbound.UseItemPacket;
 import org.spongepowered.clean.network.packet.play.serverbound.VehicleMovePacket;
 import org.spongepowered.clean.network.packet.status.PingPacket;
-import org.spongepowered.clean.network.packet.status.PongPacket;
 import org.spongepowered.clean.network.packet.status.RequestPacket;
-import org.spongepowered.clean.network.packet.status.ResponsePacket;
 
-import java.security.PrivateKey;
-import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import javax.crypto.Cipher;
-
 public enum InboundPackets {
 
-    HANDSHAKE(HANDSHAKING, 0x00, () -> new HandshakePacket(), (p, c) -> {
-        HandshakePacket packet = (HandshakePacket) p;
-        if (packet.next_state == HandshakePacket.NextState.STATUS) {
-            c.changeState(STATUS);
-        } else if (packet.next_state == HandshakePacket.NextState.LOGIN) {
-            if (packet.protocol_version != Constants.PROTOCOL_VERSION) {
-                c.close();
-            } else {
-                c.changeState(LOGIN);
-            }
-        }
-    }),
-
-    STATUS_REQUEST(STATUS, 0x00, () -> new RequestPacket(), (p, c) -> {
-        JsonObject json = new JsonObject();
-        JsonObject version = new JsonObject();
-        version.addProperty("name", Constants.MC_VERSION);
-        version.addProperty("protocol", Constants.PROTOCOL_VERSION);
-        json.add("version", version);
-        JsonObject players = new JsonObject();
-        players.addProperty("max", Sponge.getServer().getMaxPlayers());
-        players.addProperty("online", Sponge.getServer().getOnlinePlayers().size());
-        json.add("players", players);
-        JsonObject desc = new JsonObject();
-        // TODO use text serializer once implemented
-        desc.addProperty("text", "A cleanroom sponge server");
-        json.add("description", desc);
-        Gson gson = new Gson();
-        c.sendPacket(new ResponsePacket(gson.toJson(json)));
-    }),
-
-    STATUS_PING(STATUS, 0x01, () -> new PingPacket(), (p, c) -> {
-        PongPacket response = new PongPacket(((PingPacket) p).nonce);
-        c.sendPacket(response);
-        c.close();
-    }),
-
-    LOGIN_START(LOGIN, 0x00, () -> new LoginStartPacket(), (p, c) -> {
-        LoginStartPacket packet = (LoginStartPacket) p;
-        c.setName(packet.name);
-        if (Sponge.getServer().getOnlineMode() && false) {
-            c.sendPacket(new EncryptionRequestPacket("", SGame.game.getNetworkManager().getServerKeyPair().getPublic(), c.getVerifyToken()));
-            c.updateConnState(ConnectionState.AUTHENTICATING);
-        } else {
-            c.updateConnState(ConnectionState.COMPLETE_LOGIN);
-        }
-    }),
-
-    LOGIN_ENCRYPTION_RESPONSE(LOGIN, 0x00, () -> new EncryptionResponsePacket(), (p, c) -> {
-        EncryptionResponsePacket packet = (EncryptionResponsePacket) p;
-        PrivateKey key = SGame.game.getNetworkManager().getServerKeyPair().getPrivate();
-        try {
-            Cipher cipher = Cipher.getInstance(key.getAlgorithm());
-            cipher.init(2, key);
-            byte[] returned_token = cipher.doFinal(packet.verify_token);
-            if (!Arrays.equals(c.getVerifyToken(), returned_token)) {
-                c.close();
-                return;
-            }
-            // TODO get session data from mojang
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }),
-
-    TELEPORT_CONFIRM(PLAY, 0x00, () -> new TeleportConfirmPacket(), (p, c) -> {
-    }),
-
-    TAB_COMPLETE(PLAY, 0x01, () -> new TabCompletePacket(), (p, c) -> {
-    }),
-
-    CHAT_MESSAGE(PLAY, 0x02, () -> new ChatMessagePacket(), (p, c) -> {
-    }),
-
-    CLIENT_STATUS(PLAY, 0x03, () -> new ClientStatusPacket(), (p, c) -> {
-    }),
-
-    CLIENT_SETTINGS(PLAY, 0x04, () -> new ClientSettingsPacket(), (p, c) -> {
-    }),
-
-    CONFIRM_TRANSACTION(PLAY, 0x05, () -> new ConfirmTransactionPacket(), (p, c) -> {
-    }),
-
-    ENCHANT_ITEM(PLAY, 0x06, () -> new EnchantItemPacket(), (p, c) -> {
-    }),
-
-    CLICK_WINDOW(PLAY, 0x07, () -> new ClickWindowPacket(), (p, c) -> {
-    }),
-
-    CLOSE_WINDOW(PLAY, 0x08, () -> new CloseWindowPacket(), (p, c) -> {
-    }),
-
-    PLUGIN_MESSAGE(PLAY, 0x09, () -> new PluginMessagePacket(), (p, c) -> {
-    }),
-
-    USE_ENTITY(PLAY, 0x0A, () -> new UseEntityPacket(), (p, c) -> {
-    }),
-
-    KEEP_ALIVE(PLAY, 0x0B, () -> new KeepAlivePacket(), (p, c) -> {
-    }),
-
-    PLAYER_POSITION(PLAY, 0x0C, () -> new PlayerPositionPacket(), (p, c) -> {
-    }),
-
-    PLAYER_POSITION_AND_LOOK(PLAY, 0x0D, () -> new PlayerPositionAndLookPacket(), (p, c) -> {
-    }),
-
-    PLAYER_LOOK(PLAY, 0x0E, () -> new PlayerLookPacket(), (p, c) -> {
-    }),
-
-    PLAYER(PLAY, 0x0F, () -> new PlayerPacket(), (p, c) -> {
-    }),
-
-    VEHICLE_MOVE(PLAY, 0x10, () -> new VehicleMovePacket(), (p, c) -> {
-    }),
-
-    STEER_BOAT(PLAY, 0x11, () -> new SteerBoatPacket(), (p, c) -> {
-    }),
-
-    PLAYER_ABILITIES(PLAY, 0x12, () -> new PlayerAbilitiesPacket(), (p, c) -> {
-    }),
-
-    PLAYER_DIGGING(PLAY, 0x13, () -> new PlayerDiggingPacket(), (p, c) -> {
-    }),
-
-    ENTITY_ACTION(PLAY, 0x14, () -> new EntityActionPacket(), (p, c) -> {
-    }),
-
-    STEER_VEHICLE(PLAY, 0x15, () -> new SteerVehiclePacket(), (p, c) -> {
-    }),
-
-    RESOURCE_PACK_STATUS(PLAY, 0x16, () -> new ResourcePackStatusPacket(), (p, c) -> {
-    }),
-
-    HELD_ITEM_CHANGE(PLAY, 0x17, () -> new HeldItemChangePacket(), (p, c) -> {
-    }),
-
-    CREATIVE_INVENTORY_ACTION(PLAY, 0x18, () -> new CreativeInventoryActionPacket(), (p, c) -> {
-    }),
-
-    UPDATE_SIGN(PLAY, 0x19, () -> new UpdateSignPacket(), (p, c) -> {
-    }),
-
-    ANIMATION(PLAY, 0x1A, () -> new AnimationPacket(), (p, c) -> {
-    }),
-
-    SPECTATE(PLAY, 0x1B, () -> new SpectatePacket(), (p, c) -> {
-    }),
-
-    PLAYER_BLOCK_PLACEMENT(PLAY, 0x1C, () -> new PlayerBlockPlacementPacket(), (p, c) -> {
-    }),
-
-    USE_ITEM(PLAY, 0x1D, () -> new UseItemPacket(), (p, c) -> {
-    });
+    HANDSHAKE(HANDSHAKING, 0x00, () -> new HandshakePacket(), InboundPacketHandlers.HANDSHAKE),
+    STATUS_REQUEST(STATUS, 0x00, () -> new RequestPacket(), InboundPacketHandlers.STATUS_REQUEST),
+    STATUS_PING(STATUS, 0x01, () -> new PingPacket(), InboundPacketHandlers.STATUS_PING),
+    LOGIN_START(LOGIN, 0x00, () -> new LoginStartPacket(), InboundPacketHandlers.LOGIN_START),
+    LOGIN_ENCRYPTION_RESPONSE(LOGIN, 0x00, () -> new EncryptionResponsePacket(), InboundPacketHandlers.LOGIN_ENCRYPTION_RESPONSE),
+    TELEPORT_CONFIRM(PLAY, 0x00, () -> new TeleportConfirmPacket(), InboundPacketHandlers.TELEPORT_CONFIRM),
+    TAB_COMPLETE(PLAY, 0x01, () -> new TabCompletePacket(), InboundPacketHandlers.TAB_COMPLETE),
+    CHAT_MESSAGE(PLAY, 0x02, () -> new ChatMessagePacket(), InboundPacketHandlers.CHAT_MESSAGE),
+    CLIENT_STATUS(PLAY, 0x03, () -> new ClientStatusPacket(), InboundPacketHandlers.CLIENT_STATUS),
+    CLIENT_SETTINGS(PLAY, 0x04, () -> new ClientSettingsPacket(), InboundPacketHandlers.CLIENT_SETTINGS),
+    CONFIRM_TRANSACTION(PLAY, 0x05, () -> new ConfirmTransactionPacket(), InboundPacketHandlers.CONFIRM_TRANSACTION),
+    ENCHANT_ITEM(PLAY, 0x06, () -> new EnchantItemPacket(), InboundPacketHandlers.ENCHANT_ITEM),
+    CLICK_WINDOW(PLAY, 0x07, () -> new ClickWindowPacket(), InboundPacketHandlers.CLICK_WINDOW),
+    CLOSE_WINDOW(PLAY, 0x08, () -> new CloseWindowPacket(), InboundPacketHandlers.CLOSE_WINDOW),
+    PLUGIN_MESSAGE(PLAY, 0x09, () -> new PluginMessagePacket(), InboundPacketHandlers.PLUGIN_MESSAGE),
+    USE_ENTITY(PLAY, 0x0A, () -> new UseEntityPacket(), InboundPacketHandlers.USE_ENTITY),
+    KEEP_ALIVE(PLAY, 0x0B, () -> new KeepAlivePacket(), InboundPacketHandlers.KEEP_ALIVE),
+    PLAYER_POSITION(PLAY, 0x0C, () -> new PlayerPositionPacket(), InboundPacketHandlers.PLAYER_POSITION),
+    PLAYER_POSITION_AND_LOOK(PLAY, 0x0D, () -> new PlayerPositionAndLookPacket(), InboundPacketHandlers.PLAYER_POSITION_AND_LOOK),
+    PLAYER_LOOK(PLAY, 0x0E, () -> new PlayerLookPacket(), InboundPacketHandlers.PLAYER_LOOK),
+    PLAYER(PLAY, 0x0F, () -> new PlayerPacket(), InboundPacketHandlers.PLAYER),
+    VEHICLE_MOVE(PLAY, 0x10, () -> new VehicleMovePacket(), InboundPacketHandlers.VEHICLE_MOVE),
+    STEER_BOAT(PLAY, 0x11, () -> new SteerBoatPacket(), InboundPacketHandlers.STEER_BOAT),
+    PLAYER_ABILITIES(PLAY, 0x12, () -> new PlayerAbilitiesPacket(), InboundPacketHandlers.PLAYER_ABILITIES),
+    PLAYER_DIGGING(PLAY, 0x13, () -> new PlayerDiggingPacket(), InboundPacketHandlers.PLAYER_DIGGING),
+    ENTITY_ACTION(PLAY, 0x14, () -> new EntityActionPacket(), InboundPacketHandlers.ENTITY_ACTION),
+    STEER_VEHICLE(PLAY, 0x15, () -> new SteerVehiclePacket(), InboundPacketHandlers.STEER_VEHICLE),
+    RESOURCE_PACK_STATUS(PLAY, 0x16, () -> new ResourcePackStatusPacket(), InboundPacketHandlers.RESOURCE_PACK_STATUS),
+    HELD_ITEM_CHANGE(PLAY, 0x17, () -> new HeldItemChangePacket(), InboundPacketHandlers.HELD_ITEM_CHANGE),
+    CREATIVE_INVENTORY_ACTION(PLAY, 0x18, () -> new CreativeInventoryActionPacket(), InboundPacketHandlers.CREATIVE_INVENTORY_ACTION),
+    UPDATE_SIGN(PLAY, 0x19, () -> new UpdateSignPacket(), InboundPacketHandlers.UPDATE_SIGN),
+    ANIMATION(PLAY, 0x1A, () -> new AnimationPacket(), InboundPacketHandlers.ANIMATION),
+    SPECTATE(PLAY, 0x1B, () -> new SpectatePacket(), InboundPacketHandlers.SPECTATE),
+    PLAYER_BLOCK_PLACEMENT(PLAY, 0x1C, () -> new PlayerBlockPlacementPacket(), InboundPacketHandlers.PLAYER_BLOCK_PLACEMENT),
+    USE_ITEM(PLAY, 0x1D, () -> new UseItemPacket(), InboundPacketHandlers.USE_ITEM);
 
     private ProtocolState state;
     private int id;

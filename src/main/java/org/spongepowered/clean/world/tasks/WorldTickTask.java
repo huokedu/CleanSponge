@@ -40,10 +40,10 @@ public class WorldTickTask extends Task {
 
     @Override
     public void execute() {
-        this.world.serialUpdate();
         for (SChunk chunk : this.world.getSChunks()) {
             chunk.serialUpdate();
         }
+        this.world.serialUpdate();
 
         // TODO use more tasks
         TasksCompleteCondition condition = new TasksCompleteCondition();

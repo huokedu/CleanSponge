@@ -27,9 +27,11 @@ package org.spongepowered.clean.entity.living.boss;
 import java.util.Optional;
 import java.util.Set;
 
+import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.entity.EnderCrystal;
 import org.spongepowered.api.entity.living.complex.EnderDragon;
 import org.spongepowered.api.entity.living.complex.EnderDragonPart;
+import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.clean.entity.living.SAerial;
 import org.spongepowered.clean.world.SWorld;
 
@@ -48,6 +50,18 @@ public class SEnderDragon extends SAerial implements EnderDragon {
 
     @Override
     public Optional<EnderCrystal> getHealingCrystal() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public <T extends Projectile> Optional<T> launchProjectile(Class<T> projectileClass) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public <T extends Projectile> Optional<T> launchProjectile(Class<T> projectileClass, Vector3d velocity) {
         // TODO Auto-generated method stub
         return null;
     }

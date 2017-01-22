@@ -63,6 +63,7 @@ import org.spongepowered.api.util.Tristate;
 import org.spongepowered.clean.entity.living.SLiving;
 import org.spongepowered.clean.network.NetworkConnection;
 import org.spongepowered.clean.network.packet.Packet;
+import org.spongepowered.clean.world.SChunk;
 import org.spongepowered.clean.world.SWorld;
 
 import java.util.List;
@@ -74,6 +75,7 @@ public class SPlayer extends SLiving implements Player {
 
     private final NetworkConnection connection;
     private GameMode gamemode = GameModes.SURVIVAL;
+    private float yaw, pitch;
 
     public SPlayer(SWorld world, UUID uid, NetworkConnection conn) {
         super(world);
@@ -90,6 +92,58 @@ public class SPlayer extends SLiving implements Player {
 
     public GameMode getGameMode() {
         return this.gamemode;
+    }
+
+    public void updatePosition(double x, double y, double z, float yaw, float pitch, boolean onGround) {
+        updatePosition(x, y, z, onGround);
+        updateLook(yaw, pitch);
+    }
+
+    public void updateLook(float yaw, float pitch) {
+        this.yaw = yaw;
+        this.pitch = pitch;
+    }
+
+    public void updatePosition(double x, double y, double z, boolean onGround) {
+        double dx = this.x - x;
+        double dy = this.y - y;
+        double dz = this.z - z;
+        double dist = dx * dx + dy * dy + dz * dz;
+        double expected = this.vx * this.vx + this.vy * this.vy + this.vz * this.vz;
+        if (dist > expected + 100) {
+            // TODO moved too quickly
+        }
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        if (!onGround && this.vy > -1) {
+            this.vy -= 0.1;
+        } else if (onGround) {
+            this.vy = 0;
+        }
+    }
+
+    @Override
+    public void serialUpdate() {
+        this.connection.update();
+        int px = this.bx >> 4;
+        int pz = this.bz >> 4;
+
+        this.x += this.vx;
+        this.y += this.vy;
+        this.z += this.vz;
+
+        this.bx = (int) Math.floor(this.x);
+        this.by = (int) Math.floor(this.y);
+        this.bz = (int) Math.floor(this.z);
+
+        if ((this.bx >> 4) != px || (this.bz >> 4) != pz) {
+            this.chunk.removeEntity(this);
+            SChunk chunk = this.world.getOrLoadChunk(this.bx >> 4, this.bz >> 4);
+            this.chunk = chunk;
+            this.chunk.addEntity(this);
+            this.connection.updateChunks();
+        }
     }
 
     @Override
@@ -462,6 +516,10 @@ public class SPlayer extends SLiving implements Player {
     public boolean respawnPlayer() {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    public void setCurrentChunk(SChunk chunk) {
+        this.chunk = chunk;
     }
 
 }

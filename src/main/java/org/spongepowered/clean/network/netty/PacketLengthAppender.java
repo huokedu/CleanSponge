@@ -27,25 +27,19 @@ package org.spongepowered.clean.network.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import org.spongepowered.clean.util.ByteBufUtil;
 
 public class PacketLengthAppender extends MessageToByteEncoder<ByteBuf> {
 
     public PacketLengthAppender() {
-        
+
     }
-    
+
     @Override
     protected void encode(ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) throws Exception {
         int length = msg.readableBytes();
-        System.out.println("length " + length);
-        do {
-            byte temp = (byte) (length & 0b01111111);
-            length >>>= 7;
-            if (length != 0) {
-                temp |= 0b10000000;
-            }
-            out.writeByte(temp);
-        } while (length != 0);
+//        System.out.println("length " + length);
+        ByteBufUtil.writeVarInt(out, length);
         out.writeBytes(msg);
     }
 

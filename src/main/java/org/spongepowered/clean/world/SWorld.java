@@ -28,7 +28,6 @@ import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
@@ -88,24 +87,9 @@ import org.spongepowered.api.world.gen.WorldGenerator;
 import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.api.world.storage.WorldStorage;
 import org.spongepowered.api.world.weather.Weather;
-import org.spongepowered.clean.Constants;
 import org.spongepowered.clean.SGame;
 import org.spongepowered.clean.entity.SEntity;
 import org.spongepowered.clean.entity.player.SPlayer;
-import org.spongepowered.clean.network.NetworkConnection.ConnectionState;
-import org.spongepowered.clean.network.packet.play.clientbound.ChatMessagePacket;
-import org.spongepowered.clean.network.packet.play.clientbound.ChunkDataPacket;
-import org.spongepowered.clean.network.packet.play.clientbound.HeldItemChangePacket;
-import org.spongepowered.clean.network.packet.play.clientbound.JoinGamePacket;
-import org.spongepowered.clean.network.packet.play.clientbound.PlayerAbilitiesPacket;
-import org.spongepowered.clean.network.packet.play.clientbound.PlayerPositionAndLookPacket;
-import org.spongepowered.clean.network.packet.play.clientbound.PluginMessagePacket;
-import org.spongepowered.clean.network.packet.play.clientbound.ServerDifficultyPacket;
-import org.spongepowered.clean.network.packet.play.clientbound.SetExperiencePacket;
-import org.spongepowered.clean.network.packet.play.clientbound.SpawnPositionPacket;
-import org.spongepowered.clean.network.packet.play.clientbound.TimeUpdatePacket;
-import org.spongepowered.clean.network.packet.play.clientbound.UpdateHealthPacket;
-import org.spongepowered.clean.network.packet.play.clientbound.WindowItemsPacket;
 import org.spongepowered.clean.scheduler.condition.ResourceMutex;
 import org.spongepowered.clean.world.gen.SWorldGenerator;
 import org.spongepowered.clean.world.storage.SaveHandler;
@@ -133,6 +117,7 @@ public class SWorld implements World {
     private final SaveHandler saveHandler;
     private final Long2ObjectOpenHashMap<SChunk> chunks = new Long2ObjectOpenHashMap<>();
     private final List<SChunk> chunkList = Lists.newArrayList();
+    private final List<SChunk> toAdd = Lists.newArrayList();
     private final SWorldGenerator generator;
     private final SDimension dimension;
 
@@ -178,54 +163,40 @@ public class SWorld implements World {
             SPlayer player = it.next();
             it.remove();
             System.out.println("Adding player to world");
-            player.getNetConnection().updateConnState(ConnectionState.PLAYING);
             this.allEntities.add(player);
-            SChunk chunk = loadChunk(player.getChunkX(), player.getChunkZ());
+            SChunk chunk = getOrLoadChunk(player.getChunkX(), player.getChunkZ());
             chunk.addEntity(player);
+            player.setCurrentChunk(chunk);
             player.setEntityId(this.entityid++);
-            // TODO use actual values
-            player.sendPacket(new JoinGamePacket(player.getEntityId(), player.getGameMode(), 0, this.properties.getDifficulty(),
-                    (byte) Sponge.getServer().getMaxPlayers(), "default", false));
-            player.sendPacket(PluginMessagePacket.createBrandPacket(Constants.SERVER_BRAND));
-            player.sendPacket(new ServerDifficultyPacket(this.properties.getDifficulty()));
-            player.sendPacket(new PlayerAbilitiesPacket((byte) 0, 1, 0));
-            player.sendPacket(new HeldItemChangePacket((byte) 0));
-            player.sendPacket(new ChatMessagePacket("{\"text\":\"Welcome!\"}", ChatMessagePacket.Position.CHAT));
-            for(int x = -3; x <= 3; x++) {
-                for(int z = -3; z <= 3; z++) {
-                    SChunk c = loadChunk(x, z);
-                    player.sendPacket(new ChunkDataPacket(c, true, 0));
-                }
-            }
-            player.sendPacket(new PlayerPositionAndLookPacket(5, 10, 5, 0, 0, (byte) 0, 1));
-            player.sendPacket(new TimeUpdatePacket(this.properties.getTotalTime(), this.properties.getWorldTime()));
-            player.sendPacket(new SpawnPositionPacket(5, 10, 5));
-            player.sendPacket(new WindowItemsPacket((byte) 0, (short) 46));
-            player.sendPacket(new UpdateHealthPacket(20, 20, 4));
-            player.sendPacket(new SetExperiencePacket(0, 0, 0));
+            player.getNetConnection().joinGame();
         }
+
+        for (SChunk c : this.toAdd) {
+            this.chunkList.add(c);
+        }
+        this.toAdd.clear();
     }
 
-    private SChunk loadChunk(int x, int z) {
+    public SChunk getOrLoadChunk(int x, int z) {
         SChunk chunk = getLoadedChunk(x, z);
         if (chunk != null) {
             return chunk;
         }
         chunk = this.saveHandler.loadChunk(x, z);
-        long key = (x << 32) | z;
+        long key = ((x & 0xFFFFFFFFL) << 32) | (z & 0xFFFFFFFFL);
         if (chunk != null) {
             this.chunks.put(key, chunk);
-            this.chunkList.add(chunk);
+            this.toAdd.add(chunk);
             return chunk;
         }
         chunk = this.generator.generateChunk(x, z);
         this.chunks.put(key, chunk);
-        this.chunkList.add(chunk);
+        this.toAdd.add(chunk);
         return chunk;
     }
 
-    private SChunk getLoadedChunk(int x, int z) {
-        long key = (x << 32) | z;
+    public SChunk getLoadedChunk(int x, int z) {
+        long key = ((x & 0xFFFFFFFFL) << 32) | (z & 0xFFFFFFFFL);
         return this.chunks.get(key);
     }
 
@@ -466,7 +437,7 @@ public class SWorld implements World {
 
     @Override
     public BlockState getBlock(int x, int y, int z) {
-        SChunk chunk = loadChunk(x >> 4, z >> 4);
+        SChunk chunk = getOrLoadChunk(x >> 4, z >> 4);
         return chunk.getBlock(x, y, z);
     }
 
@@ -477,7 +448,7 @@ public class SWorld implements World {
 
     @Override
     public boolean setBlock(int x, int y, int z, BlockState blockState, BlockChangeFlag flag, Cause cause) {
-        SChunk chunk = loadChunk(x >> 4, z >> 4);
+        SChunk chunk = getOrLoadChunk(x >> 4, z >> 4);
         return chunk.setBlock(x, y, z, blockState, flag, cause);
     }
 

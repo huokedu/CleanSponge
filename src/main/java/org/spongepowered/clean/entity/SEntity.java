@@ -62,13 +62,13 @@ import com.flowpowered.math.vector.Vector3d;
 
 public abstract class SEntity implements Entity {
 
-    private UUID uuid;
-    private int entityId;
-    private SWorld world;
-    private SChunk chunk;
-    private double x, y, z;
-    private int bx, by, bz;
-    private double vx, vy, vz;
+    protected UUID uuid;
+    protected int entityId;
+    protected SWorld world;
+    protected SChunk chunk;
+    protected double x, y, z;
+    protected int bx, by, bz;
+    protected double vx, vy, vz;
 
     public SEntity(SWorld world) {
         this.uuid = UUID.randomUUID();
@@ -396,21 +396,25 @@ public abstract class SEntity implements Entity {
     }
 
     @Override
-    public DataTransactionResult addPassenger(Entity entity) {
+    public boolean addPassenger(Entity entity) {
         // TODO Auto-generated method stub
-        return null;
+        return false;
     }
 
     @Override
-    public DataTransactionResult removePassenger(Entity entity) {
+    public boolean hasPassenger(Entity entity) {
         // TODO Auto-generated method stub
-        return null;
+        return false;
     }
 
     @Override
-    public DataTransactionResult clearPassengers() {
+    public void removePassenger(Entity entity) {
         // TODO Auto-generated method stub
-        return null;
+    }
+
+    @Override
+    public void clearPassengers() {
+        // TODO Auto-generated method stub
     }
 
     @Override
@@ -420,9 +424,9 @@ public abstract class SEntity implements Entity {
     }
 
     @Override
-    public DataTransactionResult setVehicle(Entity entity) {
+    public boolean setVehicle(Entity entity) {
         // TODO Auto-generated method stub
-        return null;
+        return false;
     }
 
     @Override

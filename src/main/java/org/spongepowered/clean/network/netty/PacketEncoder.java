@@ -45,9 +45,9 @@ public class PacketEncoder extends MessageToByteEncoder<Packet>{
     @Override
     protected void encode(ChannelHandlerContext ctx, Packet msg, ByteBuf out) throws Exception {
         ByteBufUtil.writeVarInt(out, msg.id);
-        System.out.println("Writing out " + msg.id + " " + out.readableBytes());
+//        System.out.println("Writing out " + msg.id + " " + out.readableBytes());
         msg.write(out);
-        System.out.println("Written");
+//        System.out.println("Written");
     }
 
 }

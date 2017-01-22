@@ -24,7 +24,6 @@
  */
 package org.spongepowered.clean.world.gen.base;
 
-import com.flowpowered.math.vector.Vector3i;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.world.World;

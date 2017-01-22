@@ -24,14 +24,30 @@
  */
 package org.spongepowered.clean.entity.living.passive.horse;
 
+import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.entity.living.animal.Llama;
+import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.clean.world.SWorld;
+
+import java.util.Optional;
 
 public class SLlama extends SHorse implements Llama {
 
     public SLlama(SWorld world) {
         super(world);
         // TODO Auto-generated constructor stub
+    }
+
+    @Override
+    public <T extends Projectile> Optional<T> launchProjectile(Class<T> projectileClass) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public <T extends Projectile> Optional<T> launchProjectile(Class<T> projectileClass, Vector3d velocity) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

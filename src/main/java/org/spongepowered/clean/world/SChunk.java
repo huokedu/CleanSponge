@@ -97,9 +97,12 @@ public class SChunk implements Chunk {
     private final ChunkSection[] blocks = new ChunkSection[16];
     private final byte[] biomes;
     private final List<SEntity> entities = Lists.newArrayList();
+    private final List<SEntity> toRemove = Lists.newArrayList();
 
     private boolean physics;
     private boolean lighting;
+
+    private int viewers;
 
     public SChunk(SWorld world, int x, int z) {
         this.min = new Vector3i(x * 16, 0, z * 16);
@@ -112,6 +115,10 @@ public class SChunk implements Chunk {
         for (SEntity entity : this.entities) {
             entity.serialUpdate();
         }
+        for(SEntity entity: this.toRemove) {
+            this.entities.remove(entity);
+        }
+        this.toRemove.clear();
     }
 
     public void parallelUpdate() {
@@ -139,6 +146,18 @@ public class SChunk implements Chunk {
     public boolean containsBlock(int x, int y, int z) {
         return this.min.getX() <= x && this.max.getX() >= x && this.min.getY() <= y && this.max.getY() >= y && this.min.getZ() <= z
                 && this.max.getZ() >= z;
+    }
+
+    public void addViewer() {
+        this.viewers++;
+    }
+
+    public void removeViewer() {
+        this.viewers--;
+    }
+
+    public int getViewers() {
+        return this.viewers;
     }
 
     protected void checkRange(int x, int y, int z) {
@@ -328,7 +347,7 @@ public class SChunk implements Chunk {
     }
 
     public void removeEntity(SEntity entity) {
-        this.entities.remove(entity);
+        this.toRemove.add(entity);
     }
 
     @Override

@@ -29,6 +29,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.spongepowered.clean.network.NetworkConnection;
 import org.spongepowered.clean.network.packet.InboundPackets;
 import org.spongepowered.clean.network.packet.Packet;
+import org.spongepowered.clean.network.packet.ProtocolState;
 
 public class PacketHandler extends SimpleChannelInboundHandler<Packet> {
 
@@ -52,12 +53,17 @@ public class PacketHandler extends SimpleChannelInboundHandler<Packet> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Packet msg) throws Exception {
-        InboundPackets packetType = InboundPackets.get(ctx.channel().attr(NetworkConnection.PROTOCOL_STATE_KEY).get(), msg.id);
-        System.out.println("Packet in: " + Integer.toHexString(msg.id));
-        if (packetType == null) {
-            return;
+        ProtocolState state = ctx.channel().attr(NetworkConnection.PROTOCOL_STATE_KEY).get();
+        if (state == ProtocolState.PLAY) {
+            this.conn.queuePacket(msg);
+        } else {
+            InboundPackets packetType = InboundPackets.get(state, msg.id);
+            System.out.println("Packet in: " + Integer.toHexString(msg.id));
+            if (packetType == null) {
+                return;
+            }
+            packetType.getHandler().accept(msg, this.conn);
         }
-        packetType.getHandler().accept(msg, this.conn);
     }
 
 }
