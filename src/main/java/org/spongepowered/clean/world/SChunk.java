@@ -99,6 +99,15 @@ public class SChunk implements Chunk {
     private final List<SEntity> entities = Lists.newArrayList();
     private final List<SEntity> toRemove = Lists.newArrayList();
 
+    // TODO track these through modification
+    private byte[] heightmap;
+    private byte[] skylightHeights;
+
+    // TODO methods for calculating lighting
+    // TODO update lighting through modifications
+    // TODO allow marking chunks as requiring relighting and handle during
+    // serial update
+
     private boolean physics;
     private boolean lighting;
 
@@ -108,14 +117,16 @@ public class SChunk implements Chunk {
         this.min = new Vector3i(x * 16, 0, z * 16);
         this.max = new Vector3i(x * 16 + 15, 255, z * 16 + 15);
         this.world = world;
-        this.biomes = new byte[16 * 16];
+        this.biomes = new byte[256];
+        this.heightmap = new byte[256];
+        this.skylightHeights = new byte[256];
     }
 
     public void serialUpdate() {
         for (SEntity entity : this.entities) {
             entity.serialUpdate();
         }
-        for(SEntity entity: this.toRemove) {
+        for (SEntity entity : this.toRemove) {
             this.entities.remove(entity);
         }
         this.toRemove.clear();
@@ -215,6 +226,14 @@ public class SChunk implements Chunk {
 
     public void setLighting(boolean state) {
         this.lighting = state;
+    }
+
+    public byte getBlockLight(int x, int y, int z) {
+        ChunkSection section = this.blocks[y >> 4];
+        if (section == null) {
+            return (byte) (y >= this.skylightHeights[x + z * 16] ? 15 : 0);
+        }
+        return section.getLight(x - this.min.getX(), y & 0xFF, z - this.min.getZ());
     }
 
     @Override
@@ -800,12 +819,15 @@ public class SChunk implements Chunk {
         private int bitsPerBlock;
         private long currentMax;
         private int airCount;
+        // 4-bits per block
+        private long[] blockLighting;
 
         public ChunkSection(int y) {
             this.y = y;
             this.palette = new LocalBlockPalette();
             this.airCount = 4096;
             checkSize(8);
+            this.blockLighting = new long[256];
         }
 
         public BlockPalette getPalette() {
@@ -830,6 +852,19 @@ public class SChunk implements Chunk {
 
         public BlockState getBlock(int x, int y, int z) {
             return this.palette.get(get(x, y, z)).get();
+        }
+
+        public byte getLight(int x, int y, int z) {
+            int bit = 4 * (x + z * 16 + y * 256);
+            return (byte) ((this.blockLighting[bit / 64] >>> (bit % 64)) & 0xF);
+        }
+
+        public void setLight(int x, int y, int z, byte level) {
+            level &= 0xF;
+            int bit = 4 * (x + z * 16 + y * 256);
+            long existing = (this.blockLighting[bit / 64] & ~(0xF << (bit % 64)));
+            long newd = ((long) level << (bit % 64));
+            this.data[bit / 64] = existing | newd;
         }
 
         private int get(int x, int y, int z) {

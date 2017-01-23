@@ -62,7 +62,6 @@ import org.spongepowered.clean.network.packet.play.clientbound.WindowItemsPacket
 import org.spongepowered.clean.world.SChunk;
 import org.spongepowered.clean.world.SWorld;
 
-import java.util.Deque;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
