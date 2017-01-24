@@ -33,6 +33,7 @@ import org.spongepowered.api.scoreboard.critieria.Criterion;
 import org.spongepowered.api.statistic.achievement.Achievement;
 import org.spongepowered.api.text.translation.Translation;
 import org.spongepowered.clean.registry.AbstractCatalogType;
+import org.spongepowered.clean.registry.FixedCatalogRegistryModule;
 
 public class SAchievement extends AbstractCatalogType implements Achievement {
 
@@ -88,6 +89,41 @@ public class SAchievement extends AbstractCatalogType implements Achievement {
         return false;
     }
 
-    // TODO register achievements
+    public static void registerTypes(FixedCatalogRegistryModule<Achievement> registry) {
+        registry.register(new SAchievement("minecraft:acquire_iron", ""));
+        registry.register(new SAchievement("minecraft:bake_cake", ""));
+        registry.register(new SAchievement("minecraft:blaze_rod", ""));
+        registry.register(new SAchievement("minecraft:bookcase", ""));
+        registry.register(new SAchievement("minecraft:breed_cow", ""));
+        registry.register(new SAchievement("minecraft:build_better_pickaxe", ""));
+        registry.register(new SAchievement("minecraft:build_furnace", ""));
+        registry.register(new SAchievement("minecraft:build_hoe", ""));
+        registry.register(new SAchievement("minecraft:build_pickaxe", ""));
+        registry.register(new SAchievement("minecraft:build_sword", ""));
+        registry.register(new SAchievement("minecraft:build_work_bench", ""));
+        registry.register(new SAchievement("minecraft:cook_fish", ""));
+        registry.register(new SAchievement("minecraft:diamonds", ""));
+        registry.register(new SAchievement("minecraft:diamonds_to_you", ""));
+        registry.register(new SAchievement("minecraft:enchantments", ""));
+        registry.register(new SAchievement("minecraft:explore_all_biomes", ""));
+        registry.register(new SAchievement("minecraft:fly_pig", ""));
+        registry.register(new SAchievement("minecraft:full_beacon", ""));
+        registry.register(new SAchievement("minecraft:ghast", ""));
+        registry.register(new SAchievement("minecraft:kill_cow", ""));
+        registry.register(new SAchievement("minecraft:kill_enemy", ""));
+        registry.register(new SAchievement("minecraft:kill_wither", ""));
+        registry.register(new SAchievement("minecraft:make_bread", ""));
+        registry.register(new SAchievement("minecraft:mine_wood", ""));
+        registry.register(new SAchievement("minecraft:on_a_rail", ""));
+        registry.register(new SAchievement("minecraft:open_inventory", ""));
+        registry.register(new SAchievement("minecraft:overkill", ""));
+        registry.register(new SAchievement("minecraft:overpowered", ""));
+        registry.register(new SAchievement("minecraft:portal", ""));
+        registry.register(new SAchievement("minecraft:potion", ""));
+        registry.register(new SAchievement("minecraft:snipe_skeleton", ""));
+        registry.register(new SAchievement("minecraft:spawn_wither", ""));
+        registry.register(new SAchievement("minecraft:the_end", ""));
+        registry.register(new SAchievement("minecraft:the_end2", ""));
+    }
 
 }

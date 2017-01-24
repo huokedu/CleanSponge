@@ -22,25 +22,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.data.type;
+package org.spongepowered.clean.item.type;
 
-import org.spongepowered.api.data.type.BodyPart;
+import java.util.Optional;
+
+import org.spongepowered.api.data.type.ArmorType;
+import org.spongepowered.api.item.ItemType;
 import org.spongepowered.clean.registry.AbstractCatalogType;
 import org.spongepowered.clean.registry.FixedCatalogRegistryModule;
 
-public class SBodyPart extends AbstractCatalogType implements BodyPart {
+public class SArmorType extends AbstractCatalogType implements ArmorType {
 
-    public SBodyPart(String id, String name) {
+    public SArmorType(String id, String name) {
         super(id, name);
     }
 
-    public static void registerTypes(FixedCatalogRegistryModule<BodyPart> registry) {
-        registry.register(new SBodyPart("minecraft:chest", "Chest"));
-        registry.register(new SBodyPart("minecraft:head", "Head"));
-        registry.register(new SBodyPart("minecraft:left_arm", "Left Arm"));
-        registry.register(new SBodyPart("minecraft:left_leg", "Left Leg"));
-        registry.register(new SBodyPart("minecraft:right_arm", "Right Arm"));
-        registry.register(new SBodyPart("minecraft:right_leg", "Right Leg"));
+    @Override
+    public Optional<ItemType> getRepairItemType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public static void registerTypes(FixedCatalogRegistryModule<ArmorType> registry) {
+        registry.register(new SArmorType("minecraft:chain", "Chain"));
+        registry.register(new SArmorType("minecraft:diamond", "Diamond"));
+        registry.register(new SArmorType("minecraft:gold", "Gold"));
+        registry.register(new SArmorType("minecraft:iron", "Iron"));
+        registry.register(new SArmorType("minecraft:leather", "Leather"));
     }
 
 }

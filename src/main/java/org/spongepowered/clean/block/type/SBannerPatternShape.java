@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.data.type;
+package org.spongepowered.clean.block.type;
 
 import org.spongepowered.api.data.type.BannerPatternShape;
 import org.spongepowered.clean.registry.AbstractCatalogType;

@@ -22,32 +22,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.data.type;
+package org.spongepowered.clean.entity.type;
 
-import org.spongepowered.api.data.type.BigMushroomType;
+import org.spongepowered.api.data.type.BodyPart;
 import org.spongepowered.clean.registry.AbstractCatalogType;
 import org.spongepowered.clean.registry.FixedCatalogRegistryModule;
 
-public class SBigMushroomType extends AbstractCatalogType implements BigMushroomType {
+public class SBodyPart extends AbstractCatalogType implements BodyPart {
 
-    public SBigMushroomType(String id, String name) {
+    public SBodyPart(String id, String name) {
         super(id, name);
     }
 
-    public static void registerTypes(FixedCatalogRegistryModule<BigMushroomType> registry) {
-        registry.register(new SBigMushroomType("minecraft:all_inside", "all_inside"));
-        registry.register(new SBigMushroomType("minecraft:all_outside", "all_outside"));
-        registry.register(new SBigMushroomType("minecraft:all_stem", "all_stem"));
-        registry.register(new SBigMushroomType("minecraft:center", "center"));
-        registry.register(new SBigMushroomType("minecraft:east", "east"));
-        registry.register(new SBigMushroomType("minecraft:north", "north"));
-        registry.register(new SBigMushroomType("minecraft:north_east", "north_east"));
-        registry.register(new SBigMushroomType("minecraft:north_west", "north_west"));
-        registry.register(new SBigMushroomType("minecraft:south", "south"));
-        registry.register(new SBigMushroomType("minecraft:south_east", "south_east"));
-        registry.register(new SBigMushroomType("minecraft:south_west", "south_west"));
-        registry.register(new SBigMushroomType("minecraft:stem", "stem"));
-        registry.register(new SBigMushroomType("minecraft:west", "west"));
+    public static void registerTypes(FixedCatalogRegistryModule<BodyPart> registry) {
+        registry.register(new SBodyPart("minecraft:chest", "Chest"));
+        registry.register(new SBodyPart("minecraft:head", "Head"));
+        registry.register(new SBodyPart("minecraft:left_arm", "Left Arm"));
+        registry.register(new SBodyPart("minecraft:left_leg", "Left Leg"));
+        registry.register(new SBodyPart("minecraft:right_arm", "Right Arm"));
+        registry.register(new SBodyPart("minecraft:right_leg", "Right Leg"));
     }
 
 }

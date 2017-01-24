@@ -22,33 +22,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.data.type;
+package org.spongepowered.clean.block.type;
 
-import java.util.Optional;
-
-import org.spongepowered.api.data.type.ArmorType;
-import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.data.type.BigMushroomType;
 import org.spongepowered.clean.registry.AbstractCatalogType;
 import org.spongepowered.clean.registry.FixedCatalogRegistryModule;
 
-public class SArmorType extends AbstractCatalogType implements ArmorType {
+public class SBigMushroomType extends AbstractCatalogType implements BigMushroomType {
 
-    public SArmorType(String id, String name) {
+    public SBigMushroomType(String id, String name) {
         super(id, name);
     }
 
-    @Override
-    public Optional<ItemType> getRepairItemType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public static void registerTypes(FixedCatalogRegistryModule<ArmorType> registry) {
-        registry.register(new SArmorType("minecraft:chain", "Chain"));
-        registry.register(new SArmorType("minecraft:diamond", "Diamond"));
-        registry.register(new SArmorType("minecraft:gold", "Gold"));
-        registry.register(new SArmorType("minecraft:iron", "Iron"));
-        registry.register(new SArmorType("minecraft:leather", "Leather"));
+    public static void registerTypes(FixedCatalogRegistryModule<BigMushroomType> registry) {
+        registry.register(new SBigMushroomType("minecraft:all_inside", "all_inside"));
+        registry.register(new SBigMushroomType("minecraft:all_outside", "all_outside"));
+        registry.register(new SBigMushroomType("minecraft:all_stem", "all_stem"));
+        registry.register(new SBigMushroomType("minecraft:center", "center"));
+        registry.register(new SBigMushroomType("minecraft:east", "east"));
+        registry.register(new SBigMushroomType("minecraft:north", "north"));
+        registry.register(new SBigMushroomType("minecraft:north_east", "north_east"));
+        registry.register(new SBigMushroomType("minecraft:north_west", "north_west"));
+        registry.register(new SBigMushroomType("minecraft:south", "south"));
+        registry.register(new SBigMushroomType("minecraft:south_east", "south_east"));
+        registry.register(new SBigMushroomType("minecraft:south_west", "south_west"));
+        registry.register(new SBigMushroomType("minecraft:stem", "stem"));
+        registry.register(new SBigMushroomType("minecraft:west", "west"));
     }
 
 }
