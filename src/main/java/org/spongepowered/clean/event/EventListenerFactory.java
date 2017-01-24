@@ -31,5 +31,5 @@ import org.spongepowered.api.event.EventListener;
 public interface EventListenerFactory {
 
     EventListener<?> create(Object owner, Method method);
-    
+
 }

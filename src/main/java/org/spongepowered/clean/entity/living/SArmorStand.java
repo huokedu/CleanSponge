@@ -26,6 +26,7 @@ package org.spongepowered.clean.entity.living;
 
 import java.util.Optional;
 
+import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
@@ -44,6 +45,13 @@ public class SArmorStand extends SLiving implements ArmorStand {
     }
 
     @Override
+    public void setRotation(Vector3d rotation) {
+        this.pitch = rotation.getX();
+        this.yaw = rotation.getY();
+        this.roll = rotation.getZ();
+    }
+
+    @Override
     public Optional<ItemStack> getHelmet() {
         // TODO Auto-generated method stub
         return null;
@@ -52,7 +60,7 @@ public class SArmorStand extends SLiving implements ArmorStand {
     @Override
     public void setHelmet(ItemStack helmet) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -64,7 +72,7 @@ public class SArmorStand extends SLiving implements ArmorStand {
     @Override
     public void setChestplate(ItemStack chestplate) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -76,7 +84,7 @@ public class SArmorStand extends SLiving implements ArmorStand {
     @Override
     public void setLeggings(ItemStack leggings) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -88,7 +96,7 @@ public class SArmorStand extends SLiving implements ArmorStand {
     @Override
     public void setBoots(ItemStack boots) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -100,7 +108,7 @@ public class SArmorStand extends SLiving implements ArmorStand {
     @Override
     public void setItemInHand(HandType hand, ItemStack itemInHand) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override

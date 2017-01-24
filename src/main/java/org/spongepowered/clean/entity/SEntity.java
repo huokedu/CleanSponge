@@ -24,14 +24,7 @@
  */
 package org.spongepowered.clean.entity;
 
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
-
+import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataHolder;
 import org.spongepowered.api.data.DataTransactionResult;
@@ -46,7 +39,6 @@ import org.spongepowered.api.data.value.immutable.ImmutableValue;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityArchetype;
 import org.spongepowered.api.entity.EntitySnapshot;
-import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.entity.damage.source.DamageSource;
@@ -58,7 +50,13 @@ import org.spongepowered.api.world.World;
 import org.spongepowered.clean.world.SChunk;
 import org.spongepowered.clean.world.SWorld;
 
-import com.flowpowered.math.vector.Vector3d;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 
 public abstract class SEntity implements Entity {
 
@@ -69,6 +67,8 @@ public abstract class SEntity implements Entity {
     protected double x, y, z;
     protected int bx, by, bz;
     protected double vx, vy, vz;
+    protected double yaw, pitch, roll;
+    protected Vector3d scale = Vector3d.ONE;
 
     public SEntity(SWorld world) {
         this.uuid = UUID.randomUUID();
@@ -313,8 +313,13 @@ public abstract class SEntity implements Entity {
 
     @Override
     public boolean setLocation(Location<World> location) {
-        // TODO Auto-generated method stub
-        return false;
+        if (location.getExtent() != this.world) {
+            return transferToWorld(location.getExtent(), location.getPosition());
+        }
+        this.x = location.getX();
+        this.y = location.getY();
+        this.z = location.getZ();
+        return true;
     }
 
     public void setPosition(Vector3d position) {
@@ -325,20 +330,21 @@ public abstract class SEntity implements Entity {
 
     @Override
     public Vector3d getRotation() {
-        // TODO Auto-generated method stub
-        return null;
+        return new Vector3d(this.pitch, this.yaw, this.roll);
     }
 
     @Override
     public void setRotation(Vector3d rotation) {
-        // TODO Auto-generated method stub
-
+        this.pitch = rotation.getX();
+        this.yaw = rotation.getY();
+        // Roll is ignored
     }
 
     @Override
     public boolean setLocationAndRotation(Location<World> location, Vector3d rotation) {
-        // TODO Auto-generated method stub
-        return false;
+        setLocation(location);
+        setRotation(rotation);
+        return true;
     }
 
     @Override
@@ -349,14 +355,12 @@ public abstract class SEntity implements Entity {
 
     @Override
     public Vector3d getScale() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.scale;
     }
 
     @Override
     public void setScale(Vector3d scale) {
-        // TODO Auto-generated method stub
-
+        this.scale = scale;
     }
 
     @Override
@@ -373,6 +377,10 @@ public abstract class SEntity implements Entity {
 
     @Override
     public boolean transferToWorld(World world, Vector3d position) {
+        if (this.world == world) {
+            setPosition(position);
+            return true;
+        }
         // TODO Auto-generated method stub
         return false;
     }
@@ -443,8 +451,7 @@ public abstract class SEntity implements Entity {
 
     @Override
     public boolean isLoaded() {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
