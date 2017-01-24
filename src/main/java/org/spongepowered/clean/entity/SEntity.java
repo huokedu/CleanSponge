@@ -300,12 +300,6 @@ public abstract class SEntity implements Entity {
     }
 
     @Override
-    public EntityType getType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public EntitySnapshot createSnapshot() {
         // TODO Auto-generated method stub
         return null;

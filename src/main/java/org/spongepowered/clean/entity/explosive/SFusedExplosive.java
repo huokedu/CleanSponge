@@ -28,7 +28,7 @@ import org.spongepowered.api.entity.explosive.FusedExplosive;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.clean.world.SWorld;
 
-public class SFusedExplosive extends SExplosive implements FusedExplosive {
+public abstract class SFusedExplosive extends SExplosive implements FusedExplosive {
 
     public SFusedExplosive(SWorld world) {
         super(world);

@@ -33,6 +33,8 @@ import org.spongepowered.api.data.type.SkinPart;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.sound.SoundCategory;
 import org.spongepowered.api.effect.sound.SoundType;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
@@ -520,6 +522,11 @@ public class SPlayer extends SLiving implements Player {
 
     public void setCurrentChunk(SChunk chunk) {
         this.chunk = chunk;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.PLAYER;
     }
 
 }

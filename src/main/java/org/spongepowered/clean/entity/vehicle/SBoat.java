@@ -24,6 +24,8 @@
  */
 package org.spongepowered.clean.entity.vehicle;
 
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.vehicle.Boat;
 import org.spongepowered.clean.entity.SEntity;
 import org.spongepowered.clean.world.SWorld;
@@ -87,6 +89,11 @@ public class SBoat extends SEntity implements Boat {
     public void setUnoccupiedDeceleration(double unoccupiedDeceleration) {
         // TODO Auto-generated method stub
         
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.BOAT;
     }
 
 }

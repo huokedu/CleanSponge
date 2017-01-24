@@ -59,7 +59,6 @@ import org.spongepowered.clean.entity.living.passive.SChicken;
 import org.spongepowered.clean.entity.living.passive.SCow;
 import org.spongepowered.clean.entity.living.passive.SIronGolem;
 import org.spongepowered.clean.entity.living.passive.SMooshroom;
-import org.spongepowered.clean.entity.living.passive.SMule;
 import org.spongepowered.clean.entity.living.passive.SOcelot;
 import org.spongepowered.clean.entity.living.passive.SPig;
 import org.spongepowered.clean.entity.living.passive.SPolarBear;
@@ -69,8 +68,9 @@ import org.spongepowered.clean.entity.living.passive.SSnowGolem;
 import org.spongepowered.clean.entity.living.passive.SSquid;
 import org.spongepowered.clean.entity.living.passive.SWolf;
 import org.spongepowered.clean.entity.living.passive.horse.SDonkey;
-import org.spongepowered.clean.entity.living.passive.horse.SHorse;
 import org.spongepowered.clean.entity.living.passive.horse.SLlama;
+import org.spongepowered.clean.entity.living.passive.horse.SMule;
+import org.spongepowered.clean.entity.living.passive.horse.SRideableHorse;
 import org.spongepowered.clean.entity.living.passive.horse.SSkeletonHorse;
 import org.spongepowered.clean.entity.living.passive.horse.SZombieHorse;
 import org.spongepowered.clean.entity.player.SPlayer;
@@ -81,10 +81,10 @@ import org.spongepowered.clean.entity.projectile.SFishHook;
 import org.spongepowered.clean.entity.projectile.SLlamaSpit;
 import org.spongepowered.clean.entity.projectile.SShulkerBullet;
 import org.spongepowered.clean.entity.projectile.SSnowball;
-import org.spongepowered.clean.entity.projectile.arrow.SArrow;
+import org.spongepowered.clean.entity.projectile.arrow.SSpectralArrow;
 import org.spongepowered.clean.entity.projectile.arrow.STippedArrow;
 import org.spongepowered.clean.entity.projectile.explosive.SDragonFireball;
-import org.spongepowered.clean.entity.projectile.explosive.SFireball;
+import org.spongepowered.clean.entity.projectile.explosive.SLargeFireball;
 import org.spongepowered.clean.entity.projectile.explosive.SSmallFireball;
 import org.spongepowered.clean.entity.vehicle.SBoat;
 import org.spongepowered.clean.entity.vehicle.minecart.SChestMinecart;
@@ -93,6 +93,7 @@ import org.spongepowered.clean.entity.vehicle.minecart.SFurnaceMinecart;
 import org.spongepowered.clean.entity.vehicle.minecart.SHopperMinecart;
 import org.spongepowered.clean.entity.vehicle.minecart.SMinecart;
 import org.spongepowered.clean.entity.vehicle.minecart.SMobSpawnerMinecart;
+import org.spongepowered.clean.entity.vehicle.minecart.SRideableMinecart;
 import org.spongepowered.clean.entity.vehicle.minecart.STNTMinecart;
 import org.spongepowered.clean.registry.AbstractCatalogType;
 import org.spongepowered.clean.registry.FixedCatalogRegistryModule;
@@ -140,6 +141,7 @@ public class SEntityType extends AbstractCatalogType implements EntityType {
     }
 
     public static void registerTypes(FixedCatalogRegistryModule<EntityType> registry) {
+        // @formatter:off
         registry.register(new SEntityType("minecraft:unknown", "Unknown", -1, null, null));
 
         registry.register(new SEntityType("minecraft:item", "Item", 1, SItem.class, SItem::new));
@@ -151,9 +153,9 @@ public class SEntityType extends AbstractCatalogType implements EntityType {
         registry.register(new SEntityType("minecraft:egg", "Egg", 7, SEgg.class, SEgg::new));
         registry.register(new SEntityType("minecraft:leash_knot", "Leash Knot", 8, SLeashHitch.class, SLeashHitch::new));
         registry.register(new SEntityType("minecraft:painting", "Painting", 9, SPainting.class, SPainting::new));
-        registry.register(new SEntityType("minecraft:arrow", "Arrow", 10, SArrow.class, SArrow::new));
+        registry.register(new SEntityType("minecraft:arrow", "Arrow", 10, STippedArrow.class, STippedArrow::new));
         registry.register(new SEntityType("minecraft:snowball", "Snowball", 11, SSnowball.class, SSnowball::new));
-        registry.register(new SEntityType("minecraft:fireball", "Fireball", 12, SFireball.class, SFireball::new));
+        registry.register(new SEntityType("minecraft:fireball", "Fireball", 12, SLargeFireball.class, SLargeFireball::new));
         registry.register(new SEntityType("minecraft:small_fireball", "Small Fireball", 13, SSmallFireball.class, SSmallFireball::new));
         registry.register(new SEntityType("minecraft:ender_pearl", "Ender Pearl", 14, SEnderPearl.class, SEnderPearl::new));
         registry.register(new SEntityType("minecraft:eye_of_ender_signal", "Eye of Ender", 15, SEyeOfEnder.class, SEyeOfEnder::new));
@@ -165,7 +167,7 @@ public class SEntityType extends AbstractCatalogType implements EntityType {
         registry.register(new SEntityType("minecraft:falling_block", "Falling Block", 21, SFallingBlock.class, SFallingBlock::new));
         registry.register(new SEntityType("minecraft:fireworks_rocket", "Fireworks", 22, SFirework.class, SFirework::new));
         registry.register(new SEntityType("minecraft:husk", "Husk", 23, null, null));
-        registry.register(new SEntityType("minecraft:spectral_arrow", "Spectral Arrow", 24, null, null));
+        registry.register(new SEntityType("minecraft:spectral_arrow", "Spectral Arrow", 24, SSpectralArrow.class, SSpectralArrow::new));
         registry.register(new SEntityType("minecraft:shulker_bullet", "Shulker Bullet", 25, SShulkerBullet.class, SShulkerBullet::new));
         registry.register(new SEntityType("minecraft:dragon_fireball", "Dragon Fireball", 26, SDragonFireball.class, SDragonFireball::new));
         registry.register(new SEntityType("minecraft:zombie_villager", "Zombie Villager", 27, null, null));
@@ -180,13 +182,12 @@ public class SEntityType extends AbstractCatalogType implements EntityType {
         registry.register(new SEntityType("minecraft:vindication_illager", "Vindication Illager", 36, null, null));
         registry.register(new SEntityType("minecraft:commandblock_minecart", "CommandBlock Minecart", 40, SCommandBlockMinecart.class, null));
         registry.register(new SEntityType("minecraft:boat", "Boat", 41, SBoat.class, SBoat::new));
-        registry.register(new SEntityType("minecraft:minecart", "Minecart", 42, SMinecart.class, SMinecart::new));
+        registry.register(new SEntityType("minecraft:minecart", "Minecart", 42, SMinecart.class, SRideableMinecart::new));
         registry.register(new SEntityType("minecraft:chest_minecart", "Chest Minecart", 43, SChestMinecart.class, SChestMinecart::new));
         registry.register(new SEntityType("minecraft:furnace_minecart", "Furnace Minecart", 44, SFurnaceMinecart.class, SFurnaceMinecart::new));
         registry.register(new SEntityType("minecraft:tnt_minecart", "TNT Minecart", 45, STNTMinecart.class, STNTMinecart::new));
         registry.register(new SEntityType("minecraft:hopper_minecart", "Hopper Minecart", 46, SHopperMinecart.class, SHopperMinecart::new));
-        registry.register(
-                new SEntityType("minecraft:spawner_minecart", "MobSpawner Minecart", 47, SMobSpawnerMinecart.class, SMobSpawnerMinecart::new));
+        registry.register(new SEntityType("minecraft:spawner_minecart", "MobSpawner Minecart", 47, SMobSpawnerMinecart.class, SMobSpawnerMinecart::new));
         registry.register(new SEntityType("minecraft:creeper", "Creeper", 50, SCreeper.class, SCreeper::new));
         registry.register(new SEntityType("minecraft:skeleton", "Skeleton", 51, SSkeleton.class, SSkeleton::new));
         registry.register(new SEntityType("minecraft:spider", "Spider", 52, SSpider.class, SSpider::new));
@@ -217,7 +218,7 @@ public class SEntityType extends AbstractCatalogType implements EntityType {
         registry.register(new SEntityType("minecraft:snowman", "Snowman", 97, SSnowGolem.class, SSnowGolem::new));
         registry.register(new SEntityType("minecraft:ocelot", "Ozelot", 98, SOcelot.class, SOcelot::new));
         registry.register(new SEntityType("minecraft:villager_golem", "Iron Golem", 99, SIronGolem.class, SIronGolem::new));
-        registry.register(new SEntityType("minecraft:horse", "Horse", 100, SHorse.class, SHorse::new));
+        registry.register(new SEntityType("minecraft:horse", "Horse", 100, SRideableHorse.class, SRideableHorse::new));
         registry.register(new SEntityType("minecraft:rabbit", "Rabbit", 101, SRabbit.class, SRabbit::new));
         registry.register(new SEntityType("minecraft:polar_bear", "Polar Bear", 102, SPolarBear.class, SPolarBear::new));
         registry.register(new SEntityType("minecraft:llama", "Llama", 103, SLlama.class, SLlama::new));
@@ -248,7 +249,7 @@ public class SEntityType extends AbstractCatalogType implements EntityType {
         registry.registerAlias("minecraft:splash_potion", "minecraft:potion");
         registry.registerAlias("minecraft:thrown_exp_bottle", "minecraft:xp_bottle");
         registry.registerAlias("minecraft:primed_tnt", "minecraft:tnt");
-
+        // @formatter:on
     }
 
 }

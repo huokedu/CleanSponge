@@ -24,6 +24,8 @@
  */
 package org.spongepowered.clean.entity.living.monster;
 
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.monster.Creeper;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.clean.world.SWorld;
@@ -57,6 +59,11 @@ public class SCreeper extends SMonster implements Creeper {
     public void detonate(Cause cause) {
         // TODO Auto-generated method stub
         
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.CREEPER;
     }
 
 }

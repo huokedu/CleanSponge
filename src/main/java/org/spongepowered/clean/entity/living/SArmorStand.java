@@ -27,6 +27,8 @@ package org.spongepowered.clean.entity.living;
 import java.util.Optional;
 
 import org.spongepowered.api.data.type.HandType;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.ArmorStand;
 import org.spongepowered.api.item.inventory.Carrier;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -129,6 +131,11 @@ public class SArmorStand extends SLiving implements ArmorStand {
     public CarriedInventory<? extends Carrier> getInventory() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.ARMOR_STAND;
     }
 
 }

@@ -25,6 +25,8 @@
 package org.spongepowered.clean.entity.hanging;
 
 import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.hanging.LeashHitch;
 import org.spongepowered.clean.world.SWorld;
 
@@ -39,6 +41,11 @@ public class SLeashHitch extends SHanging implements LeashHitch {
     public Entity getLeashedEntity() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.LEASH_HITCH;
     }
 
 }

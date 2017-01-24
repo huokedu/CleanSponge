@@ -32,7 +32,7 @@ import org.spongepowered.api.entity.ai.GoalType;
 import org.spongepowered.api.entity.living.Agent;
 import org.spongepowered.clean.world.SWorld;
 
-public class SAgent extends SLiving implements Agent {
+public abstract class SAgent extends SLiving implements Agent {
 
     public SAgent(SWorld world) {
         super(world);

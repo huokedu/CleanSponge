@@ -25,12 +25,19 @@
 package org.spongepowered.clean.entity;
 
 import org.spongepowered.api.entity.AreaEffectCloud;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.clean.world.SWorld;
 
 public class SAreaEffectCloud extends SEntity implements AreaEffectCloud {
 
     public SAreaEffectCloud(SWorld world) {
         super(world);
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.AREA_EFFECT_CLOUD;
     }
 
 }

@@ -24,6 +24,8 @@
  */
 package org.spongepowered.clean.entity.projectile.explosive;
 
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.projectile.explosive.fireball.SmallFireball;
 import org.spongepowered.clean.world.SWorld;
 
@@ -32,6 +34,11 @@ public class SSmallFireball extends SFireball implements SmallFireball {
     public SSmallFireball(SWorld world) {
         super(world);
         // TODO Auto-generated constructor stub
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.SMALL_FIREBALL;
     }
 
 }

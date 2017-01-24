@@ -24,12 +24,14 @@
  */
 package org.spongepowered.clean.entity.complex;
 
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.complex.ComplexLiving;
 import org.spongepowered.api.entity.living.complex.ComplexLivingPart;
 import org.spongepowered.clean.entity.SEntity;
 import org.spongepowered.clean.world.SWorld;
 
-public class SComplexLivingPart extends SEntity implements ComplexLivingPart {
+public abstract class SComplexLivingPart extends SEntity implements ComplexLivingPart {
 
     public SComplexLivingPart(SWorld world) {
         super(world);
@@ -40,6 +42,11 @@ public class SComplexLivingPart extends SEntity implements ComplexLivingPart {
     public ComplexLiving getParent() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.COMPLEX_PART;
     }
 
 }

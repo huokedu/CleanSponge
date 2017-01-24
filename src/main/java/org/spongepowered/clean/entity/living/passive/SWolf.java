@@ -24,6 +24,8 @@
  */
 package org.spongepowered.clean.entity.living.passive;
 
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.animal.Wolf;
 import org.spongepowered.clean.world.SWorld;
 
@@ -31,6 +33,11 @@ public class SWolf extends SAgeable implements Wolf {
 
     public SWolf(SWorld world) {
         super(world);
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.WOLF;
     }
 
 }

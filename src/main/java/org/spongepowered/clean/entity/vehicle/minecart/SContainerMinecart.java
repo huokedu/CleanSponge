@@ -40,7 +40,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.translation.Translation;
 import org.spongepowered.clean.world.SWorld;
 
-public class SContainerMinecart<M extends ContainerMinecart<M>> extends SMinecart implements ContainerMinecart<M> {
+public abstract class SContainerMinecart<M extends ContainerMinecart<M>> extends SMinecart implements ContainerMinecart<M> {
 
     public SContainerMinecart(SWorld world) {
         super(world);

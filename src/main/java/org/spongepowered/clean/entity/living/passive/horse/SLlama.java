@@ -25,6 +25,9 @@
 package org.spongepowered.clean.entity.living.passive.horse;
 
 import com.flowpowered.math.vector.Vector3d;
+
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.animal.Llama;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.clean.world.SWorld;
@@ -48,6 +51,11 @@ public class SLlama extends SHorse implements Llama {
     public <T extends Projectile> Optional<T> launchProjectile(Class<T> projectileClass, Vector3d velocity) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.LLAMA;
     }
 
 }

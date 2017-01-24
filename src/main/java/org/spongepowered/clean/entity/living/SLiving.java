@@ -31,7 +31,7 @@ import org.spongepowered.clean.world.SWorld;
 
 import com.flowpowered.math.vector.Vector3d;
 
-public class SLiving extends SEntity implements Living {
+public abstract class SLiving extends SEntity implements Living {
 
     public SLiving(SWorld world) {
         super(world);

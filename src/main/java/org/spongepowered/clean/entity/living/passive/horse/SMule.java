@@ -22,17 +22,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.entity.projectile.arrow;
+package org.spongepowered.clean.entity.living.passive.horse;
 
-import org.spongepowered.api.entity.projectile.arrow.Arrow;
-import org.spongepowered.clean.entity.projectile.SDamagingProjectile;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
+import org.spongepowered.api.entity.living.animal.Mule;
 import org.spongepowered.clean.world.SWorld;
 
-public class SArrow extends SDamagingProjectile implements Arrow {
+public class SMule extends SHorse implements Mule {
 
-    public SArrow(SWorld world) {
+    public SMule(SWorld world) {
         super(world);
         // TODO Auto-generated constructor stub
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.MULE;
     }
 
 }

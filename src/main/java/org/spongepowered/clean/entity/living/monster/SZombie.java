@@ -27,6 +27,8 @@ package org.spongepowered.clean.entity.living.monster;
 import java.util.Optional;
 
 import org.spongepowered.api.data.type.HandType;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.monster.Zombie;
 import org.spongepowered.api.item.inventory.Carrier;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -135,6 +137,11 @@ public class SZombie extends SMonster implements Zombie {
     public void setScaleForAge() {
         // TODO Auto-generated method stub
         
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.ZOMBIE;
     }
 
 }

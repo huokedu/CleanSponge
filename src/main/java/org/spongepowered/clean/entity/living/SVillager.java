@@ -26,6 +26,8 @@ package org.spongepowered.clean.entity.living;
 
 import java.util.Optional;
 
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.Humanoid;
 import org.spongepowered.api.entity.living.Villager;
 import org.spongepowered.api.item.inventory.Carrier;
@@ -62,6 +64,11 @@ public class SVillager extends SAgeable implements Villager {
     public boolean isTrading() {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.VILLAGER;
     }
 
 }

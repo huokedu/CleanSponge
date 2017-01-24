@@ -26,6 +26,8 @@ package org.spongepowered.clean.entity.explosive;
 
 import java.util.Optional;
 
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.explosive.PrimedTNT;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.clean.world.SWorld;
@@ -41,6 +43,11 @@ public class SPrimedTNT extends SFusedExplosive implements PrimedTNT {
     public Optional<Living> getDetonator() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.PRIMED_TNT;
     }
 
 }

@@ -26,6 +26,8 @@ package org.spongepowered.clean.entity.living.passive;
 
 import java.util.Optional;
 
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.golem.SnowGolem;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.clean.entity.living.SCreature;
@@ -50,6 +52,11 @@ public class SSnowGolem extends SCreature implements SnowGolem {
     public <T extends Projectile> Optional<T> launchProjectile(Class<T> projectileClass, Vector3d velocity) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.SNOWMAN;
     }
 
 }

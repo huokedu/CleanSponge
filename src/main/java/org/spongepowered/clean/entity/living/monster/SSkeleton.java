@@ -27,6 +27,8 @@ package org.spongepowered.clean.entity.living.monster;
 import java.util.Optional;
 
 import org.spongepowered.api.data.type.HandType;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.monster.Skeleton;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.item.inventory.Carrier;
@@ -144,6 +146,11 @@ public class SSkeleton extends SMonster implements Skeleton {
     public <T extends Projectile> Optional<T> launchProjectile(Class<T> projectileClass, Vector3d velocity) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.SKELETON;
     }
 
 }

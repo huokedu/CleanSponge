@@ -24,6 +24,8 @@
  */
 package org.spongepowered.clean.entity.living.monster;
 
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.monster.Spider;
 import org.spongepowered.clean.world.SWorld;
 
@@ -38,6 +40,11 @@ public class SSpider extends SMonster implements Spider {
     public boolean isClimbing() {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.SPIDER;
     }
 
 }

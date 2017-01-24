@@ -24,6 +24,8 @@
  */
 package org.spongepowered.clean.entity.complex;
 
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.complex.EnderDragon;
 import org.spongepowered.api.entity.living.complex.EnderDragonPart;
 import org.spongepowered.clean.world.SWorld;

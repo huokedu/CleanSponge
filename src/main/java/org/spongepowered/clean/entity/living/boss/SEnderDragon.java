@@ -29,6 +29,8 @@ import java.util.Set;
 
 import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.entity.EnderCrystal;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.complex.EnderDragon;
 import org.spongepowered.api.entity.living.complex.EnderDragonPart;
 import org.spongepowered.api.entity.projectile.Projectile;
@@ -64,6 +66,11 @@ public class SEnderDragon extends SAerial implements EnderDragon {
     public <T extends Projectile> Optional<T> launchProjectile(Class<T> projectileClass, Vector3d velocity) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.ENDER_DRAGON;
     }
 
 }

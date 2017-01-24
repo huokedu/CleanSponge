@@ -27,6 +27,8 @@ package org.spongepowered.clean.entity.living.monster;
 import java.util.Optional;
 
 import org.spongepowered.api.data.type.HandType;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.monster.Giant;
 import org.spongepowered.api.item.inventory.Carrier;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -129,6 +131,11 @@ public class SGiant extends SMonster implements Giant {
     public CarriedInventory<? extends Carrier> getInventory() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.GIANT;
     }
 
 }

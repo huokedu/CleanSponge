@@ -24,6 +24,8 @@
  */
 package org.spongepowered.clean.entity.vehicle.minecart;
 
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.vehicle.minecart.FurnaceMinecart;
 import org.spongepowered.clean.world.SWorld;
 
@@ -44,6 +46,11 @@ public class SFurnaceMinecart extends SMinecart implements FurnaceMinecart {
     public void setFuel(int fuel) {
         // TODO Auto-generated method stub
         
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.FURNACE_MINECART;
     }
 
 }

@@ -29,7 +29,7 @@ import org.spongepowered.api.entity.projectile.source.ProjectileSource;
 import org.spongepowered.clean.entity.SEntity;
 import org.spongepowered.clean.world.SWorld;
 
-public class SProjectile extends SEntity implements Projectile {
+public abstract class SProjectile extends SEntity implements Projectile {
 
     public SProjectile(SWorld world) {
         super(world);

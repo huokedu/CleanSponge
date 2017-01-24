@@ -24,6 +24,8 @@
  */
 package org.spongepowered.clean.entity.explosive;
 
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.projectile.Firework;
 import org.spongepowered.api.entity.projectile.source.ProjectileSource;
 import org.spongepowered.clean.world.SWorld;
@@ -45,6 +47,11 @@ public class SFirework extends SFusedExplosive implements Firework {
     public void setShooter(ProjectileSource shooter) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.FIREWORK;
     }
 
 }

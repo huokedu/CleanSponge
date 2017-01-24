@@ -24,6 +24,8 @@
  */
 package org.spongepowered.clean.entity.living.monster;
 
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.monster.Enderman;
 import org.spongepowered.api.item.inventory.Carrier;
 import org.spongepowered.api.item.inventory.type.CarriedInventory;
@@ -40,6 +42,11 @@ public class SEnderman extends SMonster implements Enderman {
     public CarriedInventory<? extends Carrier> getInventory() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.ENDERMAN;
     }
 
 }

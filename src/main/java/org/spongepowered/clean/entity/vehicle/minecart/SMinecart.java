@@ -30,7 +30,7 @@ import org.spongepowered.clean.world.SWorld;
 
 import com.flowpowered.math.vector.Vector3d;
 
-public class SMinecart extends SEntity implements Minecart {
+public abstract class SMinecart extends SEntity implements Minecart {
 
     public SMinecart(SWorld world) {
         super(world);

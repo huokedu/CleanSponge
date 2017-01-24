@@ -27,6 +27,8 @@ package org.spongepowered.clean.entity.living;
 import java.util.Optional;
 
 import org.spongepowered.api.data.type.HandType;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.Human;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.item.inventory.Carrier;
@@ -150,6 +152,11 @@ public class SHuman extends SCreature implements Human {
     public String getName() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.HUMAN;
     }
 
 }

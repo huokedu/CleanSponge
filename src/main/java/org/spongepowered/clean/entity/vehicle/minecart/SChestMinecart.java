@@ -24,6 +24,8 @@
  */
 package org.spongepowered.clean.entity.vehicle.minecart;
 
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.vehicle.minecart.ChestMinecart;
 import org.spongepowered.clean.world.SWorld;
 
@@ -32,6 +34,11 @@ public class SChestMinecart extends SContainerMinecart<ChestMinecart> implements
     public SChestMinecart(SWorld world) {
         super(world);
         // TODO Auto-generated constructor stub
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.CHESTED_MINECART;
     }
 
 }

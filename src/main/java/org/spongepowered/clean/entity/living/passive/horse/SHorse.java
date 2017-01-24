@@ -30,7 +30,7 @@ import org.spongepowered.api.item.inventory.type.CarriedInventory;
 import org.spongepowered.clean.entity.living.passive.SAgeable;
 import org.spongepowered.clean.world.SWorld;
 
-public class SHorse extends SAgeable implements Horse {
+public abstract class SHorse extends SAgeable implements Horse {
 
     public SHorse(SWorld world) {
         super(world);

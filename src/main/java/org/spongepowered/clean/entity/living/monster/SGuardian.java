@@ -26,6 +26,8 @@ package org.spongepowered.clean.entity.living.monster;
 
 import java.util.Optional;
 
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.monster.Guardian;
 import org.spongepowered.clean.entity.living.SAquatic;
@@ -48,6 +50,11 @@ public class SGuardian extends SAquatic implements Guardian {
     public void setBeamTarget(Living entity) {
         // TODO Auto-generated method stub
         
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.GUARDIAN;
     }
 
 }

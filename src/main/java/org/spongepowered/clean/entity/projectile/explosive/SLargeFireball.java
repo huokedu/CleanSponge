@@ -24,6 +24,8 @@
  */
 package org.spongepowered.clean.entity.projectile.explosive;
 
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.projectile.explosive.fireball.LargeFireball;
 import org.spongepowered.api.entity.projectile.source.ProjectileSource;
 import org.spongepowered.api.event.cause.Cause;
@@ -52,6 +54,11 @@ public class SLargeFireball extends SFireball implements LargeFireball {
     public void detonate(Cause cause) {
         // TODO Auto-generated method stub
         
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.FIREBALL;
     }
 
 }

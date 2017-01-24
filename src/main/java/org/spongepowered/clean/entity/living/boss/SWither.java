@@ -27,6 +27,8 @@ package org.spongepowered.clean.entity.living.boss;
 import java.util.List;
 import java.util.Optional;
 
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.monster.Wither;
 import org.spongepowered.api.entity.projectile.Projectile;
@@ -89,6 +91,11 @@ public class SWither extends SAerial implements Wither {
     public void setTargets(List<Living> targets) {
         // TODO Auto-generated method stub
         
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.WITHER;
     }
 
 }

@@ -29,6 +29,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.vehicle.minecart.CommandBlockMinecart;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.Subject;
@@ -128,6 +130,11 @@ public class SCommandBlockMinecart extends SMinecart implements CommandBlockMine
     public Set<Context> getActiveContexts() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.COMMANDBLOCK_MINECART;
     }
 
 }

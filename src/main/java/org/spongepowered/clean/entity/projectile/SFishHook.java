@@ -27,6 +27,8 @@ package org.spongepowered.clean.entity.projectile;
 import java.util.Optional;
 
 import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.projectile.FishHook;
 import org.spongepowered.clean.world.SWorld;
 
@@ -47,6 +49,11 @@ public class SFishHook extends SProjectile implements FishHook {
     public void setHookedEntity(Entity entity) {
         // TODO Auto-generated method stub
         
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.FISHING_HOOK;
     }
 
 }

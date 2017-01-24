@@ -31,7 +31,7 @@ import org.spongepowered.clean.data.value.SMutableBoundedValue;
 import org.spongepowered.clean.entity.living.SCreature;
 import org.spongepowered.clean.world.SWorld;
 
-public class SAgeable extends SCreature implements Ageable {
+public abstract class SAgeable extends SCreature implements Ageable {
 
     private final MutableBoundedValue<Integer> ageValue;
 

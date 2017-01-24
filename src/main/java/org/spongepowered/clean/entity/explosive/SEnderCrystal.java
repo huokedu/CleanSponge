@@ -25,12 +25,19 @@
 package org.spongepowered.clean.entity.explosive;
 
 import org.spongepowered.api.entity.EnderCrystal;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.clean.world.SWorld;
 
 public class SEnderCrystal extends SExplosive implements EnderCrystal {
 
     public SEnderCrystal(SWorld world) {
         super(world);
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.ENDER_CRYSTAL;
     }
 
 }

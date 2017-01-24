@@ -24,14 +24,22 @@
  */
 package org.spongepowered.clean.entity.projectile.arrow;
 
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.projectile.arrow.TippedArrow;
+import org.spongepowered.clean.entity.projectile.SDamagingProjectile;
 import org.spongepowered.clean.world.SWorld;
 
-public class STippedArrow extends SArrow implements TippedArrow {
+public class STippedArrow extends SDamagingProjectile implements TippedArrow {
 
     public STippedArrow(SWorld world) {
         super(world);
         // TODO Auto-generated constructor stub
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityTypes.TIPPED_ARROW;
     }
 
 }
