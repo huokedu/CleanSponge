@@ -182,6 +182,27 @@ public class SChunk implements Chunk {
         return this.blocks;
     }
 
+    public byte getHeight(int x, int z) {
+        checkRange(x, 0, z);
+        return this.heightmap[(x - this.min.getX()) + (z - this.min.getZ()) * 16];
+    }
+
+    public void updateHeight(int x, int y, int z, BlockState block) {
+        byte height = getHeight(x, z);
+        boolean air = block.getType() == BlockTypes.AIR;
+        if (y > height && !air) {
+            this.heightmap[(x - this.min.getX()) + (z - this.min.getZ()) * 16] = (byte) y;
+        } else if (y == height && air) {
+            for (; y >= 0; y--) {
+                if (getBlock(x, y, z).getType() != BlockTypes.AIR) {
+                    this.heightmap[(x - this.min.getX()) + (z - this.min.getZ()) * 16] = (byte) y;
+                    return;
+                }
+            }
+            this.heightmap[(x - this.min.getX()) + (z - this.min.getZ()) * 16] = 0;
+        }
+    }
+
     @Override
     public BlockState getBlock(int x, int y, int z) {
         checkRange(x, y, z);
@@ -209,6 +230,7 @@ public class SChunk implements Chunk {
         if (section.getAirCount() == 16 * 16 * 16) {
             this.blocks[y >> 4] = null;
         }
+        updateHeight(x, y, z, block);
         return true;
     }
 
