@@ -24,7 +24,9 @@
  */
 package org.spongepowered.clean.init;
 
+import org.spongepowered.api.GameState;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.clean.SGame;
 import org.spongepowered.clean.SServer;
 import org.spongepowered.clean.scheduler.CoreScheduler;
@@ -35,6 +37,18 @@ public class WorldInitTask extends Task {
 
     @Override
     protected void execute() {
+        SGame.game.updateState(GameState.CONSTRUCTION);
+        Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.CONSTRUCTION));
+        SGame.game.updateState(GameState.PRE_INITIALIZATION);
+        Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.PRE_INITIALIZATION));
+        SGame.game.updateState(GameState.INITIALIZATION);
+        Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.INITIALIZATION));
+        SGame.game.updateState(GameState.POST_INITIALIZATION);
+        Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.POST_INITIALIZATION));
+        SGame.game.updateState(GameState.SERVER_ABOUT_TO_START);
+        Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.SERVER_ABOUT_TO_START));
+        SGame.game.updateState(GameState.SERVER_STARTING);
+        Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.SERVER_STARTING));
         SGame.game.getDimensionManager().init();
         ((SServer) Sponge.getServer()).findAllWorlds();
         SGame.getLogger().info("Located " + Sponge.getServer().getUnloadedWorlds().size() + " worlds");

@@ -24,6 +24,9 @@
  */
 package org.spongepowered.clean.init;
 
+import org.spongepowered.api.GameState;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.clean.SGame;
 import org.spongepowered.clean.scheduler.CoreScheduler;
 import org.spongepowered.clean.scheduler.Task;
@@ -33,10 +36,18 @@ public class ShutdownTask extends Task {
     @Override
     public void execute() {
         System.out.println("Shutdown");
+        SGame.game.updateState(GameState.SERVER_STOPPING);
+        Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.SERVER_STOPPING));
 
         // TODO save worlds
 
         SGame.game.getNetworkManager().shutdown();
+        SGame.game.updateState(GameState.SERVER_STOPPED);
+        Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.SERVER_STOPPED));
+        SGame.game.updateState(GameState.GAME_STOPPING);
+        Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.GAME_STOPPING));
+        SGame.game.updateState(GameState.GAME_STOPPED);
+        Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.GAME_STOPPED));
 
         CoreScheduler.shutdown();
     }

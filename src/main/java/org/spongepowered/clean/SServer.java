@@ -36,8 +36,10 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import org.spongepowered.api.Server;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.profile.GameProfileManager;
 import org.spongepowered.api.resourcepack.ResourcePack;
 import org.spongepowered.api.scoreboard.Scoreboard;
@@ -204,6 +206,7 @@ public class SServer implements Server {
         world = new SWorld(worldName, (SWorldProperties) props);
         // TODO load world spawn if needed and other load operations
         this.worlds = ImmutableMap.<String, World>builder().putAll(this.worlds).put(worldName, world).build();
+        Sponge.getEventManager().post(SpongeEventFactory.createLoadWorldEvent(SGame.game.getImplementationCause(), world));
         return Optional.of(world);
     }
 

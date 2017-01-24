@@ -25,6 +25,8 @@
 package org.spongepowered.clean.init;
 
 import org.spongepowered.api.GameState;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.clean.SGame;
 import org.spongepowered.clean.scheduler.CoreScheduler;
 import org.spongepowered.clean.scheduler.Task;
@@ -37,6 +39,7 @@ public class NetworkInitTask extends Task {
         SGame.game.getNetworkManager().startListening(25565);
 
         SGame.game.updateState(GameState.SERVER_STARTED);
+        Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.SERVER_STARTED));
         CoreScheduler.addHighTask(new GameTickTask());
     }
 

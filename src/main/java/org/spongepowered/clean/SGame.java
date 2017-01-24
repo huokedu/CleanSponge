@@ -39,6 +39,8 @@ import org.spongepowered.api.config.ConfigManager;
 import org.spongepowered.api.data.DataManager;
 import org.spongepowered.api.data.property.PropertyRegistry;
 import org.spongepowered.api.event.EventManager;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.network.ChannelRegistrar;
 import org.spongepowered.api.plugin.PluginManager;
 import org.spongepowered.api.scheduler.Scheduler;
@@ -96,6 +98,8 @@ public class SGame implements Game {
     private Path pluginsDir;
     private Path worldsDir;
     private Path configDir;
+
+    private Cause implCause = Cause.of(NamedCause.of("Game", this));
 
     private SGame() {
 
@@ -248,6 +252,10 @@ public class SGame implements Game {
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
             CoreScheduler.emergencyShutdown(e);
         }
+    }
+
+    public Cause getImplementationCause() {
+        return this.implCause;
     }
 
 }
