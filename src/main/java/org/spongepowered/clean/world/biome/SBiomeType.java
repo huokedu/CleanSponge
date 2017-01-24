@@ -65,8 +65,9 @@ public class SBiomeType extends AbstractCatalogType implements BiomeType {
 
     @Override
     public BiomeGenerationSettings createDefaultGenerationSettings(World world) {
-        // TODO Auto-generated method stub
-        return null;
+        SBiomeGenerationSettingsBuilder builder = new SBiomeGenerationSettingsBuilder();
+        // TODO populate generation settings
+        return builder.build();
     }
 
     public static void registerTypes(FixedCatalogRegistryModule<BiomeType> registry) {
