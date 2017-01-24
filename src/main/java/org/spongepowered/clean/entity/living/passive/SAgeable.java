@@ -24,21 +24,48 @@
  */
 package org.spongepowered.clean.entity.living.passive;
 
+import org.spongepowered.api.data.value.mutable.MutableBoundedValue;
+import org.spongepowered.api.data.value.mutable.Value;
 import org.spongepowered.api.entity.living.Ageable;
+import org.spongepowered.clean.data.value.SMutableBoundedValue;
 import org.spongepowered.clean.entity.living.SCreature;
 import org.spongepowered.clean.world.SWorld;
 
 public class SAgeable extends SCreature implements Ageable {
 
+    private final MutableBoundedValue<Integer> ageValue;
+
+    private int age;
+
     public SAgeable(SWorld world) {
         super(world);
-        // TODO Auto-generated constructor stub
+        this.age = 0;
+        // TODO add param for max age
+        this.ageValue = new SMutableBoundedValue<Integer>(0, 1, 0) {
+
+            @Override
+            public Value<Integer> set(Integer value) {
+                SAgeable.this.age = value;
+                return this;
+            }
+
+            @Override
+            protected Integer getIfExists() {
+                return SAgeable.this.age;
+            }
+
+        };
     }
 
     @Override
     public void setScaleForAge() {
         // TODO Auto-generated method stub
-        
+
+    }
+
+    @Override
+    public MutableBoundedValue<Integer> age() {
+        return this.ageValue;
     }
 
 }
