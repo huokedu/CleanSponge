@@ -24,9 +24,16 @@
  */
 package org.spongepowered.clean.item;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.Property;
+import org.spongepowered.api.data.property.item.ArmorTypeProperty;
+import org.spongepowered.api.data.type.ArmorTypes;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
@@ -35,25 +42,27 @@ import org.spongepowered.clean.block.SBlockType;
 import org.spongepowered.clean.registry.AbstractCatalogType;
 import org.spongepowered.clean.registry.FixedCatalogRegistryModule;
 
-import java.util.Optional;
-
 public class SItemType extends AbstractCatalogType implements ItemType {
 
     private BlockType blockType;
     private int itemId;
     private int maxQuantity = 64;
 
-    public SItemType(String id, String name, int itemid) {
+    private final Map<Class<?>, Property<?, ?>> properties;
+
+    public SItemType(String id, String name, int itemid, Map<Class<?>, Property<?, ?>> props) {
         super(id, name);
         this.blockType = null;
         this.itemId = itemid;
+        this.properties = props;
     }
 
-    public SItemType(BlockType block) {
+    public SItemType(BlockType block, Map<Class<?>, Property<?, ?>> props) {
         super(block.getId(), block.getName());
         this.blockType = block;
         ((SBlockType) block).setItem(this);
         this.itemId = ((SBlockType) block).getBlockId();
+        this.properties = props;
     }
 
     public int getItemId() {
@@ -79,8 +88,7 @@ public class SItemType extends AbstractCatalogType implements ItemType {
 
     @Override
     public boolean isSpecific() {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
@@ -104,12 +112,17 @@ public class SItemType extends AbstractCatalogType implements ItemType {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends Property<?, ?>> Optional<T> getDefaultProperty(Class<T> propertyClass) {
-        // TODO Auto-generated method stub
-        return null;
+        return Optional.of((T) this.properties.get(propertyClass));
+    }
+
+    public Collection<Property<?, ?>> getApplicableProperties() {
+        return this.properties.values();
     }
 
     public static void registerTypes(FixedCatalogRegistryModule<ItemType> registry) {
+        // @formatter:off
         registry.register(new Builder(BlockTypes.AIR).build());
         registry.register(new Builder(BlockTypes.STONE).build());
         registry.register(new Builder(BlockTypes.GRASS).build());
@@ -337,26 +350,26 @@ public class SItemType extends AbstractCatalogType implements ItemType {
         registry.register(new Builder("minecraft:wheat_seeds", "Wheat Seeds", 295).build());
         registry.register(new Builder("minecraft:wheat", "Wheat", 296).build());
         registry.register(new Builder("minecraft:bread", "Bread", 297).build());
-        registry.register(new Builder("minecraft:leather_helmet", "Leather Helmet", 298).max(1).build());
-        registry.register(new Builder("minecraft:leather_chestplate", "Leather Chestplate", 299).max(1).build());
-        registry.register(new Builder("minecraft:leather_leggings", "Leather Leggings", 300).max(1).build());
-        registry.register(new Builder("minecraft:leather_boots", "Leather Boots", 301).max(1).build());
-        registry.register(new Builder("minecraft:chainmail_helmet", "Chainmail Helmet", 302).max(1).build());
-        registry.register(new Builder("minecraft:chainmail_chestplate", "Chainmail Chestplate", 303).max(1).build());
-        registry.register(new Builder("minecraft:chainmail_leggings", "Chainmail Leggings", 304).max(1).build());
-        registry.register(new Builder("minecraft:chainmail_boots", "Chainmail Boots", 305).max(1).build());
-        registry.register(new Builder("minecraft:iron_helmet", "Iron Helmet", 306).max(1).build());
-        registry.register(new Builder("minecraft:iron_chestplate", "Iron Chestplate", 307).max(1).build());
-        registry.register(new Builder("minecraft:iron_leggings", "Iron Leggings", 308).max(1).build());
-        registry.register(new Builder("minecraft:iron_boots", "Iron Boots", 309).max(1).build());
-        registry.register(new Builder("minecraft:diamond_helmet", "Diamond Helmet", 310).max(1).build());
-        registry.register(new Builder("minecraft:diamond_chestplate", "Diamond Chestplate", 311).max(1).build());
-        registry.register(new Builder("minecraft:diamond_leggings", "Diamond Leggings", 312).max(1).build());
-        registry.register(new Builder("minecraft:diamond_boots", "Diamond Boots", 313).max(1).build());
-        registry.register(new Builder("minecraft:golden_helmet", "Golden Helmet", 314).max(1).build());
-        registry.register(new Builder("minecraft:golden_chestplate", "Golden Chestplate", 315).max(1).build());
-        registry.register(new Builder("minecraft:golden_leggings", "Golden Leggings", 316).max(1).build());
-        registry.register(new Builder("minecraft:golden_boots", "Golden Boots", 317).max(1).build());
+        registry.register(new Builder("minecraft:leather_helmet", "Leather Helmet", 298).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.LEATHER)).build());
+        registry.register(new Builder("minecraft:leather_chestplate", "Leather Chestplate", 299).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.LEATHER)).build());
+        registry.register(new Builder("minecraft:leather_leggings", "Leather Leggings", 300).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.LEATHER)).build());
+        registry.register(new Builder("minecraft:leather_boots", "Leather Boots", 301).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.LEATHER)).build());
+        registry.register(new Builder("minecraft:chainmail_helmet", "Chainmail Helmet", 302).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.CHAIN)).build());
+        registry.register(new Builder("minecraft:chainmail_chestplate", "Chainmail Chestplate", 303).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.CHAIN)).build());
+        registry.register(new Builder("minecraft:chainmail_leggings", "Chainmail Leggings", 304).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.CHAIN)).build());
+        registry.register(new Builder("minecraft:chainmail_boots", "Chainmail Boots", 305).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.CHAIN)).build());
+        registry.register(new Builder("minecraft:iron_helmet", "Iron Helmet", 306).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.IRON)).build());
+        registry.register(new Builder("minecraft:iron_chestplate", "Iron Chestplate", 307).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.IRON)).build());
+        registry.register(new Builder("minecraft:iron_leggings", "Iron Leggings", 308).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.IRON)).build());
+        registry.register(new Builder("minecraft:iron_boots", "Iron Boots", 309).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.IRON)).build());
+        registry.register(new Builder("minecraft:diamond_helmet", "Diamond Helmet", 310).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.DIAMOND)).build());
+        registry.register(new Builder("minecraft:diamond_chestplate", "Diamond Chestplate", 311).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.DIAMOND)).build());
+        registry.register(new Builder("minecraft:diamond_leggings", "Diamond Leggings", 312).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.DIAMOND)).build());
+        registry.register(new Builder("minecraft:diamond_boots", "Diamond Boots", 313).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.DIAMOND)).build());
+        registry.register(new Builder("minecraft:golden_helmet", "Golden Helmet", 314).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.GOLD)).build());
+        registry.register(new Builder("minecraft:golden_chestplate", "Golden Chestplate", 315).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.GOLD)).build());
+        registry.register(new Builder("minecraft:golden_leggings", "Golden Leggings", 316).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.GOLD)).build());
+        registry.register(new Builder("minecraft:golden_boots", "Golden Boots", 317).max(1).addProperty(new ArmorTypeProperty(ArmorTypes.GOLD)).build());
         registry.register(new Builder("minecraft:flint", "Flint", 318).build());
         registry.register(new Builder("minecraft:porkchop", "Raw Porkchop", 319).build());
         registry.register(new Builder("minecraft:cooked_porkchop", "Cooked Porkchop", 320).build());
@@ -504,8 +517,9 @@ public class SItemType extends AbstractCatalogType implements ItemType {
         registry.register(new Builder("minecraft:record_ward", "ward", 2265).max(1).build());
         registry.register(new Builder("minecraft:record_11", "11", 2266).max(1).build());
         registry.register(new Builder("minecraft:record_wait", "wait", 2267).max(1).build());
-        
+
         registry.registerAlias("minecraft:none", "minecraft:air");
+        // @formatter:on
     }
 
     private static class Builder {
@@ -516,6 +530,7 @@ public class SItemType extends AbstractCatalogType implements ItemType {
         private final BlockType block;
 
         private int max = 64;
+        private final Map<Class<?>, Property<?, ?>> properties = new HashMap<>();
 
         public Builder(String id, String name, int itemid) {
             this.id = id;
@@ -536,12 +551,17 @@ public class SItemType extends AbstractCatalogType implements ItemType {
             return this;
         }
 
+        public <T extends Property<?, ?>> Builder addProperty(T prop) {
+            this.properties.put(prop.getClass(), prop);
+            return this;
+        }
+
         public SItemType build() {
             SItemType item;
             if (this.block == null) {
-                item = new SItemType(this.id, this.name, this.itemid);
+                item = new SItemType(this.id, this.name, this.itemid, this.properties);
             } else {
-                item = new SItemType(this.block);
+                item = new SItemType(this.block, this.properties);
             }
             item.setMaxStackQuantity(this.max);
             return item;

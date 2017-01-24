@@ -102,8 +102,8 @@ public class SItemStack implements ItemStack {
 
     @Override
     public <T extends Property<?, ?>> Optional<T> getProperty(Class<T> propertyClass) {
-        // TODO Auto-generated method stub
-        return null;
+        // TODO support overriding properties on a specific stack?
+        return this.type.getDefaultProperty(propertyClass);
     }
 
     @Override
