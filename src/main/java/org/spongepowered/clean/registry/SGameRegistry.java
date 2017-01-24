@@ -96,9 +96,9 @@ public class SGameRegistry implements GameRegistry {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends CatalogType> Collection<T> getAllFor(String pluginId, Class<T> typeClass) {
-        // TODO Auto-generated method stub
-        return null;
+        return ((FixedCatalogRegistryModule<T>) this.modules.get(typeClass)).getAllFor(pluginId);
     }
 
     @Override

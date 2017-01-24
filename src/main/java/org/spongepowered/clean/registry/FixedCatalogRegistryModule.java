@@ -24,19 +24,21 @@
  */
 package org.spongepowered.clean.registry;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Consumer;
+
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.registry.CatalogRegistryModule;
 import org.spongepowered.api.util.annotation.CatalogedBy;
 import org.spongepowered.clean.SGame;
 import org.spongepowered.clean.scheduler.CoreScheduler;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 public class FixedCatalogRegistryModule<T extends CatalogType> implements CatalogRegistryModule<T> {
 
@@ -140,6 +142,17 @@ public class FixedCatalogRegistryModule<T extends CatalogType> implements Catalo
     @Override
     public Collection<T> getAll() {
         return this.types.values();
+    }
+
+    public Collection<T> getAllFor(String plugin) {
+        List<T> types = new ArrayList<>();
+        String prefix = plugin + ":";
+        for (Map.Entry<String, T> e : this.types.entrySet()) {
+            if (e.getKey().startsWith(prefix)) {
+                types.add(e.getValue());
+            }
+        }
+        return types;
     }
 
 }
