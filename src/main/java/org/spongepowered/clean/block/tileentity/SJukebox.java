@@ -28,8 +28,14 @@ import org.spongepowered.api.block.tileentity.Jukebox;
 import org.spongepowered.api.block.tileentity.TileEntityType;
 import org.spongepowered.api.block.tileentity.TileEntityTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.clean.world.SWorld;
 
 public class SJukebox extends AbstractTileEntity implements Jukebox {
+
+    public SJukebox(SWorld world, int x, int y, int z) {
+        super(world, x, y, z);
+        // TODO Auto-generated constructor stub
+    }
 
     @Override
     public TileEntityType getType() {

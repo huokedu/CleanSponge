@@ -27,8 +27,13 @@ package org.spongepowered.clean.block.tileentity;
 import org.spongepowered.api.block.tileentity.Banner;
 import org.spongepowered.api.block.tileentity.TileEntityType;
 import org.spongepowered.api.block.tileentity.TileEntityTypes;
+import org.spongepowered.clean.world.SWorld;
 
 public class SBanner extends AbstractTileEntity implements Banner {
+
+    public SBanner(SWorld world, int x, int y, int z) {
+        super(world, x, y, z);
+    }
 
     @Override
     public TileEntityType getType() {

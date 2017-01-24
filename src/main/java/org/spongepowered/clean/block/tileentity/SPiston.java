@@ -27,8 +27,14 @@ package org.spongepowered.clean.block.tileentity;
 import org.spongepowered.api.block.tileentity.Piston;
 import org.spongepowered.api.block.tileentity.TileEntityType;
 import org.spongepowered.api.block.tileentity.TileEntityTypes;
+import org.spongepowered.clean.world.SWorld;
 
 public class SPiston extends AbstractTileEntity implements Piston {
+
+    public SPiston(SWorld world, int x, int y, int z) {
+        super(world, x, y, z);
+        // TODO Auto-generated constructor stub
+    }
 
     @Override
     public TileEntityType getType() {

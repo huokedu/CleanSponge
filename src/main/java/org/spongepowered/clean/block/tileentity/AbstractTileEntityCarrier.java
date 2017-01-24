@@ -26,11 +26,12 @@ package org.spongepowered.clean.block.tileentity;
 
 import org.spongepowered.api.block.tileentity.carrier.TileEntityCarrier;
 import org.spongepowered.api.item.inventory.type.TileEntityInventory;
+import org.spongepowered.clean.world.SWorld;
 
 public abstract class AbstractTileEntityCarrier extends AbstractTileEntity implements TileEntityCarrier {
 
-    public AbstractTileEntityCarrier() {
-
+    public AbstractTileEntityCarrier(SWorld world, int x, int y, int z) {
+        super(world, x, y, z);
     }
 
     @Override

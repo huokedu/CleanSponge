@@ -47,10 +47,10 @@ import org.spongepowered.api.text.translation.Translation;
 
 public class SItemStack implements ItemStack {
 
-    private final ItemType type;
+    private final SItemType type;
     private int quantity;
 
-    public SItemStack(ItemType type, int quantity) {
+    public SItemStack(SItemType type, int quantity) {
         this.type = type;
         this.quantity = quantity;
     }
@@ -108,8 +108,7 @@ public class SItemStack implements ItemStack {
 
     @Override
     public Collection<Property<?, ?>> getApplicableProperties() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.type.getApplicableProperties();
     }
 
     @Override

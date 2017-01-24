@@ -24,6 +24,10 @@
  */
 package org.spongepowered.clean.block.tileentity;
 
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
+
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.block.tileentity.TileEntityArchetype;
@@ -42,15 +46,18 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.world.LocatableBlock;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
+import org.spongepowered.clean.world.SWorld;
 
 public abstract class AbstractTileEntity implements TileEntity {
 
-    public AbstractTileEntity() {
-        
+    private SWorld world;
+    private int x, y, z;
+    
+    public AbstractTileEntity(SWorld world, int x, int y, int z) {
+        this.world = world;
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
     
     @Override
@@ -199,8 +206,7 @@ public abstract class AbstractTileEntity implements TileEntity {
 
     @Override
     public Location<World> getLocation() {
-        // TODO Auto-generated method stub
-        return null;
+        return new Location<>(this.world, this.x, this.y, this.z);
     }
 
     @Override
