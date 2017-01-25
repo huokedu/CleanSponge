@@ -24,6 +24,7 @@
  */
 package org.spongepowered.clean.network;
 
+import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Queues;
 import io.netty.channel.Channel;
@@ -33,6 +34,7 @@ import io.netty.util.AttributeKey;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.clean.Constants;
 import org.spongepowered.clean.SGame;
 import org.spongepowered.clean.SServer;
@@ -90,7 +92,7 @@ public class NetworkConnection {
     private ConnectionState conn_state;
     private LongSet chunks = new LongOpenHashSet();
     private LongSet chunks_b = new LongOpenHashSet();
-    private int viewDistance = 2;
+    private int viewDistance = 8;
     private int timeout = 0;
     // TODO track keepalives sent and timeout if not returned
 
@@ -208,7 +210,7 @@ public class NetworkConnection {
         updateConnState(ConnectionState.PLAYING);
         SWorld world = (SWorld) this.player.getWorld();
         // TODO use actual values
-        this.player.sendPacket(new JoinGamePacket(this.player.getEntityId(), this.player.getGameMode(), 0, world.getProperties().getDifficulty(),
+        this.player.sendPacket(new JoinGamePacket(this.player.getEntityId(), GameModes.CREATIVE, 0, world.getProperties().getDifficulty(),
                 (byte) Sponge.getServer().getMaxPlayers(), "default", false));
         this.player.sendPacket(PluginMessagePacket.createBrandPacket(Constants.SERVER_BRAND));
         this.player.sendPacket(new ServerDifficultyPacket(world.getDifficulty()));
@@ -216,7 +218,8 @@ public class NetworkConnection {
         this.player.sendPacket(new HeldItemChangePacket((byte) 0));
         this.player.sendPacket(new ChatMessagePacket("{\"text\":\"Welcome!\"}", ChatMessagePacket.Position.CHAT));
         updateChunks();
-        this.player.sendPacket(new PlayerPositionAndLookPacket(5, 10, 5, 0, 0, (byte) 0, 1));
+        Vector3i spawnpos = world.getSpawnLocation().getBlockPosition();
+        this.player.sendPacket(new PlayerPositionAndLookPacket(spawnpos.getX(), spawnpos.getY(), spawnpos.getZ(), 0, 0, (byte) 0, 1));
         this.player.sendPacket(new TimeUpdatePacket(world.getProperties().getTotalTime(), world.getProperties().getWorldTime()));
         this.player.sendPacket(new SpawnPositionPacket(5, 10, 5));
         this.player.sendPacket(new WindowItemsPacket((byte) 0, (short) 46));
@@ -231,12 +234,12 @@ public class NetworkConnection {
         for (int x = this.player.getChunkX() - this.viewDistance; x <= this.player.getChunkX() + this.viewDistance; x++) {
             for (int z = this.player.getChunkZ() + this.viewDistance; z >= this.player.getChunkZ() - this.viewDistance; z--) {
                 long key = ((x & 0xFFFFFFFFL) << 32) | (z & 0xFFFFFFFFL);
-                System.out.println("Checking chunk " + x + " " + z + " " + key);
+//                System.out.println("Checking chunk " + x + " " + z + " " + key);
                 if (!this.chunks.contains(key)) {
                     SChunk c = world.getOrLoadChunk(x, z);
                     this.player.sendPacket(new ChunkDataPacket(c, true, 0));
-                    System.out.println("Sending chunk " + x + " " + z);
-                    System.out.println("wout " + (c.getBlockMin().getX() >> 4) + " " + (c.getBlockMin().getZ() >> 4) + " " + c.getBlockMin());
+//                    System.out.println("Sending chunk " + x + " " + z);
+//                    System.out.println("wout " + (c.getBlockMin().getX() >> 4) + " " + (c.getBlockMin().getZ() >> 4) + " " + c.getBlockMin());
                     c.addViewer();
                     this.chunks.add(key);
                 } else {
@@ -251,7 +254,7 @@ public class NetworkConnection {
             if (c != null) {
                 c.removeViewer();
             }
-            System.out.println("Unloading chunk " + x + " " + z);
+//            System.out.println("Unloading chunk " + x + " " + z);
             this.player.sendPacket(new UnloadChunkPacket(x, z));
             this.chunks.rem(rem);
         }

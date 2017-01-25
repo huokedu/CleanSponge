@@ -154,7 +154,7 @@ public class SWorld implements World {
 
     public void init() {
         if (this.properties.doesKeepSpawnLoaded() || this.properties.doesGenerateSpawnOnLoad()) {
-
+            
         }
     }
 

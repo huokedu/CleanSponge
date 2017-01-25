@@ -171,6 +171,7 @@ public class SWorldProperties implements WorldProperties {
         this.thundering = false;
         this.thundertime = 0;
         this.clearWeatherTime = 1500;
+        this.worldSpawn = new Vector3i(0, 64, 0);
 
         this.uuid = UUID.randomUUID();
     }

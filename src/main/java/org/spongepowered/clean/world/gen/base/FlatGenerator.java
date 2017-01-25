@@ -51,16 +51,11 @@ public class FlatGenerator implements GenerationPopulator {
 
     @Override
     public void populate(World world, MutableBlockVolume buffer, ImmutableBiomeVolume biomes) {
-        int minx = buffer.getBlockMin().getX();
-        int maxx = buffer.getBlockMax().getX();
-        int minz = buffer.getBlockMin().getZ();
-        int maxz = buffer.getBlockMax().getZ();
         fillLayer(buffer, 0, BlockTypes.BEDROCK.getDefaultState());
         fillLayer(buffer, 1, BlockTypes.DIRT.getDefaultState());
         fillLayer(buffer, 2, BlockTypes.DIRT.getDefaultState());
         fillLayer(buffer, 3, BlockTypes.DIRT.getDefaultState());
         fillLayer(buffer, 4, BlockTypes.GRASS.getDefaultState());
-
     }
 
 }
