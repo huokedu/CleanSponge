@@ -179,7 +179,7 @@ public class NetworkConnection {
         if (this.channel.isOpen()) {
             return this.channel.writeAndFlush(packet);
         }
-        throw new IllegalStateException("channel closed");
+        return null;
     }
 
     public void close() {
