@@ -51,12 +51,12 @@ public class SBannerPatternShape extends AbstractCatalogType implements BannerPa
         registry.register(new SBannerPatternShape("minecraft:gradient_up", "Gradient Up"));
         registry.register(new SBannerPatternShape("minecraft:half_horizontal", "Half Horizontal"));
         registry.register(new SBannerPatternShape("minecraft:half_horizontal_mirror", "Half Horizontal Mirror"));
-        registry.register(new SBannerPatternShape("minecraft:half_virtical", "Half Virtical"));
-        registry.register(new SBannerPatternShape("minecraft:half_virtical_mirror", "Half Vertical Mirror"));
+        registry.register(new SBannerPatternShape("minecraft:half_vertical", "Half Virtical"));
+        registry.register(new SBannerPatternShape("minecraft:half_vertical_mirror", "Half Vertical Mirror"));
         registry.register(new SBannerPatternShape("minecraft:mojang", "Mojang"));
         registry.register(new SBannerPatternShape("minecraft:rhombus_middle", "Rhombus Middle"));
         registry.register(new SBannerPatternShape("minecraft:skull", "Skull"));
-        registry.register(new SBannerPatternShape("minecraft:square_botton_left", "Square Bottom Left"));
+        registry.register(new SBannerPatternShape("minecraft:square_bottom_left", "Square Bottom Left"));
         registry.register(new SBannerPatternShape("minecraft:square_bottom_right", "Square Bottom Right"));
         registry.register(new SBannerPatternShape("minecraft:square_top_left", "Square Top Left"));
         registry.register(new SBannerPatternShape("minecraft:square_top_right", "Square Top Right"));
@@ -66,6 +66,9 @@ public class SBannerPatternShape extends AbstractCatalogType implements BannerPa
         registry.register(new SBannerPatternShape("minecraft:stripe_downleft", "Stripe Downleft"));
         registry.register(new SBannerPatternShape("minecraft:stripe_downright", "Stripe Downright"));
         registry.register(new SBannerPatternShape("minecraft:stripe_left", "Stripe Left"));
+        registry.register(new SBannerPatternShape("minecraft:stripe_middle", "Stripe Middle"));
+        registry.register(new SBannerPatternShape("minecraft:stripe_small", "Stripe Small"));
+        registry.register(new SBannerPatternShape("minecraft:stripe_top", "Stripe Top"));
         registry.register(new SBannerPatternShape("minecraft:stripe_right", "Stripe Right"));
         registry.register(new SBannerPatternShape("minecraft:triangles_bottom", "Triangles Bottom"));
         registry.register(new SBannerPatternShape("minecraft:triangles_top", "Triangles Top"));

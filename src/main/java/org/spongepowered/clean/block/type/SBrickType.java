@@ -42,7 +42,7 @@ public class SBrickType extends AbstractCatalogType implements BrickType {
     }
 
     public static void registerTypes(FixedCatalogRegistryModule<BrickType> registry) {
-        registry.register(new SBrickType("minecraft:chisled", "Chisled"));
+        registry.register(new SBrickType("minecraft:chiseled", "Chisled"));
         registry.register(new SBrickType("minecraft:cracked", "Cracked"));
         registry.register(new SBrickType("minecraft:default", "Default"));
         registry.register(new SBrickType("minecraft:mossy", "Mossy"));

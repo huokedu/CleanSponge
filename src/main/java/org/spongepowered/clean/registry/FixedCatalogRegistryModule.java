@@ -120,6 +120,7 @@ public class FixedCatalogRegistryModule<T extends CatalogType> implements Catalo
                     if (!type.isPresent()) {
                         type = getById(this.defaultNamespace + ":" + f.getName().toLowerCase());
                     }
+                    // TODO attempt get any regardless of namespace
                     if (!type.isPresent()) {
                         SGame.getLogger().warn("No type found for field " + f.getName() + " in catalog " + c.getName());
                         continue;

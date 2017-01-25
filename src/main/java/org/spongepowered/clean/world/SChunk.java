@@ -24,9 +24,15 @@
  */
 package org.spongepowered.clean.world;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
-import com.google.common.collect.Lists;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
@@ -76,14 +82,9 @@ import org.spongepowered.clean.world.biome.SBiomeType;
 import org.spongepowered.clean.world.palette.GlobalPalette;
 import org.spongepowered.clean.world.palette.LocalBlockPalette;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
+import com.google.common.collect.Lists;
 
 public class SChunk implements Chunk {
 
@@ -203,6 +204,39 @@ public class SChunk implements Chunk {
         }
     }
 
+    public void updateSkyHeight(int x, int y, int z, BlockState block) {
+        // TODO check if a block actually blocks light
+        byte height = this.skylightHeights[(x - this.min.getX()) + (z - this.min.getZ()) * 16];
+        boolean air = block.getType() == BlockTypes.AIR;
+        if (y >= height || (y == height && air)) {
+            for (; y >= 0; y--) {
+                if (getBlock(x, y, z).getType() != BlockTypes.AIR) {
+                    this.skylightHeights[(x - this.min.getX()) + (z - this.min.getZ()) * 16] = (byte) y;
+                    return;
+                }
+            }
+            this.skylightHeights[(x - this.min.getX()) + (z - this.min.getZ()) * 16] = 0;
+        }
+    }
+
+    public void recalcSkyLight() {
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                int height = this.skylightHeights[x + z * 16] & 0xFF;
+                for (int y0 = 0; y0 < 16; y0++) {
+                    ChunkSection section = this.blocks[y0];
+                    for (int y = 0; y < 16; y++) {
+                        if (y0 * 16 + y < height) {
+                            section.setSkyLight(x, y, z, (byte) 0);
+                        } else {
+                            section.setSkyLight(x, y, z, (byte) 15);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public BlockState getBlock(int x, int y, int z) {
         checkRange(x, y, z);
@@ -223,7 +257,7 @@ public class SChunk implements Chunk {
         checkRange(x, y, z);
         ChunkSection section = this.blocks[y >> 4];
         if (section == null) {
-            section = new ChunkSection(y >> 4);
+            section = new ChunkSection(y >> 4, true);
             this.blocks[y >> 4] = section;
         }
         section.setBlock(x - this.min.getX(), y & 0xFF, z - this.min.getZ(), block);
@@ -231,6 +265,7 @@ public class SChunk implements Chunk {
             this.blocks[y >> 4] = null;
         }
         updateHeight(x, y, z, block);
+        updateSkyHeight(x, y, z, block);
         return true;
     }
 
@@ -843,13 +878,23 @@ public class SChunk implements Chunk {
         private int airCount;
         // 4-bits per block
         private long[] blockLighting;
+        private long[] skyLighting;
 
-        public ChunkSection(int y) {
+        public ChunkSection(int y, boolean hasSky) {
             this.y = y;
             this.palette = new LocalBlockPalette();
             this.airCount = 4096;
             checkSize(8);
             this.blockLighting = new long[256];
+            if (hasSky) {
+                this.skyLighting = new long[256];
+                for (int i = 0; i < 256; i++) {
+                    // initial value is 15
+                    this.skyLighting[i] = 0xFFFFFFFFFFFFFFFFL;
+                }
+            } else {
+                this.skyLighting = null;
+            }
         }
 
         public BlockPalette getPalette() {
@@ -886,7 +931,28 @@ public class SChunk implements Chunk {
             int bit = 4 * (x + z * 16 + y * 256);
             long existing = (this.blockLighting[bit / 64] & ~(0xF << (bit % 64)));
             long newd = ((long) level << (bit % 64));
-            this.data[bit / 64] = existing | newd;
+            this.blockLighting[bit / 64] = existing | newd;
+        }
+
+        public long[] getBlockLightData() {
+            return this.blockLighting;
+        }
+
+        public byte getSkyLight(int x, int y, int z) {
+            int bit = 4 * (x + z * 16 + y * 256);
+            return (byte) ((this.skyLighting[bit / 64] >>> (bit % 64)) & 0xF);
+        }
+
+        public void setSkyLight(int x, int y, int z, byte level) {
+            level &= 0xF;
+            int bit = 4 * (x + z * 16 + y * 256);
+            long existing = (this.skyLighting[bit / 64] & ~(0xF << (bit % 64)));
+            long newd = ((long) level << (bit % 64));
+            this.skyLighting[bit / 64] = existing | newd;
+        }
+
+        public long[] getSkyLightData() {
+            return this.skyLighting;
         }
 
         private int get(int x, int y, int z) {

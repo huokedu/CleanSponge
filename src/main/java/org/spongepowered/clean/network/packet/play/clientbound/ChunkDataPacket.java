@@ -94,10 +94,16 @@ public class ChunkDataPacket extends Packet {
                     chunkdata.writeLong(data[l]);
                 }
                 // block light
-                chunkdata.writeZero(2048);
+                long[] light = section.getBlockLightData();
+                for (int l = 0; l < light.length; l++) {
+                    chunkdata.writeLong(light[l]);
+                }
                 if (this.chunk.getWorld().getDimension().getType() == DimensionTypes.OVERWORLD) {
                     // sky light
-                    chunkdata.writeZero(2048);
+                    long[] sky = section.getSkyLightData();
+                    for (int l = 0; l < sky.length; l++) {
+                        chunkdata.writeLong(sky[l]);
+                    }
                 }
             }
         }

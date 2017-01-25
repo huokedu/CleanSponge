@@ -42,6 +42,7 @@ public class SBanType extends AbstractCatalogType implements BanType {
     }
 
     public static void registerTypes(FixedCatalogRegistryModule<BanType> registry) {
+        registry.setDefaultNamespace("sponge");
         registry.register(new SBanType("sponge:ip", "Ip"));
         registry.register(new SBanType("sponge:profile", "Profile"));
     }

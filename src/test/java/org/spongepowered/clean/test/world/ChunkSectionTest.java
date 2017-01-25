@@ -45,7 +45,7 @@ public class ChunkSectionTest {
     
     @Test
     public void testGetSet() {
-        ChunkSection section = new ChunkSection(0);
+        ChunkSection section = new ChunkSection(0, false);
         BlockState air = BlockTypes.AIR.getDefaultState();
         BlockState stone = BlockTypes.STONE.getDefaultState();
         BlockState grass = BlockTypes.GRASS.getDefaultState();

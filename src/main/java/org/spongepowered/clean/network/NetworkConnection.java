@@ -90,7 +90,7 @@ public class NetworkConnection {
     private ConnectionState conn_state;
     private LongSet chunks = new LongOpenHashSet();
     private LongSet chunks_b = new LongOpenHashSet();
-    private int viewDistance = 1;
+    private int viewDistance = 2;
     private int timeout = 0;
     // TODO track keepalives sent and timeout if not returned
 
@@ -166,7 +166,7 @@ public class NetworkConnection {
             Packet packet = this.queue.poll();
             while (packet != null) {
                 InboundPackets type = InboundPackets.get(this.state, packet.id);
-                System.out.println("Packet in: " + Integer.toHexString(packet.id));
+//                System.out.println("Packet in: " + Integer.toHexString(packet.id));
                 type.getHandler().accept(packet, this);
                 packet = this.queue.poll();
             }
@@ -229,7 +229,7 @@ public class NetworkConnection {
         this.chunks_b.clear();
         this.chunks_b.addAll(this.chunks);
         for (int x = this.player.getChunkX() - this.viewDistance; x <= this.player.getChunkX() + this.viewDistance; x++) {
-            for (int z = this.player.getChunkZ() - this.viewDistance; z <= this.player.getChunkZ() + this.viewDistance; z++) {
+            for (int z = this.player.getChunkZ() + this.viewDistance; z >= this.player.getChunkZ() - this.viewDistance; z--) {
                 long key = ((x & 0xFFFFFFFFL) << 32) | (z & 0xFFFFFFFFL);
                 System.out.println("Checking chunk " + x + " " + z + " " + key);
                 if (!this.chunks.contains(key)) {
@@ -251,7 +251,9 @@ public class NetworkConnection {
             if (c != null) {
                 c.removeViewer();
             }
+            System.out.println("Unloading chunk " + x + " " + z);
             this.player.sendPacket(new UnloadChunkPacket(x, z));
+            this.chunks.rem(rem);
         }
     }
 
