@@ -82,8 +82,8 @@ public class ChunkDataPacket extends Packet {
                 if (section.getPalette() == GlobalPalette.instance) {
                     ByteBufUtil.writeVarInt(chunkdata, 0);
                 } else {
-                    ByteBufUtil.writeVarInt(chunkdata, section.getPalette().getHighestId());
-                    for (int p = 0; p < section.getPalette().getHighestId(); p++) {
+                    ByteBufUtil.writeVarInt(chunkdata, section.getPalette().getHighestId() + 1);
+                    for (int p = 0; p <= section.getPalette().getHighestId(); p++) {
                         BlockState block = section.getPalette().get(p).get();
                         ByteBufUtil.writeVarInt(chunkdata, GlobalPalette.instance.getOrAssign(block));
                     }

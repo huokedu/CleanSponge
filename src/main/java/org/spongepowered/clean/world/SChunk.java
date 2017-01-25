@@ -244,7 +244,7 @@ public class SChunk implements Chunk {
         if (section == null) {
             return BlockTypes.AIR.getDefaultState();
         }
-        return section.getBlock(x - this.min.getX(), y & 0xFF, z - this.min.getZ());
+        return section.getBlock(x - this.min.getX(), y & 0xF, z - this.min.getZ());
     }
 
     @Override
@@ -260,7 +260,7 @@ public class SChunk implements Chunk {
             section = new ChunkSection(y >> 4, true);
             this.blocks[y >> 4] = section;
         }
-        section.setBlock(x - this.min.getX(), y & 0xFF, z - this.min.getZ(), block);
+        section.setBlock(x - this.min.getX(), y & 0xF, z - this.min.getZ(), block);
         if (section.getAirCount() == 16 * 16 * 16) {
             this.blocks[y >> 4] = null;
         }
