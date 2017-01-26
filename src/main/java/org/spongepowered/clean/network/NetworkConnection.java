@@ -214,12 +214,12 @@ public class NetworkConnection {
                 (byte) Sponge.getServer().getMaxPlayers(), "default", false));
         this.player.sendPacket(PluginMessagePacket.createBrandPacket(Constants.SERVER_BRAND));
         this.player.sendPacket(new ServerDifficultyPacket(world.getDifficulty()));
-        this.player.sendPacket(new PlayerAbilitiesPacket((byte) 0, 1, 0));
+        this.player.sendPacket(new PlayerAbilitiesPacket((byte) 0xF, 0.1f, 0));
         this.player.sendPacket(new HeldItemChangePacket((byte) 0));
         this.player.sendPacket(new ChatMessagePacket("{\"text\":\"Welcome!\"}", ChatMessagePacket.Position.CHAT));
         updateChunks();
-        Vector3i spawnpos = world.getSpawnLocation().getBlockPosition();
-        this.player.sendPacket(new PlayerPositionAndLookPacket(spawnpos.getX(), spawnpos.getY(), spawnpos.getZ(), 0, 0, (byte) 0, 1));
+        SChunk c = world.getOrLoadChunk(0, 0);
+        this.player.sendPacket(new PlayerPositionAndLookPacket(0, c.getHeight(0, 0), 0, 0, 0, (byte) 0, 1));
         this.player.sendPacket(new TimeUpdatePacket(world.getProperties().getTotalTime(), world.getProperties().getWorldTime()));
         this.player.sendPacket(new SpawnPositionPacket(5, 10, 5));
         this.player.sendPacket(new WindowItemsPacket((byte) 0, (short) 46));

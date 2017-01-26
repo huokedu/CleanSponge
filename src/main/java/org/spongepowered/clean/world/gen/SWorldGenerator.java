@@ -26,11 +26,15 @@ package org.spongepowered.clean.world.gen;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.world.biome.BiomeGenerationSettings;
 import org.spongepowered.api.world.biome.BiomeType;
+import org.spongepowered.api.world.biome.GroundCoverLayer;
 import org.spongepowered.api.world.extent.ImmutableBiomeVolume;
+import org.spongepowered.api.world.extent.MutableBlockVolume;
 import org.spongepowered.api.world.gen.BiomeGenerator;
 import org.spongepowered.api.world.gen.GenerationPopulator;
 import org.spongepowered.api.world.gen.Populator;
@@ -38,6 +42,8 @@ import org.spongepowered.api.world.gen.WorldGenerator;
 import org.spongepowered.clean.world.SChunk;
 import org.spongepowered.clean.world.SWorld;
 import org.spongepowered.clean.world.buffer.SMutableBiomeVolume;
+import org.spongepowered.clean.world.buffer.SMutableBlockVolume;
+import org.spongepowered.clean.world.palette.GlobalPalette;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Lists;
@@ -58,19 +64,36 @@ public class SWorldGenerator implements WorldGenerator {
         this.basePopulator = base;
     }
 
-    public SChunk generateChunk(int x, int z) {
-        SChunk chunk = new SChunk(this.world, x, z);
-        chunk.setPhysics(false);
-        chunk.setLighting(false);
-        SMutableBiomeVolume biomes = new SMutableBiomeVolume(new Vector3i(x, 0, z), SChunk.BIOME_SIZE);
+    public SChunk generateChunk(int cx, int cz) {
+        MutableBlockVolume blocks = new SMutableBlockVolume(GlobalPalette.instance, new Vector3i(cx * 16, 0, cz * 16), SChunk.CHUNK_SIZE);
+        SMutableBiomeVolume biomes = new SMutableBiomeVolume(new Vector3i(cx * 16 - 4, 0, cz * 16 - 4), new Vector3i(24, 1, 24), true);
         this.biomeGen.generateBiomes(biomes);
         ImmutableBiomeVolume ibiomes = biomes.getImmutableBiomeCopy();
-        this.basePopulator.populate(this.world, chunk, ibiomes);
+        this.basePopulator.populate(this.world, blocks, ibiomes);
 
         for (GenerationPopulator genpop : this.genpopulators) {
-            genpop.populate(this.world, chunk, ibiomes);
+            genpop.populate(this.world, blocks, ibiomes);
         }
-        return chunk;
+
+        Random rand = new Random((((cx & 0xFFFFFFFFL) << 32) | (cz & 0xFFFFFFFFL)) ^ this.world.getProperties().getSeed());
+
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                BiomeGenerationSettings settings = getBiomeSettings(biomes.getBiome(cx * 16 + x, 0, cz * 16 + z));
+                groundcover: for (int y = 255; y >= 0; y--) {
+                    if (blocks.getBlock(cx * 16 + x, y, cz * 16 + z).getType() == BlockTypes.STONE) {
+                        for (GroundCoverLayer gcl : settings.getGroundCoverLayers()) {
+                            int depth = gcl.getDepth().getFlooredAmount(rand, 0.0);
+                            for (int y0 = y; y >= y0 - depth; y--) {
+                                blocks.setBlock(cx * 16 + x, y0, cz * 16 + z, gcl.getBlockState().apply(0.0), null);
+                            }
+                        }
+                        break groundcover;
+                    }
+                }
+            }
+        }
+        return new SChunk(this.world, cx, cz, blocks, biomes);
     }
 
     public void populateChunk(SChunk chunk) {
@@ -126,6 +149,7 @@ public class SWorldGenerator implements WorldGenerator {
         BiomeGenerationSettings override = this.biomeOverrides.get(type);
         if (override == null) {
             override = type.createDefaultGenerationSettings(this.world);
+            this.biomeOverrides.put(type, override);
         }
         return override;
     }

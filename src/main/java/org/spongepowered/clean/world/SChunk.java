@@ -64,6 +64,8 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.biome.BiomeType;
 import org.spongepowered.api.world.extent.ArchetypeVolume;
+import org.spongepowered.api.world.extent.BiomeVolume;
+import org.spongepowered.api.world.extent.BlockVolume;
 import org.spongepowered.api.world.extent.Extent;
 import org.spongepowered.api.world.extent.ImmutableBiomeVolume;
 import org.spongepowered.api.world.extent.ImmutableBlockVolume;
@@ -114,13 +116,16 @@ public class SChunk implements Chunk {
 
     private int viewers;
 
-    public SChunk(SWorld world, int x, int z) {
+    public SChunk(SWorld world, int x, int z, BlockVolume volume, BiomeVolume biomes) {
         this.min = new Vector3i(x * 16, 0, z * 16);
         this.max = new Vector3i(x * 16 + 15, 255, z * 16 + 15);
         this.world = world;
         this.biomes = new byte[256];
         this.heightmap = new byte[256];
         this.skylightHeights = new byte[256];
+
+        fillBlocks(volume);
+        fillBiomes(biomes);
     }
 
     public void serialUpdate() {
@@ -257,6 +262,9 @@ public class SChunk implements Chunk {
         checkRange(x, y, z);
         ChunkSection section = this.blocks[y >> 4];
         if (section == null) {
+            if(block.getType() == BlockTypes.AIR) {
+                return true;
+            }
             section = new ChunkSection(y >> 4, true);
             this.blocks[y >> 4] = section;
         }
@@ -275,6 +283,34 @@ public class SChunk implements Chunk {
         // TODO Auto-generated method stub
         // TODO update physics and lighting if flags set
         return setBlock(x, y, z, blockState, cause);
+    }
+
+    public void fillBlocks(BlockVolume blocks) {
+        int minx = this.min.getX();
+        int miny = this.min.getY();
+        int minz = this.min.getZ();
+        int maxx = this.max.getX();
+        int maxy = this.max.getY();
+        int maxz = this.max.getZ();
+        for (int x = minx; x <= maxx; x++) {
+            for (int z = minz; z <= maxz; z++) {
+                for (int y = miny; y <= maxy; y++) {
+                    setBlock(x, y, z, blocks.getBlock(x, y, z), null);
+                }
+            }
+        }
+    }
+
+    public void fillBiomes(BiomeVolume biomes) {
+        int minx = this.min.getX();
+        int minz = this.min.getZ();
+        int maxx = this.max.getX();
+        int maxz = this.max.getZ();
+        for (int x = minx; x <= maxx; x++) {
+            for (int z = minz; z <= maxz; z++) {
+                setBiome(x, 0, z, biomes.getBiome(x, 0, z));
+            }
+        }
     }
 
     public void setPhysics(boolean state) {

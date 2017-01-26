@@ -11,20 +11,22 @@ public class NoiseGenerator {
     private SimplexNoise noise;
     private int octaves;
     private double persistence;
-
-    public NoiseGenerator(Random rand, int octaves, double persistence) {
+    private double frequency;
+    
+    public NoiseGenerator(Random rand, int octaves, double persistence, double frequency) {
         this.noise = new SimplexNoise(rand);
         this.octaves = octaves;
         this.persistence = persistence;
+        this.frequency = frequency;
     }
 
     public double getNoise(int x, int z) {
         double total = 0;
-        double freq = 0.01;
+        double freq = this.frequency;
         double amplitude = 1;
         double max = 0;
         for (int i = 0; i < this.octaves; i++) {
-            total += (this.noise.noise(x * freq, z * freq) + 1) * amplitude * 0.5;
+            total += this.noise.noise(x * freq, z * freq) * amplitude;
             max += amplitude;
             amplitude *= this.persistence;
             freq *= 2;

@@ -43,6 +43,10 @@ public class SBiomeGenerationSettings implements BiomeGenerationSettings {
 
     public SBiomeGenerationSettings(SBiomeGenerationSettingsBuilder builder) {
         this.min = builder.min;
+        this.max = builder.max;
+        this.populators.addAll(builder.populators);
+        this.genpop.addAll(builder.genpop);
+        this.groundCover.addAll(builder.groundCover);
     }
 
     @Override

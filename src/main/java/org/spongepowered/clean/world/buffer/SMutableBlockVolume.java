@@ -74,7 +74,7 @@ public class SMutableBlockVolume extends AbstractVolume implements MutableBlockV
     public boolean setBlock(int x, int y, int z, BlockState block, Cause cause) {
         checkRange(x, y, z);
         int id = this.palette.getOrAssign(block);
-        this.data[x + y * this.size.getX() + z * this.size.getX() * this.size.getZ()] = (char) (id & 0xFFFF);
+        this.data[getIndex(x, y, z)] = (char) (id & 0xFFFF);
         return true;
     }
 

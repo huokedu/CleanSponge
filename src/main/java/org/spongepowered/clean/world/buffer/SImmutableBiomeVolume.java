@@ -24,30 +24,40 @@
  */
 package org.spongepowered.clean.world.buffer;
 
+import java.util.Arrays;
+
 import org.spongepowered.api.util.DiscreteTransform3;
 import org.spongepowered.api.world.biome.BiomeType;
 import org.spongepowered.api.world.extent.ImmutableBiomeVolume;
 import org.spongepowered.api.world.extent.MutableBiomeVolume;
 import org.spongepowered.api.world.extent.StorageType;
 import org.spongepowered.api.world.extent.UnmodifiableBiomeVolume;
-import org.spongepowered.api.world.extent.worker.MutableBiomeVolumeWorker;
+import org.spongepowered.api.world.extent.worker.BiomeVolumeWorker;
 import org.spongepowered.clean.world.biome.SBiomeType;
 
 import com.flowpowered.math.vector.Vector3i;
 
-public class SMutableBiomeVolume extends AbstractVolume implements MutableBiomeVolume {
+public class SImmutableBiomeVolume extends AbstractVolume implements ImmutableBiomeVolume {
 
     private final byte[] data;
     private final float[] weights;
 
-    public SMutableBiomeVolume(Vector3i min, Vector3i size, boolean weighted) {
+    public SImmutableBiomeVolume(Vector3i min, Vector3i size) {
         super(min, size);
         this.data = new byte[size.getX() * size.getY() * size.getZ()];
-        if (weighted) {
-            this.weights = new float[this.data.length];
-        } else {
-            this.weights = null;
-        }
+        this.weights = null;
+    }
+
+    public SImmutableBiomeVolume(Vector3i min, Vector3i size, byte[] data) {
+        super(min, size);
+        this.data = Arrays.copyOf(data, data.length);
+        this.weights = null;
+    }
+
+    public SImmutableBiomeVolume(Vector3i min, Vector3i size, byte[] data, float[] weights) {
+        super(min, size);
+        this.data = Arrays.copyOf(data, data.length);
+        this.weights = Arrays.copyOf(weights, weights.length);
     }
 
     @Override
@@ -78,20 +88,9 @@ public class SMutableBiomeVolume extends AbstractVolume implements MutableBiomeV
         return type;
     }
 
-    @Override
-    public void setBiome(int x, int y, int z, BiomeType biome) {
-        checkRange(x, y, z);
-        this.data[getIndex(x, y, z)] = (byte) ((SBiomeType) biome).getBiomeId();
-    }
-
     public float getBiomeWeight(int x, int y, int z) {
         checkRange(x, y, z);
         return this.weights[getIndex(x, y, z)];
-    }
-
-    public void setBiomeWeight(int x, int y, int z, float weight) {
-        checkRange(x, y, z);
-        this.weights[getIndex(x, y, z)] = weight;
     }
 
     @Override
@@ -108,23 +107,23 @@ public class SMutableBiomeVolume extends AbstractVolume implements MutableBiomeV
 
     @Override
     public ImmutableBiomeVolume getImmutableBiomeCopy() {
-        return new SImmutableBiomeVolume(this.min, this.size, this.data, this.weights);
+        return this;
     }
 
     @Override
-    public MutableBiomeVolume getBiomeView(Vector3i newMin, Vector3i newMax) {
+    public ImmutableBiomeVolume getBiomeView(Vector3i newMin, Vector3i newMax) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public MutableBiomeVolume getBiomeView(DiscreteTransform3 transform) {
+    public ImmutableBiomeVolume getBiomeView(DiscreteTransform3 transform) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public MutableBiomeVolumeWorker<? extends MutableBiomeVolume> getBiomeWorker() {
+    public BiomeVolumeWorker<? extends ImmutableBiomeVolume> getBiomeWorker() {
         // TODO Auto-generated method stub
         return null;
     }

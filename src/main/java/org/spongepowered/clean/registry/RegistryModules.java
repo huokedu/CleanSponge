@@ -98,7 +98,6 @@ public class RegistryModules {
         reg.registerModule(BanType.class, new FixedCatalogRegistryModule<>(BanType.class, SBanType::registerTypes));
         reg.registerModule(BigMushroomType.class, new FixedCatalogRegistryModule<>(BigMushroomType.class, SBigMushroomType::registerTypes));
         reg.registerModule(BiomeTreeType.class, new FixedCatalogRegistryModule<>(BiomeTreeType.class, SBiomeTreeType::registerTypes));
-        reg.registerModule(BiomeType.class, new FixedCatalogRegistryModule<>(BiomeType.class, SBiomeType::registerTypes));
         reg.registerModule(BlockPaletteType.class, new FixedCatalogRegistryModule<>(BlockPaletteType.class, SBlockPaletteType::registerTypes));
         reg.registerModule(BlockType.class, new FixedCatalogRegistryModule<>(BlockType.class, SBlockType::registerTypes));
         reg.registerModule(BodyPart.class, new FixedCatalogRegistryModule<>(BodyPart.class, SBodyPart::registerTypes));
@@ -123,6 +122,7 @@ public class RegistryModules {
 
     public static void registerLateModules() {
         GameRegistry reg = Sponge.getRegistry();
+        reg.registerModule(BiomeType.class, new FixedCatalogRegistryModule<>(BiomeType.class, SBiomeType::registerTypes));
         reg.registerModule(ItemType.class, new FixedCatalogRegistryModule<>(ItemType.class, SItemType::registerTypes));
         reg.registerModule(WorldArchetype.class, new FixedCatalogRegistryModule<>(WorldArchetype.class, SWorldArchetype::registerTypes));
     }

@@ -27,13 +27,12 @@ package org.spongepowered.clean.world.gen;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.world.GeneratorType;
 import org.spongepowered.api.world.World;
-import org.spongepowered.api.world.biome.BiomeTypes;
 import org.spongepowered.api.world.gen.WorldGenerator;
 import org.spongepowered.clean.registry.AbstractCatalogType;
 import org.spongepowered.clean.registry.FixedCatalogRegistryModule;
 import org.spongepowered.clean.world.SWorld;
-import org.spongepowered.clean.world.biome.SingleBiomeGenerator;
 import org.spongepowered.clean.world.gen.base.OverworldGenerator;
+import org.spongepowered.clean.world.gen.biome.OverworldBiomeGenerator;
 
 public class SGeneratorType extends AbstractCatalogType implements GeneratorType {
 
@@ -49,7 +48,9 @@ public class SGeneratorType extends AbstractCatalogType implements GeneratorType
 
     @Override
     public WorldGenerator createGenerator(World world) {
-        return new SWorldGenerator((SWorld) world, new SingleBiomeGenerator(BiomeTypes.PLAINS), new OverworldGenerator((SWorld) world));
+        SWorldGenerator gen = new SWorldGenerator((SWorld) world, new OverworldBiomeGenerator((SWorld) world), null);
+        gen.setBaseGenerationPopulator(new OverworldGenerator((SWorld) world, gen));
+        return gen;
     }
 
     public static void registerTypes(FixedCatalogRegistryModule<GeneratorType> registry) {
