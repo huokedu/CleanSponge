@@ -32,7 +32,7 @@ import org.spongepowered.clean.registry.AbstractCatalogType;
 import org.spongepowered.clean.registry.FixedCatalogRegistryModule;
 import org.spongepowered.clean.world.SWorld;
 import org.spongepowered.clean.world.gen.base.OverworldGenerator;
-import org.spongepowered.clean.world.gen.biome.OverworldBiomeGenerator;
+import org.spongepowered.clean.world.gen.biome.DummyBiomeGenerator;
 
 public class SGeneratorType extends AbstractCatalogType implements GeneratorType {
 
@@ -48,7 +48,7 @@ public class SGeneratorType extends AbstractCatalogType implements GeneratorType
 
     @Override
     public WorldGenerator createGenerator(World world) {
-        SWorldGenerator gen = new SWorldGenerator((SWorld) world, new OverworldBiomeGenerator((SWorld) world), null);
+        SWorldGenerator gen = new SWorldGenerator((SWorld) world, new DummyBiomeGenerator(), null);
         gen.setBaseGenerationPopulator(new OverworldGenerator((SWorld) world, gen));
         return gen;
     }

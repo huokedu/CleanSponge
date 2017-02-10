@@ -43,6 +43,7 @@ import org.spongepowered.clean.world.SChunk;
 import org.spongepowered.clean.world.SWorld;
 import org.spongepowered.clean.world.buffer.SMutableBiomeVolume;
 import org.spongepowered.clean.world.buffer.SMutableBlockVolume;
+import org.spongepowered.clean.world.gen.base.OverworldGenerator;
 import org.spongepowered.clean.world.palette.GlobalPalette;
 
 import com.flowpowered.math.vector.Vector3i;
@@ -69,6 +70,9 @@ public class SWorldGenerator implements WorldGenerator {
         SMutableBiomeVolume biomes = new SMutableBiomeVolume(new Vector3i(cx * 16 - 4, 0, cz * 16 - 4), new Vector3i(24, 1, 24), true);
         this.biomeGen.generateBiomes(biomes);
         ImmutableBiomeVolume ibiomes = biomes.getImmutableBiomeCopy();
+        if(this.basePopulator instanceof OverworldGenerator) {
+            ((OverworldGenerator) this.basePopulator).setBiomes(biomes);
+        }
         this.basePopulator.populate(this.world, blocks, ibiomes);
 
         for (GenerationPopulator genpop : this.genpopulators) {

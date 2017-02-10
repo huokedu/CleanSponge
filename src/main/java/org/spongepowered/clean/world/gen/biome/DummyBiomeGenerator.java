@@ -22,28 +22,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.item.type;
+package org.spongepowered.clean.world.gen.biome;
 
-import org.spongepowered.api.data.type.CoalType;
-import org.spongepowered.api.text.translation.Translation;
-import org.spongepowered.clean.registry.AbstractCatalogType;
-import org.spongepowered.clean.registry.FixedCatalogRegistryModule;
+import org.spongepowered.api.world.extent.MutableBiomeVolume;
+import org.spongepowered.api.world.gen.BiomeGenerator;
 
-public class SCoalType extends AbstractCatalogType implements CoalType {
-
-    public SCoalType(String id, String name) {
-        super(id, name);
-    }
+public class DummyBiomeGenerator implements BiomeGenerator {
 
     @Override
-    public Translation getTranslation() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    public static void registerTypes(FixedCatalogRegistryModule<CoalType> registry) {
-        registry.register(new SCoalType("minecraft:coal", ""));
-        registry.register(new SCoalType("minecraft:charcoal", ""));
+    public void generateBiomes(MutableBiomeVolume buffer) {
     }
 
 }

@@ -22,28 +22,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.item.type;
+package org.spongepowered.clean.util;
 
-import org.spongepowered.api.data.type.CoalType;
-import org.spongepowered.api.text.translation.Translation;
-import org.spongepowered.clean.registry.AbstractCatalogType;
-import org.spongepowered.clean.registry.FixedCatalogRegistryModule;
+public class Maths {
 
-public class SCoalType extends AbstractCatalogType implements CoalType {
-
-    public SCoalType(String id, String name) {
-        super(id, name);
+    public static double clamp(double val, double min, double max) {
+        if (val < min)
+            return min;
+        if (val > max)
+            return max;
+        return val;
     }
 
-    @Override
-    public Translation getTranslation() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    public static void registerTypes(FixedCatalogRegistryModule<CoalType> registry) {
-        registry.register(new SCoalType("minecraft:coal", ""));
-        registry.register(new SCoalType("minecraft:charcoal", ""));
+    private Maths() {
     }
 
 }
