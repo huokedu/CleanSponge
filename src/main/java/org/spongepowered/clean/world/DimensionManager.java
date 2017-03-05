@@ -26,7 +26,6 @@ package org.spongepowered.clean.world;
 
 import com.google.common.collect.Maps;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.world.Dimension;
 import org.spongepowered.api.world.DimensionType;
 
 import java.util.Map;

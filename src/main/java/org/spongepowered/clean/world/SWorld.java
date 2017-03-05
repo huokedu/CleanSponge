@@ -871,7 +871,7 @@ public class SWorld implements World {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Iterable<Chunk> getLoadedChunks() {
         return (Collection) this.chunks.values();
     }

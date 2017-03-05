@@ -245,19 +245,12 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
     // (In Java, array access is a lot slower than member access)
     private static class Grad {
 
-        double x, y, z, w;
+        double x, y, z;
 
         Grad(double x, double y, double z) {
             this.x = x;
             this.y = y;
             this.z = z;
-        }
-
-        Grad(double x, double y, double z, double w) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.w = w;
         }
     }
 }

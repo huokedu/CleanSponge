@@ -24,7 +24,6 @@
  */
 package org.spongepowered.clean.network;
 
-import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Queues;
 import io.netty.channel.Channel;
@@ -145,18 +144,15 @@ public class NetworkConnection {
 
                     @Override
                     public void operationComplete(ChannelFuture future) throws Exception {
-                        System.out.println("compressing");
                         NetworkConnection.this.channel.pipeline().addBefore("decoder", "decompressor", new PacketDecompressor());
                         NetworkConnection.this.channel.pipeline().addBefore("encoder", "compressor", new PacketCompressor(compress_threshold));
-                        System.out.println(NetworkConnection.this.channel.pipeline());
                     }
                 });
             }
             sendPacket(new LoginSuccessPacket(this.uid, this.name));
             changeState(ProtocolState.PLAY);
             this.conn_state = ConnectionState.JOINING;
-
-            System.out.println("Joining world");
+            SGame.getLogger().info("Player " + this.name + " joining to world " + Sponge.getServer().getDefaultWorldName());
             SWorld world = (SWorld) Sponge.getServer().getWorld(Sponge.getServer().getDefaultWorldName()).get();
             this.player = new SPlayer(world, this.uid, this);
             world.addJoiningPlayer(this.player);

@@ -35,7 +35,6 @@ import org.spongepowered.clean.SGame;
 import org.spongepowered.clean.network.NetworkConnection;
 import org.spongepowered.clean.network.NetworkConnection.ConnectionState;
 import org.spongepowered.clean.network.packet.handshake.HandshakePacket;
-import org.spongepowered.clean.network.packet.login.EncryptionRequestPacket;
 import org.spongepowered.clean.network.packet.login.EncryptionResponsePacket;
 import org.spongepowered.clean.network.packet.login.LoginStartPacket;
 import org.spongepowered.clean.network.packet.play.serverbound.PlayerLookPacket;
@@ -93,12 +92,13 @@ public class InboundPacketHandlers {
     public static final BiConsumer<Packet, NetworkConnection> LOGIN_START = (p, c) -> {
         LoginStartPacket packet = (LoginStartPacket) p;
         c.setName(packet.name);
-        if (Sponge.getServer().getOnlineMode() && false) {
-            c.sendPacket(new EncryptionRequestPacket("", SGame.game.getNetworkManager().getServerKeyPair().getPublic(), c.getVerifyToken()));
-            c.updateConnState(ConnectionState.AUTHENTICATING);
-        } else {
+        // TODO support online mode
+//        if (Sponge.getServer().getOnlineMode()) {
+//            c.sendPacket(new EncryptionRequestPacket("", SGame.game.getNetworkManager().getServerKeyPair().getPublic(), c.getVerifyToken()));
+//            c.updateConnState(ConnectionState.AUTHENTICATING);
+//        } else {
             c.updateConnState(ConnectionState.COMPLETE_LOGIN);
-        }
+//        }
     };
 
     public static final BiConsumer<Packet, NetworkConnection> LOGIN_ENCRYPTION_RESPONSE = (p, c) -> {
