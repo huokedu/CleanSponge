@@ -24,6 +24,8 @@
  */
 package org.spongepowered.clean.network;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import com.google.common.base.Charsets;
 import com.google.common.collect.Queues;
 import io.netty.channel.Channel;
@@ -102,6 +104,15 @@ public class NetworkConnection {
         this.conn_state = ConnectionState.HANDSHAKING;
     }
 
+    public int getViewDistance() {
+        return this.viewDistance;
+    }
+
+    public void setViewDistance(int viewDistance) {
+        checkArgument(viewDistance > 0);
+        this.viewDistance = viewDistance;
+    }
+
     public void setChannel(Channel channel) {
         this.channel = channel;
         this.channel.attr(PROTOCOL_STATE_KEY).set(this.state);
@@ -164,7 +175,6 @@ public class NetworkConnection {
             Packet packet = this.queue.poll();
             while (packet != null) {
                 InboundPackets type = InboundPackets.get(this.state, packet.id);
-//                System.out.println("Packet in: " + Integer.toHexString(packet.id));
                 type.getHandler().accept(packet, this);
                 packet = this.queue.poll();
             }

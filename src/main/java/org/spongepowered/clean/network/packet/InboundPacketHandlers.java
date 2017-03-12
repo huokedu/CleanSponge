@@ -30,6 +30,7 @@ import static org.spongepowered.clean.network.packet.ProtocolState.STATUS;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.clean.Constants;
 import org.spongepowered.clean.SGame;
 import org.spongepowered.clean.network.NetworkConnection;
@@ -37,6 +38,7 @@ import org.spongepowered.clean.network.NetworkConnection.ConnectionState;
 import org.spongepowered.clean.network.packet.handshake.HandshakePacket;
 import org.spongepowered.clean.network.packet.login.EncryptionResponsePacket;
 import org.spongepowered.clean.network.packet.login.LoginStartPacket;
+import org.spongepowered.clean.network.packet.play.serverbound.ClientSettingsPacket;
 import org.spongepowered.clean.network.packet.play.serverbound.PlayerLookPacket;
 import org.spongepowered.clean.network.packet.play.serverbound.PlayerPositionAndLookPacket;
 import org.spongepowered.clean.network.packet.play.serverbound.PlayerPositionPacket;
@@ -46,11 +48,16 @@ import org.spongepowered.clean.network.packet.status.ResponsePacket;
 
 import java.security.PrivateKey;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.function.BiConsumer;
 
 import javax.crypto.Cipher;
 
 public class InboundPacketHandlers {
+
+    private static final BiConsumer<Packet, NetworkConnection> UNKNOWN = (p, c) -> {
+        System.out.println("Received unsupported packet " + p);
+    };
 
     public static final BiConsumer<Packet, NetworkConnection> HANDSHAKE = (p, c) -> {
         HandshakePacket packet = (HandshakePacket) p;
@@ -97,7 +104,7 @@ public class InboundPacketHandlers {
 //            c.sendPacket(new EncryptionRequestPacket("", SGame.game.getNetworkManager().getServerKeyPair().getPublic(), c.getVerifyToken()));
 //            c.updateConnState(ConnectionState.AUTHENTICATING);
 //        } else {
-            c.updateConnState(ConnectionState.COMPLETE_LOGIN);
+        c.updateConnState(ConnectionState.COMPLETE_LOGIN);
 //        }
     };
 
@@ -118,40 +125,37 @@ public class InboundPacketHandlers {
         }
     };
 
-    public static final BiConsumer<Packet, NetworkConnection> TELEPORT_CONFIRM = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> TELEPORT_CONFIRM = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> TAB_COMPLETE = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> TAB_COMPLETE = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> CHAT_MESSAGE = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> CHAT_MESSAGE = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> CLIENT_STATUS = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> CLIENT_STATUS = UNKNOWN;
 
     public static final BiConsumer<Packet, NetworkConnection> CLIENT_SETTINGS = (p, c) -> {
+        ClientSettingsPacket pk = (ClientSettingsPacket) p;
+        c.getPlayerEntity().setLocale(new Locale(pk.locale));
+        c.getPlayerEntity().getNetConnection().setViewDistance(pk.viewDistance);
+        // TODO: support other packet fields
+        // TODO: post PlayerChangeClientSettingsEvent
     };
 
-    public static final BiConsumer<Packet, NetworkConnection> CONFIRM_TRANSACTION = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> CONFIRM_TRANSACTION = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> ENCHANT_ITEM = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> ENCHANT_ITEM = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> CLICK_WINDOW = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> CLICK_WINDOW = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> CLOSE_WINDOW = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> CLOSE_WINDOW = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> PLUGIN_MESSAGE = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> PLUGIN_MESSAGE = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> USE_ENTITY = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> USE_ENTITY = UNKNOWN;
 
     public static final BiConsumer<Packet, NetworkConnection> KEEP_ALIVE = (p, c) -> {
+        // TODO: need to pass to net connection so it can know to not timeout
+        // the connection
     };
 
     public static final BiConsumer<Packet, NetworkConnection> PLAYER_POSITION = (p, c) -> {
@@ -169,49 +173,34 @@ public class InboundPacketHandlers {
         c.getPlayerEntity().updateLook(pk.yaw, pk.pitch);
     };
 
-    public static final BiConsumer<Packet, NetworkConnection> PLAYER = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> PLAYER = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> VEHICLE_MOVE = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> VEHICLE_MOVE = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> STEER_BOAT = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> STEER_BOAT = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> PLAYER_ABILITIES = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> PLAYER_ABILITIES = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> PLAYER_DIGGING = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> PLAYER_DIGGING = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> ENTITY_ACTION = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> ENTITY_ACTION = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> STEER_VEHICLE = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> STEER_VEHICLE = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> RESOURCE_PACK_STATUS = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> RESOURCE_PACK_STATUS = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> HELD_ITEM_CHANGE = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> HELD_ITEM_CHANGE = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> CREATIVE_INVENTORY_ACTION = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> CREATIVE_INVENTORY_ACTION = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> UPDATE_SIGN = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> UPDATE_SIGN = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> ANIMATION = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> ANIMATION = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> SPECTATE = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> SPECTATE = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> PLAYER_BLOCK_PLACEMENT = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> PLAYER_BLOCK_PLACEMENT = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> USE_ITEM = (p, c) -> {
-    };
+    public static final BiConsumer<Packet, NetworkConnection> USE_ITEM = UNKNOWN;
 
 }

@@ -26,7 +26,7 @@ package org.spongepowered.clean.network.packet.play.serverbound;
 
 import org.spongepowered.clean.network.packet.Packet;
 import org.spongepowered.clean.util.ByteBufUtil;
-
+import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 
 public class UseEntityPacket extends Packet {
@@ -64,6 +64,19 @@ public class UseEntityPacket extends Packet {
     @Override
     public void write(ByteBuf buffer) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", Integer.toHexString(this.id))
+                .add("target", this.target)
+                .add("type", this.type.name())
+                .add("x", this.x)
+                .add("y", this.y)
+                .add("z", this.z)
+                .add("hand", this.hand)
+                .toString();
     }
 
 }

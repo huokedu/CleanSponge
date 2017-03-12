@@ -58,7 +58,6 @@ public class PacketHandler extends SimpleChannelInboundHandler<Packet> {
             this.conn.queuePacket(msg);
         } else {
             InboundPackets packetType = InboundPackets.get(state, msg.id);
-            System.out.println("Packet in: " + Integer.toHexString(msg.id));
             if (packetType == null) {
                 return;
             }

@@ -69,6 +69,7 @@ import org.spongepowered.clean.world.SChunk;
 import org.spongepowered.clean.world.SWorld;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -76,8 +77,9 @@ import java.util.UUID;
 public class SPlayer extends SLiving implements Player {
 
     private final NetworkConnection connection;
-    private GameMode gamemode = GameModes.SURVIVAL;
-    private float yaw, pitch;
+    private GameMode                gamemode = GameModes.SURVIVAL;
+    private float                   yaw, pitch;
+    private Locale                  locale   = Locale.US;
 
     public SPlayer(SWorld world, UUID uid, NetworkConnection conn) {
         super(world);
@@ -146,6 +148,14 @@ public class SPlayer extends SLiving implements Player {
             this.chunk.addEntity(this);
             this.connection.updateChunks();
         }
+    }
+
+    public Locale getLocale() {
+        return this.locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 
     @Override

@@ -24,6 +24,7 @@
  */
 package org.spongepowered.clean.network.packet.play.serverbound;
 
+import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 import org.spongepowered.clean.network.packet.Packet;
 
@@ -47,6 +48,16 @@ public class SteerVehiclePacket extends Packet {
     @Override
     public void write(ByteBuf buffer) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", Integer.toHexString(this.id))
+                .add("sideways", this.sideways)
+                .add("forwards", this.forwards)
+                .add("flags", this.flags)
+                .toString();
     }
 
 }

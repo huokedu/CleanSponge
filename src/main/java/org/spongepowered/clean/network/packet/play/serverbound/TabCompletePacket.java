@@ -28,7 +28,7 @@ import org.spongepowered.clean.network.packet.Packet;
 import org.spongepowered.clean.util.ByteBufUtil;
 
 import com.flowpowered.math.vector.Vector3i;
-
+import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 
 public class TabCompletePacket extends Packet {
@@ -55,6 +55,17 @@ public class TabCompletePacket extends Packet {
     @Override
     public void write(ByteBuf buffer) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", Integer.toHexString(this.id))
+                .add("text", this.text)
+                .add("command", this.command)
+                .add("hasPosition", this.hasPosition)
+                .add("position", this.position)
+                .toString();
     }
 
 }

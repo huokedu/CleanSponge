@@ -24,6 +24,7 @@
  */
 package org.spongepowered.clean.network.packet.play.serverbound;
 
+import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 import org.spongepowered.clean.network.packet.Packet;
 
@@ -45,6 +46,15 @@ public class EnchantItemPacket extends Packet {
     @Override
     public void write(ByteBuf buffer) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", Integer.toHexString(this.id))
+                .add("windowid", this.windowid)
+                .add("enchantment", this.enchantment)
+                .toString();
     }
 
 }

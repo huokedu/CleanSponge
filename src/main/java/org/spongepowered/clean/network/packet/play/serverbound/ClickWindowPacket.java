@@ -27,7 +27,7 @@ package org.spongepowered.clean.network.packet.play.serverbound;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.clean.network.packet.Packet;
 import org.spongepowered.clean.util.ByteBufUtil;
-
+import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 
 public class ClickWindowPacket extends Packet {
@@ -71,6 +71,21 @@ public class ClickWindowPacket extends Packet {
     @Override
     public void write(ByteBuf buffer) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", Integer.toHexString(this.id))
+                .add("windowId", this.windowid)
+                .add("slot", this.slot)
+                .add("button", this.button)
+                .add("actionNumber", this.actionNumber)
+                .add("mod", this.mode)
+                .add("slotBlockId", this.slotBlockId)
+                .add("slotCount", this.slotCount)
+                .add("slotDamage", this.slotDamage)
+                .toString();
     }
 
 }

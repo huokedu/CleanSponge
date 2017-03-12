@@ -28,7 +28,7 @@ import org.spongepowered.clean.network.packet.Packet;
 import org.spongepowered.clean.util.ByteBufUtil;
 
 import com.flowpowered.math.vector.Vector3i;
-
+import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 
 public class PlayerBlockPlacementPacket extends Packet {
@@ -55,6 +55,19 @@ public class PlayerBlockPlacementPacket extends Packet {
     @Override
     public void write(ByteBuf buffer) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", Integer.toHexString(this.id))
+                .add("position", this.position)
+                .add("face", this.face)
+                .add("hand", this.hand)
+                .add("cursorx", this.cursorx)
+                .add("cursory", this.cursory)
+                .add("cursorz", this.cursorz)
+                .toString();
     }
 
 }

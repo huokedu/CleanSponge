@@ -28,7 +28,7 @@ import org.spongepowered.clean.network.packet.Packet;
 import org.spongepowered.clean.util.ByteBufUtil;
 
 import com.flowpowered.math.vector.Vector3i;
-
+import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 
 public class UpdateSignPacket extends Packet {
@@ -52,6 +52,18 @@ public class UpdateSignPacket extends Packet {
     @Override
     public void write(ByteBuf buffer) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", Integer.toHexString(this.id))
+                .add("position", this.position)
+                .add("line0", this.lines[0])
+                .add("line1", this.lines[1])
+                .add("line2", this.lines[2])
+                .add("line3", this.lines[3])
+                .toString();
     }
 
 }
