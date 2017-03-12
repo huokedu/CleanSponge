@@ -88,11 +88,13 @@ public class SWorldGenerator implements WorldGenerator {
                     if (blocks.getBlock(cx * 16 + x, y, cz * 16 + z).getType() == BlockTypes.STONE) {
                         for (GroundCoverLayer gcl : settings.getGroundCoverLayers()) {
                             int depth = gcl.getDepth().getFlooredAmount(rand, 0.0);
-                            for (int y0 = y; y >= y0 - depth; y--) {
-                                blocks.setBlock(cx * 16 + x, y0, cz * 16 + z, gcl.getBlockState().apply(0.0), null);
+                            for (int y0 = y; y > y0 - depth; y--) {
+                                blocks.setBlock(cx * 16 + x, y, cz * 16 + z, gcl.getBlockState().apply(0.0), null);
                             }
                         }
                         break groundcover;
+                    } else if(y <= 64) {
+                        blocks.setBlock(cx * 16 + x, y, cz * 16 + z, BlockTypes.WATER.getDefaultState(), null);
                     }
                 }
             }

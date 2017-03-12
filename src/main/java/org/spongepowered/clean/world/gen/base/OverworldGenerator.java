@@ -45,15 +45,13 @@ public class OverworldGenerator implements GenerationPopulator {
     private final SWorld world;
     private final SWorldGenerator worldgen;
     private NoiseGenerator noise1;
-    private NoiseGenerator noise2;
     private Random rand;
     private MutableBiomeVolume mbiomes;
 
     public OverworldGenerator(SWorld world, SWorldGenerator worldgen) {
         this.world = world;
         this.rand = new Random(world.getProperties().getSeed());
-        this.noise1 = new NoiseGenerator(this.rand, 4, 0.45, 0.002);
-        this.noise2 = new NoiseGenerator(this.rand, 8, 0.45, 0.004);
+        this.noise1 = new NoiseGenerator(this.rand, 8, 0.45, 0.002);
         this.worldgen = worldgen;
     }
 
@@ -73,7 +71,7 @@ public class OverworldGenerator implements GenerationPopulator {
         for (int x0 = 0; x0 < 16; x0++) {
             for (int z0 = 0; z0 < 16; z0++) {
                 double heightnoise = this.noise1.getNoise(x + x0 + 915375, z + z0 + 915375);
-                int maxheight = SimplexNoise.fastfloor(heightnoise * 64 + 96);
+                int maxheight = SimplexNoise.fastfloor(heightnoise * 96 + 64);
                 BiomeType biome = BiomeTypes.PLAINS;
                 if (maxheight < 64) {
                     biome = BiomeTypes.OCEAN;
@@ -88,15 +86,8 @@ public class OverworldGenerator implements GenerationPopulator {
                 for (int y = 255; y >= 0; y--) {
                     if (y == 0 || y < this.rand.nextInt(5)) {
                         buffer.setBlock(x0 + x, y, z0 + z, BlockTypes.BEDROCK.getDefaultState(), null);
-                    } else if (y < maxheight) {
-                        double bias = 0;
-                        if (y < 64) {
-                            bias = Maths.clamp((48 - y) / 64.0, 0, 1);
-                        }
-                        double noise = this.noise2.getNoise(x + x0, y, z + z0);
-                        if (noise + bias > 0) {
-                            buffer.setBlock(x0 + x, y, z0 + z, BlockTypes.STONE.getDefaultState(), null);
-                        }
+                    } else if (y <= maxheight) {
+                        buffer.setBlock(x0 + x, y, z0 + z, BlockTypes.STONE.getDefaultState(), null);
                     }
                 }
             }

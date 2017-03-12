@@ -45,7 +45,7 @@ public class SBiomeType extends AbstractCatalogType implements BiomeType {
     }
 
     private final BiomeGenerationSettings base;
-    private final int biomeId;
+    private final int                     biomeId;
 
     public SBiomeType(String id, String name, int biomeId, BiomeGenerationSettings base) {
         super(id, name);
@@ -87,7 +87,8 @@ public class SBiomeType extends AbstractCatalogType implements BiomeType {
                 new SBiomeGenerationSettingsBuilder()
                 .minHeight(68)
                 .maxHeight(78)
-                .groundCover(new GroundCoverLayer(BlockTypes.GRASS.getDefaultState(), fixed(1)))
+                .groundCover(new GroundCoverLayer(BlockTypes.GRASS.getDefaultState(), fixed(1)),
+                        new GroundCoverLayer(BlockTypes.DIRT.getDefaultState(), fixed(3)))
                 .build()));
         registry.register(new SBiomeType("minecraft:desert", "Desert", 2, new SBiomeGenerationSettingsBuilder().build()));
         registry.register(new SBiomeType("minecraft:extreme_hills", "Extreme Hills", 3,
@@ -107,7 +108,9 @@ public class SBiomeType extends AbstractCatalogType implements BiomeType {
         registry.register(new SBiomeType("minecraft:ice_mountains", "Ice Mountains", 13, new SBiomeGenerationSettingsBuilder().build()));
         registry.register(new SBiomeType("minecraft:mushroom_island", "Mushroom Island", 14, new SBiomeGenerationSettingsBuilder().build()));
         registry.register(new SBiomeType("minecraft:mushroom_island_shore", "Mushroom Island Shore", 15, new SBiomeGenerationSettingsBuilder().build()));
-        registry.register(new SBiomeType("minecraft:beaches", "Beaches", 16, new SBiomeGenerationSettingsBuilder().build()));
+        registry.register(new SBiomeType("minecraft:beaches", "Beaches", 16, new SBiomeGenerationSettingsBuilder()
+                .groundCover(new GroundCoverLayer(BlockTypes.SAND.getDefaultState(), fixed(3)))
+                .build()));
         registry.register(new SBiomeType("minecraft:desert_hills", "Desert Hills", 17, new SBiomeGenerationSettingsBuilder().build()));
         registry.register(new SBiomeType("minecraft:forest_hills", "Forest Hills", 18, new SBiomeGenerationSettingsBuilder().build()));
         registry.register(new SBiomeType("minecraft:taiga_hills", "Taiga Hills", 19, new SBiomeGenerationSettingsBuilder().build()));
