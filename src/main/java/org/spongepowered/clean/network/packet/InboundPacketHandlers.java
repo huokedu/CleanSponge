@@ -31,6 +31,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.SpongeEventFactory;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.clean.Constants;
 import org.spongepowered.clean.SGame;
 import org.spongepowered.clean.network.NetworkConnection;
@@ -132,6 +133,8 @@ public class InboundPacketHandlers {
 
     public static final BiConsumer<Packet, NetworkConnection> CHAT_MESSAGE = (p, c) -> {
         ChatMessagePacket pk = (ChatMessagePacket) p;
+        // TODO: throw proper event for formatting
+        Sponge.getServer().getBroadcastChannel().send(Text.of("<" + c.getName() + "> " + pk.text));
     };
 
     public static final BiConsumer<Packet, NetworkConnection> CLIENT_STATUS = UNKNOWN;

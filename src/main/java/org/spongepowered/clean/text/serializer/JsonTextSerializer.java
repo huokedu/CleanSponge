@@ -24,6 +24,7 @@
  */
 package org.spongepowered.clean.text.serializer;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.spongepowered.api.text.LiteralText;
 import org.spongepowered.api.text.Text;
@@ -31,19 +32,30 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextParseException;
 import org.spongepowered.api.text.serializer.TextSerializer;
 
-public class JsonTextSerializer implements TextSerializer{
+public class JsonTextSerializer implements TextSerializer {
 
     @Override
     public String serialize(Text text) {
+        return toJson(text).toString();
+    }
+
+    private JsonObject toJson(Text text) {
         JsonObject obj = new JsonObject();
-        if(text instanceof LiteralText) {
+        if (text instanceof LiteralText) {
             LiteralText t = (LiteralText) text;
-            if(t.getFormat().getColor() != TextColors.NONE) {
+            if (t.getFormat().getColor() != TextColors.NONE) {
                 obj.addProperty("color", t.getFormat().getColor().getId());
             }
             obj.addProperty("text", t.getContent());
+            if(!text.getChildren().isEmpty()) {
+                JsonArray extra = new JsonArray();
+                for (Text child : text.getChildren()) {
+                    extra.add(toJson(child));
+                }
+                obj.add("extra", extra);
+            }
         }
-        return obj.toString();
+        return obj;
     }
 
     @Override
