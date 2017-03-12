@@ -59,12 +59,15 @@ import org.spongepowered.api.text.BookView;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.chat.ChatType;
+import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.chat.ChatVisibility;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.text.title.Title;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.clean.entity.living.SLiving;
 import org.spongepowered.clean.network.NetworkConnection;
 import org.spongepowered.clean.network.packet.Packet;
+import org.spongepowered.clean.network.packet.play.clientbound.ChatMessagePacket;
 import org.spongepowered.clean.world.SChunk;
 import org.spongepowered.clean.world.SWorld;
 
@@ -77,9 +80,9 @@ import java.util.UUID;
 public class SPlayer extends SLiving implements Player {
 
     private final NetworkConnection connection;
-    private GameMode                gamemode = GameModes.SURVIVAL;
-    private float                   yaw, pitch;
-    private Locale                  locale   = Locale.US;
+    private GameMode gamemode = GameModes.SURVIVAL;
+    private float yaw, pitch;
+    private Locale locale = Locale.US;
 
     public SPlayer(SWorld world, UUID uid, NetworkConnection conn) {
         super(world);
@@ -262,8 +265,7 @@ public class SPlayer extends SLiving implements Player {
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.connection.getName();
     }
 
     @Override
@@ -345,12 +347,6 @@ public class SPlayer extends SLiving implements Player {
     }
 
     @Override
-    public void sendMessage(Text message) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public MessageChannel getMessageChannel() {
         // TODO Auto-generated method stub
         return null;
@@ -417,9 +413,14 @@ public class SPlayer extends SLiving implements Player {
     }
 
     @Override
-    public void sendMessage(ChatType type, Text message) {
-        // TODO Auto-generated method stub
+    public void sendMessage(Text message) {
+        sendMessage(ChatTypes.CHAT, message);
+    }
 
+    @Override
+    public void sendMessage(ChatType type, Text message) {
+        String json = TextSerializers.JSON.serialize(message);
+        this.connection.sendPacket(new ChatMessagePacket(json, type));
     }
 
     @Override

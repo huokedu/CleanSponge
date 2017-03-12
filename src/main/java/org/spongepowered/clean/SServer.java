@@ -26,15 +26,7 @@ package org.spongepowered.clean;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-
+import com.google.common.collect.ImmutableMap;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.source.ConsoleSource;
@@ -44,7 +36,9 @@ import org.spongepowered.api.profile.GameProfileManager;
 import org.spongepowered.api.resourcepack.ResourcePack;
 import org.spongepowered.api.scoreboard.Scoreboard;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.channel.AbstractMutableMessageChannel;
 import org.spongepowered.api.text.channel.MessageChannel;
+import org.spongepowered.api.text.channel.impl.SimpleMutableMessageChannel;
 import org.spongepowered.api.world.ChunkTicketManager;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.WorldArchetype;
@@ -52,6 +46,7 @@ import org.spongepowered.api.world.WorldArchetypes;
 import org.spongepowered.api.world.storage.ChunkLayout;
 import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.clean.config.ServerProperties;
+import org.spongepowered.clean.entity.player.SPlayer;
 import org.spongepowered.clean.scheduler.CoreScheduler;
 import org.spongepowered.clean.scheduler.condition.TaskCondition;
 import org.spongepowered.clean.scheduler.condition.TasksCompleteCondition;
@@ -59,13 +54,22 @@ import org.spongepowered.clean.world.SWorld;
 import org.spongepowered.clean.world.SWorldProperties;
 import org.spongepowered.clean.world.storage.SaveHandler;
 
-import com.google.common.collect.ImmutableMap;
+import java.io.File;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class SServer implements Server {
 
+    private ServerProperties properties;
+
     private ImmutableMap<String, Player> online_players = ImmutableMap.of();
     private ImmutableMap<UUID, Player> online_players_uid = ImmutableMap.of();
-    private ServerProperties properties;
+    private MessageChannel broadcastChannel = new SimpleMutableMessageChannel();
 
     private ImmutableMap<String, World> worlds = ImmutableMap.of();
     private ImmutableMap<String, WorldProperties> unloaded_worlds = ImmutableMap.of();
@@ -111,6 +115,16 @@ public class SServer implements Server {
         }
 
         return new TasksCompleteCondition();
+    }
+
+    public void addPlayer(SPlayer player) {
+        synchronized (this.online_players) {
+            if (this.broadcastChannel instanceof AbstractMutableMessageChannel) {
+                ((AbstractMutableMessageChannel) this.broadcastChannel).addMember(player);
+            }
+            this.online_players = ImmutableMap.<String, Player>builder().putAll(this.online_players).put(player.getName(), player).build();
+            this.online_players_uid = ImmutableMap.<UUID, Player>builder().putAll(this.online_players_uid).put(player.getUniqueId(), player).build();
+        }
     }
 
     public ServerProperties getServerProperties() {
@@ -295,14 +309,12 @@ public class SServer implements Server {
 
     @Override
     public MessageChannel getBroadcastChannel() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.broadcastChannel;
     }
 
     @Override
     public void setBroadcastChannel(MessageChannel channel) {
-        // TODO Auto-generated method stub
-
+        this.broadcastChannel = channel;
     }
 
     @Override

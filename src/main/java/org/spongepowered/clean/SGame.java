@@ -77,20 +77,20 @@ public class SGame implements Game {
     }
 
     private GameState state = GameState.CONSTRUCTION;
-    private Platform platform = new SPlatform();
-    private Server server = new SServer();
-    private PluginManager pluginManager = new SPluginManager();
-    private EventManager eventManager = new SEventManager();
-    private AssetManager assetManager = new SAssetManager();
-    private GameRegistry gameRegistry = new SGameRegistry();
-    private GameDictionary gameDictionary = new SGameDictionary();
-    private ServiceManager serviceManager = new SServiceManager();
-    private Scheduler scheduler = new SScheduler();
-    private DataManager dataManager = new SDataManager();
-    private PropertyRegistry propertyRegistry = new SPropertyRegistry();
-    private CommandManager commandManager = new SCommandManager();
-    private DimensionManager dimManager = new DimensionManager();
-    private NetworkManager network = new NetworkManager();
+    public SPlatform platform = new SPlatform();
+    public SServer server = new SServer();
+    public SPluginManager pluginManager = new SPluginManager();
+    public SEventManager eventManager = new SEventManager();
+    public SAssetManager assetManager = new SAssetManager();
+    public SGameRegistry gameRegistry = new SGameRegistry();
+    public SGameDictionary gameDictionary = new SGameDictionary();
+    public SServiceManager serviceManager = new SServiceManager();
+    public SScheduler scheduler = new SScheduler();
+    public SDataManager dataManager = new SDataManager();
+    public SPropertyRegistry propertyRegistry = new SPropertyRegistry();
+    public SCommandManager commandManager = new SCommandManager();
+    public DimensionManager dimManager = new DimensionManager();
+    public NetworkManager network = new NetworkManager();
 
     private final Logger logger = LogManager.getLogger("Sponge");
 

@@ -28,6 +28,7 @@ import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
@@ -58,6 +59,7 @@ import org.spongepowered.api.text.BookView;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.chat.ChatType;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.title.Title;
 import org.spongepowered.api.util.AABB;
 import org.spongepowered.api.util.Direction;
@@ -162,13 +164,14 @@ public class SWorld implements World {
         for (Iterator<SPlayer> it = this.joiningPlayers.iterator(); it.hasNext();) {
             SPlayer player = it.next();
             it.remove();
-            System.out.println("Adding player to world");
             this.allEntities.add(player);
             SChunk chunk = getOrLoadChunk(player.getChunkX(), player.getChunkZ());
             chunk.addEntity(player);
             player.setCurrentChunk(chunk);
             player.setEntityId(this.entityid++);
             player.getNetConnection().joinGame();
+            SGame.game.server.addPlayer(player);
+            Sponge.getServer().getBroadcastChannel().send(Text.of(TextColors.YELLOW, player.getName() + " has joined the game."));
         }
 
         for (SChunk c : this.toAdd) {

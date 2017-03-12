@@ -36,6 +36,9 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.chat.ChatTypes;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.clean.Constants;
 import org.spongepowered.clean.SGame;
 import org.spongepowered.clean.SServer;
@@ -113,6 +116,10 @@ public class NetworkConnection {
         this.viewDistance = viewDistance;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     public void setChannel(Channel channel) {
         this.channel = channel;
         this.channel.attr(PROTOCOL_STATE_KEY).set(this.state);
@@ -163,7 +170,7 @@ public class NetworkConnection {
             sendPacket(new LoginSuccessPacket(this.uid, this.name));
             changeState(ProtocolState.PLAY);
             this.conn_state = ConnectionState.JOINING;
-            SGame.getLogger().info("Player " + this.name + " joining to world " + Sponge.getServer().getDefaultWorldName());
+            SGame.getLogger().info("Player [" + this.name + "] joining to world \"" + Sponge.getServer().getDefaultWorldName() + "\"");
             SWorld world = (SWorld) Sponge.getServer().getWorld(Sponge.getServer().getDefaultWorldName()).get();
             this.player = new SPlayer(world, this.uid, this);
             world.addJoiningPlayer(this.player);
@@ -208,7 +215,6 @@ public class NetworkConnection {
     }
 
     public void setName(String name) {
-        System.out.println("Set name to " + name);
         this.name = name;
     }
 
@@ -222,7 +228,6 @@ public class NetworkConnection {
         this.player.sendPacket(new ServerDifficultyPacket(world.getDifficulty()));
         this.player.sendPacket(new PlayerAbilitiesPacket((byte) 0xF, 0.1f, 0));
         this.player.sendPacket(new HeldItemChangePacket((byte) 0));
-        this.player.sendPacket(new ChatMessagePacket("{\"text\":\"Welcome!\"}", ChatMessagePacket.Position.CHAT));
         updateChunks();
         SChunk c = world.getOrLoadChunk(0, 0);
         this.player.sendPacket(new PlayerPositionAndLookPacket(0, c.getHeight(0, 0), 0, 0, 0, (byte) 0, 1));

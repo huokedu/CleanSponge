@@ -24,21 +24,21 @@
  */
 package org.spongepowered.clean.util;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
-import org.spongepowered.api.data.DataContainer;
-import org.spongepowered.api.data.DataView;
-import org.spongepowered.api.util.Direction;
-import org.spongepowered.clean.SGame;
-
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.base.Charsets;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
+import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.text.chat.ChatType;
+import org.spongepowered.api.text.chat.ChatTypes;
+import org.spongepowered.api.util.Direction;
+import org.spongepowered.clean.SGame;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 public class ByteBufUtil {
 
@@ -178,6 +178,16 @@ public class ByteBufUtil {
         } catch (IOException e) {
             SGame.getLogger().error("Error writing nbt to network stream");
             e.printStackTrace();
+        }
+    }
+
+    public static void writeChatType(ByteBuf buffer, ChatType chat) {
+        if (chat == ChatTypes.CHAT) {
+            buffer.writeByte(0);
+        } else if (chat == ChatTypes.SYSTEM) {
+            buffer.writeByte(1);
+        } else if (chat == ChatTypes.ACTION_BAR) {
+            buffer.writeByte(2);
         }
     }
 }

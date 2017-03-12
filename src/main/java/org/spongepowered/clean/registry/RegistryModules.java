@@ -47,6 +47,7 @@ import org.spongepowered.api.scoreboard.CollisionRule;
 import org.spongepowered.api.statistic.achievement.Achievement;
 import org.spongepowered.api.text.chat.ChatType;
 import org.spongepowered.api.text.chat.ChatVisibility;
+import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.util.ban.BanType;
 import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.GeneratorType;
@@ -76,6 +77,8 @@ import org.spongepowered.clean.item.type.SCoalType;
 import org.spongepowered.clean.scoreboard.type.SCollisionRule;
 import org.spongepowered.clean.service.ban.SBanType;
 import org.spongepowered.clean.statistic.SAchievement;
+import org.spongepowered.clean.text.format.STextColor;
+import org.spongepowered.clean.text.serializer.STextSerializer;
 import org.spongepowered.clean.text.type.SChatType;
 import org.spongepowered.clean.text.type.SChatVisibility;
 import org.spongepowered.clean.world.SDifficulty;
@@ -117,7 +120,10 @@ public class RegistryModules {
         reg.registerModule(GeneratorType.class, new FixedCatalogRegistryModule<>(GeneratorType.class, SGeneratorType::registerTypes));
         reg.registerModule(HandType.class, new FixedCatalogRegistryModule<>(HandType.class, SHandType::registerTypes));
         reg.registerModule(PopulatorType.class, new FixedCatalogRegistryModule<>(PopulatorType.class, SPopulatorType::registerTypes));
+        reg.registerModule(TextColor.class, new FixedCatalogRegistryModule<>(TextColor.class, STextColor::registerTypes));
         reg.registerModule(TileEntityType.class, new FixedCatalogRegistryModule<>(TileEntityType.class, STileEntityType::registerTypes));
+
+        STextSerializer.registerTypes();
     }
 
     public static void registerLateModules() {

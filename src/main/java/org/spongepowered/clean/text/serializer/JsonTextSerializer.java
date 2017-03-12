@@ -22,33 +22,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.network.packet.play.clientbound;
+package org.spongepowered.clean.text.serializer;
 
-import io.netty.buffer.ByteBuf;
-import org.spongepowered.clean.util.ByteBufUtil;
-import org.spongepowered.api.text.chat.ChatType;
-import org.spongepowered.clean.network.packet.Packet;
+import com.google.gson.JsonObject;
+import org.spongepowered.api.text.LiteralText;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.serializer.TextParseException;
+import org.spongepowered.api.text.serializer.TextSerializer;
 
-public class ChatMessagePacket extends Packet {
+public class JsonTextSerializer implements TextSerializer{
 
-    public String chat;
-    public ChatType position;
-
-    public ChatMessagePacket(String json, ChatType pos) {
-        this.id = 0x0F;
-        this.chat = json;
-        this.position = pos;
+    @Override
+    public String serialize(Text text) {
+        JsonObject obj = new JsonObject();
+        if(text instanceof LiteralText) {
+            LiteralText t = (LiteralText) text;
+            if(t.getFormat().getColor() != TextColors.NONE) {
+                obj.addProperty("color", t.getFormat().getColor().getId());
+            }
+            obj.addProperty("text", t.getContent());
+        }
+        return obj.toString();
     }
 
     @Override
-    public void read(ByteBuf buffer) {
+    public Text deserialize(String input) throws TextParseException {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void write(ByteBuf buffer) {
-        ByteBufUtil.writeString(buffer, this.chat);
-        ByteBufUtil.writeChatType(buffer, this.position);
     }
 
 }

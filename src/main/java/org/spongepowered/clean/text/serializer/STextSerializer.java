@@ -22,33 +22,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.network.packet.play.clientbound;
+package org.spongepowered.clean.text.serializer;
 
-import io.netty.buffer.ByteBuf;
-import org.spongepowered.clean.util.ByteBufUtil;
-import org.spongepowered.api.text.chat.ChatType;
-import org.spongepowered.clean.network.packet.Packet;
+import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.clean.scheduler.CoreScheduler;
 
-public class ChatMessagePacket extends Packet {
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
-    public String chat;
-    public ChatType position;
+public class STextSerializer {
 
-    public ChatMessagePacket(String json, ChatType pos) {
-        this.id = 0x0F;
-        this.chat = json;
-        this.position = pos;
+    public static void registerTypes() {
+        try {
+            Field json = TextSerializers.class.getField("JSON");
+            set(json, new JsonTextSerializer());
+        } catch (NoSuchFieldException | SecurityException e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
-    public void read(ByteBuf buffer) {
-        throw new UnsupportedOperationException();
-    }
+    private static void set(Field field, Object type) {
+        try {
+            field.setAccessible(true);
 
-    @Override
-    public void write(ByteBuf buffer) {
-        ByteBufUtil.writeString(buffer, this.chat);
-        ByteBufUtil.writeChatType(buffer, this.position);
-    }
+            Field modifiersField = Field.class.getDeclaredField("modifiers");
+            modifiersField.setAccessible(true);
+            modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
 
+            field.set(null, type);
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+            CoreScheduler.emergencyShutdown(e);
+        }
+    }
 }

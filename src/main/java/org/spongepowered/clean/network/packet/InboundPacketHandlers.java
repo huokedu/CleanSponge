@@ -38,6 +38,7 @@ import org.spongepowered.clean.network.NetworkConnection.ConnectionState;
 import org.spongepowered.clean.network.packet.handshake.HandshakePacket;
 import org.spongepowered.clean.network.packet.login.EncryptionResponsePacket;
 import org.spongepowered.clean.network.packet.login.LoginStartPacket;
+import org.spongepowered.clean.network.packet.play.serverbound.ChatMessagePacket;
 import org.spongepowered.clean.network.packet.play.serverbound.ClientSettingsPacket;
 import org.spongepowered.clean.network.packet.play.serverbound.PlayerLookPacket;
 import org.spongepowered.clean.network.packet.play.serverbound.PlayerPositionAndLookPacket;
@@ -129,7 +130,9 @@ public class InboundPacketHandlers {
 
     public static final BiConsumer<Packet, NetworkConnection> TAB_COMPLETE = UNKNOWN;
 
-    public static final BiConsumer<Packet, NetworkConnection> CHAT_MESSAGE = UNKNOWN;
+    public static final BiConsumer<Packet, NetworkConnection> CHAT_MESSAGE = (p, c) -> {
+        ChatMessagePacket pk = (ChatMessagePacket) p;
+    };
 
     public static final BiConsumer<Packet, NetworkConnection> CLIENT_STATUS = UNKNOWN;
 

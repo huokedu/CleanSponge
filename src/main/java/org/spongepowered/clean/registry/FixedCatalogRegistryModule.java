@@ -50,6 +50,7 @@ public class FixedCatalogRegistryModule<T extends CatalogType> implements Catalo
     private Class<?>[] catalog;
     private String defaultNamespace = "minecraft";
     private boolean defaultsRegistered = false;
+    private boolean requiresNamespace = true;
 
     public FixedCatalogRegistryModule(Class<T> type, Consumer<FixedCatalogRegistryModule<T>> reg) {
         this.type = type;
@@ -64,6 +65,9 @@ public class FixedCatalogRegistryModule<T extends CatalogType> implements Catalo
 
     public void setDefaultNamespace(String ns) {
         this.defaultNamespace = ns;
+        if (ns.isEmpty()) {
+            this.requiresNamespace = false;
+        }
     }
 
     @Override
@@ -82,7 +86,7 @@ public class FixedCatalogRegistryModule<T extends CatalogType> implements Catalo
             throw new IllegalStateException("Cannot register to fixed catalog registry outside of registration time.");
         }
         String id = type.getId();
-        if (!id.contains(":")) {
+        if (!id.contains(":") && this.requiresNamespace) {
             throw new IllegalArgumentException("catalog type id had no namespace");
         }
         this.types.put(id, type);
@@ -117,7 +121,7 @@ public class FixedCatalogRegistryModule<T extends CatalogType> implements Catalo
             for (Field f : c.getDeclaredFields()) {
                 if (f.getType().equals(this.type) && Modifier.isStatic(f.getModifiers())) {
                     Optional<T> type = getById(f.getName().toLowerCase());
-                    if (!type.isPresent()) {
+                    if (!type.isPresent() && !this.defaultNamespace.isEmpty()) {
                         type = getById(this.defaultNamespace + ":" + f.getName().toLowerCase());
                     }
                     // TODO attempt get any regardless of namespace
