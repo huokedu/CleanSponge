@@ -37,21 +37,24 @@ public class WorldInitTask extends Task {
 
     @Override
     protected void execute() {
+
+        SGame.game.pluginManager.doLoad();
+
         SGame.game.updateState(GameState.CONSTRUCTION);
-        Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.CONSTRUCTION));
+        Sponge.getEventManager().post(SpongeEventFactory.createGameConstructionEvent(SGame.game.getImplementationCause()));
         SGame.game.updateState(GameState.PRE_INITIALIZATION);
-        Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.PRE_INITIALIZATION));
+        Sponge.getEventManager().post(SpongeEventFactory.createGamePreInitializationEvent(SGame.game.getImplementationCause()));
         SGame.game.updateState(GameState.INITIALIZATION);
-        Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.INITIALIZATION));
+        Sponge.getEventManager().post(SpongeEventFactory.createGameInitializationEvent(SGame.game.getImplementationCause()));
         SGame.game.updateState(GameState.POST_INITIALIZATION);
-        Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.POST_INITIALIZATION));
+        Sponge.getEventManager().post(SpongeEventFactory.createGamePostInitializationEvent(SGame.game.getImplementationCause()));
         SGame.game.updateState(GameState.SERVER_ABOUT_TO_START);
-        Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.SERVER_ABOUT_TO_START));
+        Sponge.getEventManager().post(SpongeEventFactory.createGameAboutToStartServerEvent(SGame.game.getImplementationCause()));
         SGame.game.updateState(GameState.SERVER_STARTING);
-        Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.SERVER_STARTING));
+        Sponge.getEventManager().post(SpongeEventFactory.createGameStartingServerEvent(SGame.game.getImplementationCause()));
         SGame.game.getDimensionManager().init();
         ((SServer) Sponge.getServer()).findAllWorlds();
-        SGame.getLogger().info("Located " + Sponge.getServer().getUnloadedWorlds().size() + " worlds");
+        SGame.getLogger().info("Located " + Sponge.getServer().getUnloadedWorlds().size() + " worlds.");
         TaskCondition condition = ((SServer) Sponge.getServer()).loadStartupWorlds();
         CoreScheduler.addNormalTask(new NetworkInitTask(), condition);
     }

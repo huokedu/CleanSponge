@@ -24,27 +24,65 @@
  */
 package org.spongepowered.clean.plugin;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.plugin.PluginManager;
+import org.spongepowered.clean.SGame;
+import org.spongepowered.clean.plugin.inject.PluginModule;
+import org.spongepowered.clean.plugin.inject.RootModule;
+
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.plugin.PluginManager;
-import org.spongepowered.clean.SGame;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 public class SPluginManager implements PluginManager {
 
-    private final Map<String, PluginContainer> pluginsById = Maps.newHashMap();
-    private final Map<Object, PluginContainer> pluginsByInstance = Maps.newHashMap();
+    private Map<String, PluginContainer> pluginsById = ImmutableMap.of();
+    private Map<Object, PluginContainer> pluginsByInstance = ImmutableMap.of();
+
+    private List<PluginCandidate> candidates = new ArrayList<>();
 
     public SPluginManager() {
+    }
 
+    public void addCandidate(PluginCandidate candidate) {
+        synchronized (this.candidates) {
+            this.candidates.add(candidate);
+        }
+    }
+
+    public void doLoad() {
+        synchronized (this.candidates) {
+            SGame.getLogger().info("Loading " + this.candidates.size() + " plugins.");
+            ImmutableMap.Builder<String, PluginContainer> newPlugins = ImmutableMap.builder();
+            ImmutableMap.Builder<Object, PluginContainer> newPluginInstances = ImmutableMap.builder();
+            Injector rootInjector = Guice.createInjector(new RootModule());
+            for (PluginCandidate candidate : this.candidates) {
+                try {
+                    SGame.getLogger().info("Loading plugin " + candidate.getId());
+                    Class<?> main = Class.forName(candidate.getPluginClass());
+                    SPluginContainer container = new SPluginContainer(candidate.getId());
+                    Injector injector = rootInjector.createChildInjector(new PluginModule(container));
+                    Object instance = injector.getInstance(main);
+                    Sponge.getEventManager().registerListeners(container, instance);
+                    newPlugins.put(candidate.getId(), container);
+                    newPluginInstances.put(instance, container);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    continue;
+                }
+            }
+            this.pluginsById = newPlugins.build();
+            this.pluginsByInstance = newPluginInstances.build();
+        }
     }
 
     @Override

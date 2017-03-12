@@ -22,48 +22,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.event;
+package org.spongepowered.clean.plugin.inject;
 
-import org.spongepowered.api.event.Event;
-import org.spongepowered.api.event.EventListener;
-import org.spongepowered.api.event.Order;
+import com.google.inject.AbstractModule;
+import org.slf4j.Logger;
 import org.spongepowered.api.plugin.PluginContainer;
 
-public class RegisteredListener {
+public class PluginModule extends AbstractModule {
 
-    private final Order order;
-    private final Object owner;
-    private final EventListener<?> listener;
-    private final PluginContainer plugin;
-    private final Class<? extends Event> type;
+    private final PluginContainer container;
 
-    public RegisteredListener(PluginContainer pl, EventListener<?> listener, Object owner, Order order, Class<? extends Event> type) {
-        this.order = order;
-        this.owner = owner;
-        this.listener = listener;
-        this.plugin = pl;
-        this.type = type;
+    public PluginModule(PluginContainer container) {
+        this.container = container;
     }
 
-    public Order getOrder() {
-        return this.order;
-    }
-
-    public Object getOwner() {
-        return this.owner;
-    }
-
-    @SuppressWarnings("rawtypes")
-    public EventListener getListener() {
-        return this.listener;
-    }
-
-    public PluginContainer getPlugin() {
-        return this.plugin;
-    }
-
-    public Class<? extends Event> getEventType() {
-        return this.type;
+    @Override
+    protected void configure() {
+        bind(PluginContainer.class).toInstance(this.container);
+        bind(Logger.class).toInstance(this.container.getLogger());
     }
 
 }

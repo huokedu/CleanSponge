@@ -40,7 +40,7 @@ public class NetworkInitTask extends Task {
         SGame.game.commandManager.startListener();
 
         SGame.game.updateState(GameState.SERVER_STARTED);
-        Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.SERVER_STARTED));
+        Sponge.getEventManager().post(SpongeEventFactory.createGameStartedServerEvent(SGame.game.getImplementationCause()));
         CoreScheduler.addHighTask(new GameTickTask());
     }
 

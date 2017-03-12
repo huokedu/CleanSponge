@@ -22,35 +22,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.init;
+package org.spongepowered.clean.plugin.inject;
 
-import org.spongepowered.api.GameState;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.event.SpongeEventFactory;
+import com.google.inject.AbstractModule;
+import org.spongepowered.api.Game;
 import org.spongepowered.clean.SGame;
-import org.spongepowered.clean.scheduler.CoreScheduler;
-import org.spongepowered.clean.scheduler.Task;
 
-public class ShutdownTask extends Task {
+public class RootModule extends AbstractModule {
 
     @Override
-    public void execute() {
-        System.out.println("Shutdown");
-        SGame.game.commandManager.stopListener();
-        SGame.game.updateState(GameState.SERVER_STOPPING);
-        Sponge.getEventManager().post(SpongeEventFactory.createGameStoppingServerEvent(SGame.game.getImplementationCause()));
-
-        // TODO save worlds
-
-        SGame.game.getNetworkManager().shutdown();
-        SGame.game.updateState(GameState.SERVER_STOPPED);
-        Sponge.getEventManager().post(SpongeEventFactory.createGameStoppedServerEvent(SGame.game.getImplementationCause()));
-        SGame.game.updateState(GameState.GAME_STOPPING);
-        Sponge.getEventManager().post(SpongeEventFactory.createGameStoppingEvent(SGame.game.getImplementationCause()));
-        SGame.game.updateState(GameState.GAME_STOPPED);
-        Sponge.getEventManager().post(SpongeEventFactory.createGameStoppedEvent(SGame.game.getImplementationCause()));
-
-        CoreScheduler.shutdown();
+    protected void configure() {
+        bind(Game.class).toInstance(SGame.game);
     }
 
 }

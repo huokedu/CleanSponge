@@ -22,48 +22,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean.event;
+package org.spongepowered.clean.plugin;
 
-import org.spongepowered.api.event.Event;
-import org.spongepowered.api.event.EventListener;
-import org.spongepowered.api.event.Order;
-import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.plugin.meta.PluginMetadata;
 
-public class RegisteredListener {
+import java.util.Map;
 
-    private final Order order;
-    private final Object owner;
-    private final EventListener<?> listener;
-    private final PluginContainer plugin;
-    private final Class<? extends Event> type;
+public class PluginCandidate {
 
-    public RegisteredListener(PluginContainer pl, EventListener<?> listener, Object owner, Order order, Class<? extends Event> type) {
-        this.order = order;
-        this.owner = owner;
-        this.listener = listener;
-        this.plugin = pl;
-        this.type = type;
+    private String pluginClass;
+    private Map<String, Object> annotationValues;
+    private PluginMetadata metadata;
+
+    public PluginCandidate(String name, Map<String, Object> plugin) {
+        this.pluginClass = name;
+        this.annotationValues = plugin;
+
     }
 
-    public Order getOrder() {
-        return this.order;
+    public String getPluginClass() {
+        return this.pluginClass;
     }
 
-    public Object getOwner() {
-        return this.owner;
+    public Map<String, Object> getAnnotationValues() {
+        return this.annotationValues;
     }
 
-    @SuppressWarnings("rawtypes")
-    public EventListener getListener() {
-        return this.listener;
+    public String getId() {
+        return (String) this.annotationValues.get("id");
     }
 
-    public PluginContainer getPlugin() {
-        return this.plugin;
+    public PluginMetadata getMetadata() {
+        return this.metadata;
     }
 
-    public Class<? extends Event> getEventType() {
-        return this.type;
+    public void setMetadata(PluginMetadata meta) {
+        this.metadata = meta;
     }
 
 }
