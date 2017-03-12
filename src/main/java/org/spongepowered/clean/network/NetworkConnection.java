@@ -175,10 +175,10 @@ public class NetworkConnection {
             this.player = new SPlayer(world, this.uid, this);
             world.addJoiningPlayer(this.player);
         } else if (this.conn_state == ConnectionState.PLAYING) {
-            if (this.timeout == 15) {
-                int val = (int) System.currentTimeMillis();
-                sendPacket(new KeepAlivePacket(val));
-            }
+//            if (this.timeout == 15) {
+//                int val = (int) System.currentTimeMillis();
+//                sendPacket(new KeepAlivePacket(val));
+//            }
             Packet packet = this.queue.poll();
             while (packet != null) {
                 InboundPackets type = InboundPackets.get(this.state, packet.id);

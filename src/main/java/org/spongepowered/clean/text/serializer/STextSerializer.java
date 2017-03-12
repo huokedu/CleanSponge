@@ -39,6 +39,12 @@ public class STextSerializer {
         } catch (NoSuchFieldException | SecurityException e) {
             e.printStackTrace();
         }
+        try {
+            Field json = TextSerializers.class.getField("PLAIN");
+            set(json, new PlainTextSerializer());
+        } catch (NoSuchFieldException | SecurityException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void set(Field field, Object type) {

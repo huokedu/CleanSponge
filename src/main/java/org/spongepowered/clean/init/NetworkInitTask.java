@@ -35,8 +35,9 @@ public class NetworkInitTask extends Task {
 
     @Override
     protected void execute() {
-        // TODO setup network listener
         SGame.game.getNetworkManager().startListening(25565);
+
+        SGame.game.commandManager.startListener();
 
         SGame.game.updateState(GameState.SERVER_STARTED);
         Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.SERVER_STARTED));

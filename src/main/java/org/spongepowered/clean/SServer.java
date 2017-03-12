@@ -46,6 +46,7 @@ import org.spongepowered.api.world.WorldArchetype;
 import org.spongepowered.api.world.WorldArchetypes;
 import org.spongepowered.api.world.storage.ChunkLayout;
 import org.spongepowered.api.world.storage.WorldProperties;
+import org.spongepowered.clean.command.SConsoleSource;
 import org.spongepowered.clean.config.ServerProperties;
 import org.spongepowered.clean.entity.player.SPlayer;
 import org.spongepowered.clean.scheduler.CoreScheduler;
@@ -75,6 +76,8 @@ public class SServer implements Server {
     private ImmutableMap<String, World> worlds = ImmutableMap.of();
     private ImmutableMap<String, WorldProperties> unloaded_worlds = ImmutableMap.of();
     private ImmutableMap<String, WorldProperties> all_worlds = ImmutableMap.of();
+    
+    private final ConsoleSource console_source = new SConsoleSource();
 
     public SServer() {
 
@@ -360,8 +363,7 @@ public class SServer implements Server {
 
     @Override
     public ConsoleSource getConsole() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.console_source;
     }
 
     @Override

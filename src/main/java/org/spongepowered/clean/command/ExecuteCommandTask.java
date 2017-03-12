@@ -22,28 +22,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean;
+package org.spongepowered.clean.command;
 
-import org.spongepowered.api.util.Coerce;
-import org.spongepowered.clean.init.StartupTask;
-import org.spongepowered.clean.scheduler.CoreScheduler;
+import org.spongepowered.api.command.CommandCallable;
+import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.clean.scheduler.Task;
 
-public class Main {
+import java.util.concurrent.CompletableFuture;
 
-    public static void main(String[] args) {
-        int cores = Runtime.getRuntime().availableProcessors();
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("--cores=")) {
-                cores = Coerce.toInteger(args[i].substring("--cores=".length()));
-            }
-        }
-        System.out.println("Launching Sponge with " + cores + " worker threads.");
-        CoreScheduler.init(cores, new StartupTask());
-        try {
-            CoreScheduler.waitForShutdown();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        CoreScheduler.stopWorkers();
+public class ExecuteCommandTask extends Task {
+
+    private CommandCallable cmd;
+    private CommandSource src;
+    private String args;
+    private CompletableFuture<CommandResult> result = new CompletableFuture<>();
+
+    public ExecuteCommandTask(CommandCallable c, CommandSource s, String a) {
+        this.cmd = c;
+        this.src = s;
+        this.args = a;
     }
+
+    public CompletableFuture<CommandResult> getResult() {
+        return this.result;
+    }
+
+    @Override
+    protected void execute() {
+        try {
+            CommandResult r = this.cmd.process(this.src, this.args);
+            this.result.complete(r);
+        } catch (CommandException e) {
+            e.printStackTrace();
+            this.result.complete(CommandResult.empty());
+        }
+    }
+
 }

@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.SubjectCollection;
@@ -36,15 +37,15 @@ import org.spongepowered.api.service.permission.SubjectData;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.util.Tristate;
+import org.spongepowered.clean.SGame;
 
-public class ConsoleSource implements CommandSource {
+public class SConsoleSource implements ConsoleSource {
 
     private static final String CONSOLE_NAME = "Console";
 
     @Override
     public void sendMessage(Text message) {
-        // TODO Auto-generated method stub
-
+        SGame.getLogger().info(message.toPlain());
     }
 
     @Override
@@ -85,8 +86,7 @@ public class ConsoleSource implements CommandSource {
 
     @Override
     public Tristate getPermissionValue(Set<Context> contexts, String permission) {
-        // TODO Auto-generated method stub
-        return null;
+        return Tristate.TRUE;
     }
 
     @Override

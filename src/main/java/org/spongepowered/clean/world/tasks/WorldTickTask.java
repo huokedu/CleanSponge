@@ -33,6 +33,7 @@ import org.spongepowered.clean.world.SWorld;
 public class WorldTickTask extends Task {
 
     private final SWorld world;
+    private final WorldTickFinishTask finish = new WorldTickFinishTask();
 
     public WorldTickTask(SWorld world) {
         this.world = world;
@@ -50,7 +51,7 @@ public class WorldTickTask extends Task {
         ChunkParallelTickTask task = new ChunkParallelTickTask(this.world.getSChunks(), 0, this.world.getSChunks().size());
         condition.addTask(task);
         CoreScheduler.addHighTask(task);
-        CoreScheduler.addHighTask(new WorldTickFinishTask(), condition);
+        CoreScheduler.addHighTask(this.finish, condition);
     }
 
     private class WorldTickFinishTask extends Task {

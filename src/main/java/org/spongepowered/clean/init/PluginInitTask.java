@@ -53,8 +53,6 @@ public class PluginInitTask extends Task {
         condition.addTask(cpload);
         CoreScheduler.addHighTask(cpload);
         List<File> possible = plugins.discoverPlugins();
-        // TODO discover plugins and kick off a task per plugin jar to load it
-        // or reject it
         for (File jar : possible) {
             PluginLoadTask task = new PluginLoadTask(jar);
             condition.addTask(task);

@@ -36,6 +36,7 @@ public class ShutdownTask extends Task {
     @Override
     public void execute() {
         System.out.println("Shutdown");
+        SGame.game.commandManager.stopListener();
         SGame.game.updateState(GameState.SERVER_STOPPING);
         Sponge.getEventManager().post(SpongeEventFactory.createGameStateEvent(SGame.game.getImplementationCause(), GameState.SERVER_STOPPING));
 

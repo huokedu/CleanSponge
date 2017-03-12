@@ -45,18 +45,21 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.clean.command.builtin.HelpCommand;
 import org.spongepowered.clean.command.builtin.StopCommand;
+import org.spongepowered.clean.scheduler.CoreScheduler;
 
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SCommandManager implements CommandManager {
 
     private final Multimap<String, CommandMapping> commands = HashMultimap.create();
+    private ConsoleCommandReader console;
 
     public SCommandManager() {
     }
@@ -64,6 +67,15 @@ public class SCommandManager implements CommandManager {
     public void registerBaseCommands() {
         register(Sponge.getGame().getPlatform().getContainer(Component.IMPLEMENTATION), new HelpCommand(), "help", "?");
         register(Sponge.getGame().getPlatform().getContainer(Component.IMPLEMENTATION), new StopCommand(), "stop");
+    }
+
+    public void startListener() {
+        this.console = new ConsoleCommandReader();
+        this.console.start();
+    }
+
+    public void stopListener() {
+        this.console.halt();
     }
 
     @Override
@@ -204,6 +216,13 @@ public class SCommandManager implements CommandManager {
         return this.commands.size();
     }
 
+    public CompletableFuture<CommandResult> process(CommandSource src, CommandCallable cmd, String arguments) {
+        ExecuteCommandTask task = new ExecuteCommandTask(cmd, src, arguments);
+        // TODO: collect required contexts and add as condition
+        CoreScheduler.addNormalTask(task);
+        return task.getResult();
+    }
+
     @Override
     public CommandResult process(CommandSource source, String arguments) {
         int first = arguments.indexOf(' ');
@@ -214,11 +233,7 @@ public class SCommandManager implements CommandManager {
             source.sendMessage(Text.of(TextColors.RED, "Command " + cmd + " not found."));
             return CommandResult.empty();
         }
-        try {
-            return mapping.get().getCallable().process(source, args);
-        } catch (CommandException e) {
-            e.printStackTrace();
-        }
+        process(source, mapping.get().getCallable(), args);
         return CommandResult.empty();
     }
 

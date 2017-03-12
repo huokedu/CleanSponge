@@ -22,28 +22,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.clean;
+package org.spongepowered.clean.text.serializer;
 
-import org.spongepowered.api.util.Coerce;
-import org.spongepowered.clean.init.StartupTask;
-import org.spongepowered.clean.scheduler.CoreScheduler;
+import org.spongepowered.api.text.LiteralText;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.SafeTextSerializer;
+import org.spongepowered.api.text.serializer.TextParseException;
 
-public class Main {
+public class PlainTextSerializer implements SafeTextSerializer {
 
-    public static void main(String[] args) {
-        int cores = Runtime.getRuntime().availableProcessors();
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("--cores=")) {
-                cores = Coerce.toInteger(args[i].substring("--cores=".length()));
+    @Override
+    public String serialize(Text text) {
+        StringBuilder builder = new StringBuilder();
+        toPlain(text, builder);
+        return builder.toString();
+    }
+
+    private void toPlain(Text text, StringBuilder builder) {
+        if (text instanceof LiteralText) {
+            builder.append(((LiteralText) text).getContent());
+            if (!text.getChildren().isEmpty()) {
+                for (Text child : text.getChildren()) {
+                    toPlain(child, builder);
+                }
             }
         }
-        System.out.println("Launching Sponge with " + cores + " worker threads.");
-        CoreScheduler.init(cores, new StartupTask());
-        try {
-            CoreScheduler.waitForShutdown();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        CoreScheduler.stopWorkers();
     }
+
+    @Override
+    public Text deserialize(String input) throws TextParseException {
+        return Text.of(input);
+    }
+
 }
