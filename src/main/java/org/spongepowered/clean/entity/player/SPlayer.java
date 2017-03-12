@@ -312,8 +312,7 @@ public class SPlayer extends SLiving implements Player {
 
     @Override
     public Tristate getPermissionValue(Set<Context> contexts, String permission) {
-        // TODO Auto-generated method stub
-        return null;
+        return Tristate.TRUE;
     }
 
     @Override

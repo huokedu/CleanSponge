@@ -57,6 +57,7 @@ import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.api.world.gen.PopulatorType;
 import org.spongepowered.api.world.gen.type.BiomeTreeType;
 import org.spongepowered.api.world.schematic.BlockPaletteType;
+import org.spongepowered.clean.SGame;
 import org.spongepowered.clean.block.SBlockType;
 import org.spongepowered.clean.block.tileentity.STileEntityType;
 import org.spongepowered.clean.block.type.SBannerPatternShape;
@@ -124,6 +125,7 @@ public class RegistryModules {
         reg.registerModule(TileEntityType.class, new FixedCatalogRegistryModule<>(TileEntityType.class, STileEntityType::registerTypes));
 
         STextSerializer.registerTypes();
+        SGame.game.commandManager.registerBaseCommands();
     }
 
     public static void registerLateModules() {

@@ -169,6 +169,7 @@ public class CoreScheduler {
                         return new ShutdownTask();
                     }
                     stopping.signalAll();
+                    stopWorkers();
                 }
                 if (!condition_tasks.isEmpty()) {
                     // await a new task arriving

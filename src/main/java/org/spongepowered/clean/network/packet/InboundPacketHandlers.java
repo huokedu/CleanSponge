@@ -133,8 +133,12 @@ public class InboundPacketHandlers {
 
     public static final BiConsumer<Packet, NetworkConnection> CHAT_MESSAGE = (p, c) -> {
         ChatMessagePacket pk = (ChatMessagePacket) p;
-        // TODO: throw proper event for formatting
-        Sponge.getServer().getBroadcastChannel().send(Text.of("<" + c.getName() + "> " + pk.text));
+        if (pk.text.startsWith("/")) {
+            Sponge.getCommandManager().process(c.getPlayerEntity(), pk.text.substring(1));
+        } else {
+            // TODO: throw proper event for formatting
+            Sponge.getServer().getBroadcastChannel().send(Text.of("<" + c.getName() + "> " + pk.text));
+        }
     };
 
     public static final BiConsumer<Packet, NetworkConnection> CLIENT_STATUS = UNKNOWN;

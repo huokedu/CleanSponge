@@ -27,6 +27,7 @@ package org.spongepowered.clean;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.collect.ImmutableMap;
+import org.spongepowered.api.GameState;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.source.ConsoleSource;
@@ -347,13 +348,13 @@ public class SServer implements Server {
 
     @Override
     public void shutdown() {
-        // TODO Auto-generated method stub
-
+        shutdown(Text.of("Stopping server..."));
     }
 
     @Override
     public void shutdown(Text kickMessage) {
-        // TODO Auto-generated method stub
+        getBroadcastChannel().send(kickMessage);
+        SGame.game.updateState(GameState.SERVER_STOPPING);
 
     }
 
