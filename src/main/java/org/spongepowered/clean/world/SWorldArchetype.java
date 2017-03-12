@@ -51,6 +51,7 @@ public class SWorldArchetype extends AbstractCatalogType implements WorldArchety
     private final boolean keepsSpawnLoaded;
     private final boolean generateSpawnOnLoad;
     private final long seed;
+    private final boolean randomSeed;
     private final GameMode gamemode;
     private final GeneratorType generatorType;
     private final List<WorldGeneratorModifier> modifiers;
@@ -72,6 +73,7 @@ public class SWorldArchetype extends AbstractCatalogType implements WorldArchety
         this.keepsSpawnLoaded = builder.keepsSpawnLoaded;
         this.generateSpawnOnLoad = builder.generateSpawnOnLoad;
         this.seed = builder.seed;
+        this.randomSeed = builder.randomSeed;
         this.gamemode = builder.gamemode;
         this.generatorType = builder.generatorType;
         this.modifiers = ImmutableList.copyOf(builder.modifiers);
@@ -105,6 +107,11 @@ public class SWorldArchetype extends AbstractCatalogType implements WorldArchety
     @Override
     public boolean doesGenerateSpawnOnLoad() {
         return this.generateSpawnOnLoad;
+    }
+
+    @Override
+    public boolean isSeedRandomized() {
+        return this.randomSeed;
     }
 
     @Override

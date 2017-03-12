@@ -28,8 +28,13 @@ import org.spongepowered.api.text.LiteralText;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.SafeTextSerializer;
 import org.spongepowered.api.text.serializer.TextParseException;
+import org.spongepowered.clean.registry.AbstractCatalogType;
 
-public class PlainTextSerializer implements SafeTextSerializer {
+public class PlainTextSerializer extends AbstractCatalogType implements SafeTextSerializer {
+
+    public PlainTextSerializer() {
+        super("sponge:plain", "Plain");
+    }
 
     @Override
     public String serialize(Text text) {

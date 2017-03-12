@@ -26,6 +26,7 @@ package org.spongepowered.clean.text.format;
 
 import org.spongepowered.api.text.Text.Builder;
 import org.spongepowered.api.text.format.TextColor;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.Color;
 import org.spongepowered.clean.registry.AbstractCatalogType;
 import org.spongepowered.clean.registry.FixedCatalogRegistryModule;
@@ -50,6 +51,7 @@ public class STextColor extends AbstractCatalogType implements TextColor {
     
     public static void registerTypes(FixedCatalogRegistryModule<TextColor> registry) {
         registry.setDefaultNamespace("");
+        registry.register(TextColors.NONE);
         registry.register(new STextColor("aqua", "Aqua"));
         registry.register(new STextColor("black", "Black"));
         registry.register(new STextColor("blue", "Blue"));

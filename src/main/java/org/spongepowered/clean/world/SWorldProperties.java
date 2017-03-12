@@ -51,6 +51,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 public class SWorldProperties implements WorldProperties {
@@ -146,7 +147,7 @@ public class SWorldProperties implements WorldProperties {
         this.loadsOnStartup = archetype.loadOnStartup();
         this.keepsSpawnLoaded = archetype.doesKeepSpawnLoaded();
         this.generateSpawnOnLoad = archetype.doesGenerateSpawnOnLoad();
-        this.seed = archetype.getSeed();
+        this.seed = archetype.isSeedRandomized() ? new Random().nextLong() : archetype.getSeed();
         this.gamemode = archetype.getGameMode();
         this.generatorType = archetype.getGeneratorType();
         this.modifiers = ImmutableList.copyOf(archetype.getGeneratorModifiers());
@@ -263,6 +264,11 @@ public class SWorldProperties implements WorldProperties {
     @Override
     public long getSeed() {
         return this.seed;
+    }
+
+    @Override
+    public void setSeed(long seed) {
+        this.seed = seed;
     }
 
     @Override

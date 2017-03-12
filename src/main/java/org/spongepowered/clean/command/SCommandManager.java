@@ -216,11 +216,26 @@ public class SCommandManager implements CommandManager {
         return this.commands.size();
     }
 
-    public CompletableFuture<CommandResult> process(CommandSource src, CommandCallable cmd, String arguments) {
+    public CompletableFuture<CommandResult> processAsync(CommandSource src, CommandCallable cmd, String arguments) {
         ExecuteCommandTask task = new ExecuteCommandTask(cmd, src, arguments);
         // TODO: collect required contexts and add as condition
         CoreScheduler.addNormalTask(task);
         return task.getResult();
+    }
+
+    @Override
+    public CompletableFuture<CommandResult>  processAsync(CommandSource source, String arguments) {
+        int first = arguments.indexOf(' ');
+        String cmd = arguments.substring(0, first == -1 ? arguments.length() : first);
+        String args = first == -1 ? "" : arguments.substring(first + 1);
+        Optional<CommandMapping> mapping = get(cmd, source);
+        if (!mapping.isPresent()) {
+            source.sendMessage(Text.of(TextColors.RED, "Command " + cmd + " not found."));
+            CompletableFuture<CommandResult> result = new CompletableFuture<>();
+            result.complete(CommandResult.empty());
+            return result;
+        }
+        return processAsync(source, mapping.get().getCallable(), args);
     }
 
     @Override
@@ -233,7 +248,7 @@ public class SCommandManager implements CommandManager {
             source.sendMessage(Text.of(TextColors.RED, "Command " + cmd + " not found."));
             return CommandResult.empty();
         }
-        process(source, mapping.get().getCallable(), args);
+        processAsync(source, mapping.get().getCallable(), args);
         return CommandResult.empty();
     }
 

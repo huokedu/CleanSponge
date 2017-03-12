@@ -478,6 +478,12 @@ public class SChunk implements Chunk {
     }
 
     @Override
+    public Entity createEntityNaturally(EntityType type, Vector3d position) throws IllegalArgumentException, IllegalStateException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
     public Optional<Entity> createEntity(DataContainer entityContainer) {
         // TODO Auto-generated method stub
         return null;

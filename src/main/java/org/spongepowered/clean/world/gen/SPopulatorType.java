@@ -53,6 +53,7 @@ public class SPopulatorType extends AbstractCatalogType implements PopulatorType
         registry.register(new SPopulatorType("minecraft:end_island", "End Island"));
         registry.register(new SPopulatorType("minecraft:flower", "Flower"));
         registry.register(new SPopulatorType("minecraft:forest", "Forest"));
+        registry.register(new SPopulatorType("minecraft:fossil", "Fossil"));
         registry.register(new SPopulatorType("minecraft:generic_block", "Generic Block"));
         registry.register(new SPopulatorType("minecraft:generic_object", "Generic Object"));
         registry.register(new SPopulatorType("minecraft:glowstone", "Glowstone"));

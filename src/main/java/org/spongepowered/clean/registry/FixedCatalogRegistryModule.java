@@ -119,7 +119,7 @@ public class FixedCatalogRegistryModule<T extends CatalogType> implements Catalo
         }
         for (Class<?> c : this.catalog) {
             for (Field f : c.getDeclaredFields()) {
-                if (f.getType().equals(this.type) && Modifier.isStatic(f.getModifiers())) {
+                if (this.type.isAssignableFrom(f.getType()) && Modifier.isStatic(f.getModifiers())) {
                     Optional<T> type = getById(f.getName().toLowerCase());
                     if (!type.isPresent() && !this.defaultNamespace.isEmpty()) {
                         type = getById(this.defaultNamespace + ":" + f.getName().toLowerCase());

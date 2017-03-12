@@ -66,12 +66,12 @@ import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.util.DiscreteTransform3;
 import org.spongepowered.api.world.BlockChangeFlag;
 import org.spongepowered.api.world.Chunk;
+import org.spongepowered.api.world.ChunkPreGenerate;
 import org.spongepowered.api.world.Dimension;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.PortalAgent;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.WorldBorder;
-import org.spongepowered.api.world.WorldBorder.ChunkPreGenerate;
 import org.spongepowered.api.world.biome.BiomeType;
 import org.spongepowered.api.world.explosion.Explosion;
 import org.spongepowered.api.world.extent.ArchetypeVolume;
@@ -326,6 +326,12 @@ public class SWorld implements World {
 
     @Override
     public Entity createEntity(EntityType type, Vector3d position) throws IllegalArgumentException, IllegalStateException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Entity createEntityNaturally(EntityType type, Vector3d position) throws IllegalArgumentException, IllegalStateException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -896,7 +902,7 @@ public class SWorld implements World {
     }
 
     @Override
-    public ChunkPreGenerate newChunkPreGenerate(Vector3d center, double diameter) {
+    public ChunkPreGenerate.Builder newChunkPreGenerate(Vector3d center, double diameter) {
         // TODO Auto-generated method stub
         return null;
     }

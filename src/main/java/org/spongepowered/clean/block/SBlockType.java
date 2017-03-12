@@ -80,6 +80,12 @@ public class SBlockType extends AbstractCatalogType implements BlockType {
     }
 
     @Override
+    public Collection<BlockState> getAllBlockStates() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
     public Optional<ItemType> getItem() {
         return Optional.ofNullable(this.item);
     }

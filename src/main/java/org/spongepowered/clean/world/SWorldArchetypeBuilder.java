@@ -54,6 +54,7 @@ public class SWorldArchetypeBuilder implements WorldArchetype.Builder {
     boolean keepsSpawnLoaded;
     boolean generateSpawnOnLoad;
     long seed;
+    boolean randomSeed;
     GameMode gamemode;
     GeneratorType generatorType;
     final List<WorldGeneratorModifier> modifiers = Lists.newArrayList();
@@ -97,8 +98,15 @@ public class SWorldArchetypeBuilder implements WorldArchetype.Builder {
     }
 
     @Override
+    public Builder randomSeed() {
+        this.randomSeed = true;
+        return this;
+    }
+
+    @Override
     public Builder seed(long seed) {
         this.seed = seed;
+        this.randomSeed = false;
         return this;
     }
 
@@ -190,6 +198,7 @@ public class SWorldArchetypeBuilder implements WorldArchetype.Builder {
         this.keepsSpawnLoaded = value.doesKeepSpawnLoaded();
         this.generateSpawnOnLoad = value.doesGenerateSpawnOnLoad();
         this.seed = value.getSeed();
+        this.randomSeed = false;
         this.gamemode = value.getGameMode();
         this.generatorType = value.getGeneratorType();
         this.modifiers.clear();
@@ -214,6 +223,7 @@ public class SWorldArchetypeBuilder implements WorldArchetype.Builder {
         this.keepsSpawnLoaded = value.doesKeepSpawnLoaded();
         this.generateSpawnOnLoad = value.doesGenerateSpawnOnLoad();
         this.seed = value.getSeed();
+        this.randomSeed = value.isSeedRandomized();
         this.gamemode = value.getGameMode();
         this.generatorType = value.getGeneratorType();
         this.modifiers.clear();
@@ -238,6 +248,7 @@ public class SWorldArchetypeBuilder implements WorldArchetype.Builder {
         this.keepsSpawnLoaded = true;
         this.generateSpawnOnLoad = true;
         this.seed = 0;
+        this.randomSeed = true;
         this.gamemode = GameModes.SURVIVAL;
         this.generatorType = GeneratorTypes.DEFAULT;
         this.modifiers.clear();

@@ -33,6 +33,7 @@ import org.spongepowered.api.data.type.SkinPart;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.sound.SoundCategory;
 import org.spongepowered.api.effect.sound.SoundType;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
@@ -41,6 +42,7 @@ import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.entity.living.player.tab.TabList;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.message.MessageChannelEvent.Chat;
 import org.spongepowered.api.item.inventory.Carrier;
 import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -537,6 +539,24 @@ public class SPlayer extends SLiving implements Player {
     @Override
     public EntityType getType() {
         return EntityTypes.PLAYER;
+    }
+
+    @Override
+    public Chat simulateChat(Text message, Cause cause) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Optional<Entity> getSpectatorTarget() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setSpectatorTarget(Entity entity) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

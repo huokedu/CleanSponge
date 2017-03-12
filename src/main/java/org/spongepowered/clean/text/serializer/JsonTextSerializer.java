@@ -31,8 +31,13 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextParseException;
 import org.spongepowered.api.text.serializer.TextSerializer;
+import org.spongepowered.clean.registry.AbstractCatalogType;
 
-public class JsonTextSerializer implements TextSerializer {
+public class JsonTextSerializer extends AbstractCatalogType implements TextSerializer {
+
+    public JsonTextSerializer() {
+        super("sponge:json", "Json");
+    }
 
     @Override
     public String serialize(Text text) {

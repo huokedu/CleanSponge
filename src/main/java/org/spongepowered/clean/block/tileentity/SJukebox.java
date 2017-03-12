@@ -60,4 +60,10 @@ public class SJukebox extends AbstractTileEntity implements Jukebox {
 
     }
 
+    @Override
+    public void stopRecord() {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

@@ -48,6 +48,7 @@ import org.spongepowered.api.statistic.achievement.Achievement;
 import org.spongepowered.api.text.chat.ChatType;
 import org.spongepowered.api.text.chat.ChatVisibility;
 import org.spongepowered.api.text.format.TextColor;
+import org.spongepowered.api.text.serializer.TextSerializer;
 import org.spongepowered.api.util.ban.BanType;
 import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.GeneratorType;
@@ -122,9 +123,9 @@ public class RegistryModules {
         reg.registerModule(HandType.class, new FixedCatalogRegistryModule<>(HandType.class, SHandType::registerTypes));
         reg.registerModule(PopulatorType.class, new FixedCatalogRegistryModule<>(PopulatorType.class, SPopulatorType::registerTypes));
         reg.registerModule(TextColor.class, new FixedCatalogRegistryModule<>(TextColor.class, STextColor::registerTypes));
+        reg.registerModule(TextSerializer.class, new FixedCatalogRegistryModule<>(TextSerializer.class, STextSerializer::registerTypes));
         reg.registerModule(TileEntityType.class, new FixedCatalogRegistryModule<>(TileEntityType.class, STileEntityType::registerTypes));
 
-        STextSerializer.registerTypes();
         SGame.game.commandManager.registerBaseCommands();
     }
 

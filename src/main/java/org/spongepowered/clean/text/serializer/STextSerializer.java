@@ -24,40 +24,14 @@
  */
 package org.spongepowered.clean.text.serializer;
 
-import org.spongepowered.api.text.serializer.TextSerializers;
-import org.spongepowered.clean.scheduler.CoreScheduler;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+import org.spongepowered.api.text.serializer.TextSerializer;
+import org.spongepowered.clean.registry.FixedCatalogRegistryModule;
 
 public class STextSerializer {
 
-    public static void registerTypes() {
-        try {
-            Field json = TextSerializers.class.getField("JSON");
-            set(json, new JsonTextSerializer());
-        } catch (NoSuchFieldException | SecurityException e) {
-            e.printStackTrace();
-        }
-        try {
-            Field json = TextSerializers.class.getField("PLAIN");
-            set(json, new PlainTextSerializer());
-        } catch (NoSuchFieldException | SecurityException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void set(Field field, Object type) {
-        try {
-            field.setAccessible(true);
-
-            Field modifiersField = Field.class.getDeclaredField("modifiers");
-            modifiersField.setAccessible(true);
-            modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-
-            field.set(null, type);
-        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-            CoreScheduler.emergencyShutdown(e);
-        }
+    public static void registerTypes(FixedCatalogRegistryModule<TextSerializer> registry) {
+        registry.setDefaultNamespace("sponge");
+        registry.register(new JsonTextSerializer());
+        registry.register(new PlainTextSerializer());
     }
 }
