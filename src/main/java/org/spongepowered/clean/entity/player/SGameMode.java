@@ -45,6 +45,17 @@ public class SGameMode extends AbstractCatalogType implements GameMode {
         return GameModes.NOT_SET;
     }
 
+    public static int getId(GameMode gm) {
+        if (gm == GameModes.CREATIVE) {
+            return 1;
+        } else if (gm == GameModes.ADVENTURE) {
+            return 2;
+        } else if (gm == GameModes.SPECTATOR) {
+            return 3;
+        }
+        return 0;
+    }
+
     public SGameMode(String id, String name) {
         super(id, name);
     }

@@ -45,6 +45,17 @@ public class SDifficulty extends AbstractCatalogType implements Difficulty {
         return Difficulties.NORMAL;
     }
 
+    public static int getId(Difficulty dif) {
+        if (dif == Difficulties.EASY) {
+            return 1;
+        } else if (dif == Difficulties.NORMAL) {
+            return 2;
+        } else if (dif == Difficulties.HARD) {
+            return 3;
+        }
+        return 0;
+    }
+
     public SDifficulty(String id, String name) {
         super(id, name);
     }

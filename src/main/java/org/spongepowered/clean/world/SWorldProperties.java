@@ -32,6 +32,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.data.MemoryDataContainer;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.GeneratorType;
@@ -47,6 +48,7 @@ import org.spongepowered.clean.entity.player.SGameMode;
 import org.spongepowered.clean.world.storage.SaveHandler;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -141,6 +143,7 @@ public class SWorldProperties implements WorldProperties {
     public SWorldProperties(String name, WorldArchetype archetype) {
         File dir = SGame.game.getWorldsDir().resolve(name).toFile();
         this.save = new SaveHandler(dir);
+        this.save.setProperties(this);
         this.name = name;
 
         this.enabled = archetype.isEnabled();
@@ -175,6 +178,12 @@ public class SWorldProperties implements WorldProperties {
         this.worldSpawn = new Vector3i(0, 64, 0);
 
         this.uuid = UUID.randomUUID();
+
+        try {
+            this.save.saveProperties();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void updateTime() {
@@ -565,8 +574,40 @@ public class SWorldProperties implements WorldProperties {
 
     @Override
     public DataContainer toContainer() {
-        // TODO Auto-generated method stub
-        return null;
+        MemoryDataContainer container = new MemoryDataContainer();
+        DataView data = container.createView(DataQuery.of("Data"));
+        data.set(DataQueries.LEVEL_VERSION, this.version);
+        data.set(DataQueries.LEVEL_INITIALIZED, this.initialized);
+        data.set(DataQueries.LEVEL_NAME, this.name);
+        data.set(DataQueries.LEVEL_GENERATOR_NAME, this.generatorType.getId());
+        // TODO generatorVersion
+        data.set(DataQueries.LEVEL_GENERATOR_VERSION, 0);
+        // TODO generatorOptions
+        data.set(DataQueries.LEVEL_GENERATOR_OPTIONS, "");
+        data.set(DataQueries.LEVEL_RANDOM_SEED, this.seed);
+        data.set(DataQueries.LEVEL_MAP_FEATURES, this.mapFeatures);
+        data.set(DataQueries.LEVEL_LAST_PLAYED, this.lastload);
+        data.set(DataQueries.LEVEL_SIZE_ON_DISK, 0);
+        data.set(DataQueries.LEVEL_ALLOW_COMMANDS, this.commandsAllowed);
+        data.set(DataQueries.LEVEL_HARDCORE, this.hardcore);
+        data.set(DataQueries.LEVEL_GAME_TYPE, SGameMode.getId(this.gamemode));
+        data.set(DataQueries.LEVEL_DIFFICULTY, SDifficulty.getId(this.difficulty));
+        // TODO difficulty locked
+        data.set(DataQueries.LEVEL_DIFFICULTY_LOCKED, 0);
+        data.set(DataQueries.LEVEL_TIME, this.time);
+        data.set(DataQueries.LEVEL_DAY_TIME, this.daytime);
+        data.set(DataQueries.LEVEL_SPAWN_X, this.worldSpawn.getX());
+        data.set(DataQueries.LEVEL_SPAWN_Y, this.worldSpawn.getY());
+        data.set(DataQueries.LEVEL_SPAWN_Z, this.worldSpawn.getZ());
+        data.set(DataQueries.LEVEL_RAINING, this.raining);
+        data.set(DataQueries.LEVEL_RAIN_TIME, this.raintime);
+        data.set(DataQueries.LEVEL_THUNDERING, this.thundering);
+        data.set(DataQueries.LEVEL_THUNDER_TIME, this.thundertime);
+        data.set(DataQueries.LEVEL_CLEAR_WEATHER_TIME, this.clearWeatherTime);
+        // TODO world border stuff
+        // TODO game rules
+        // TODO version
+        return container;
     }
 
 }

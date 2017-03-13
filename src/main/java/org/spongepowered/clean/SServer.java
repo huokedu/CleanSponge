@@ -76,7 +76,7 @@ public class SServer implements Server {
     private ImmutableMap<String, World> worlds = ImmutableMap.of();
     private ImmutableMap<String, WorldProperties> unloaded_worlds = ImmutableMap.of();
     private ImmutableMap<String, WorldProperties> all_worlds = ImmutableMap.of();
-    
+
     private final ConsoleSource console_source = new SConsoleSource();
 
     public SServer() {
@@ -260,8 +260,11 @@ public class SServer implements Server {
 
     @Override
     public WorldProperties createWorldProperties(String folderName, WorldArchetype archetype) throws IOException {
-        // TODO check for duplicates
-        WorldProperties props = new SWorldProperties(folderName, archetype);
+        WorldProperties props = this.unloaded_worlds.get(folderName);
+        if (props != null) {
+            return props;
+        }
+        props = new SWorldProperties(folderName, archetype);
         ImmutableMap.Builder<String, WorldProperties> builder = ImmutableMap.builder();
         builder.putAll(this.unloaded_worlds);
         builder.put(folderName, props);

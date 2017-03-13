@@ -112,7 +112,7 @@ public class SDataManager implements DataManager {
     @Override
     public <T> Optional<DataTranslator<T>> getTranslator(Class<T> objectclass) {
         // TODO Auto-generated method stub
-        return null;
+        return Optional.empty();
     }
 
 }

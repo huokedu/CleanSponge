@@ -24,9 +24,8 @@
  */
 package org.spongepowered.clean.world.storage;
 
-import java.io.File;
-import java.io.IOException;
-
+import com.google.common.io.Files;
+import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.world.storage.WorldProperties;
@@ -35,6 +34,9 @@ import org.spongepowered.clean.util.NbtIO;
 import org.spongepowered.clean.world.SChunk;
 import org.spongepowered.clean.world.SWorldProperties;
 
+import java.io.File;
+import java.io.IOException;
+
 public class SaveHandler {
 
     public static final int CURRENT_CONTENT_VERSION = 0;
@@ -42,12 +44,21 @@ public class SaveHandler {
     private final File worldDir;
     private String name;
 
+    private SWorldProperties properties;
+
     public SaveHandler(File dir) {
         this.worldDir = dir;
+        if (!this.worldDir.exists()) {
+            this.worldDir.mkdirs();
+        }
     }
 
     public String getWorldName() {
         return this.name;
+    }
+
+    public void setProperties(SWorldProperties props) {
+        this.properties = props;
     }
 
     public WorldProperties loadProperties() throws IOException {
@@ -58,7 +69,22 @@ public class SaveHandler {
         DataView levelDat = NbtIO.read(levelDatFile).getView(DataQuery.of("Data")).get();
         SWorldProperties props = new SWorldProperties(this, levelDat);
         this.name = levelDat.getString(DataQueries.LEVEL_NAME).get();
+        this.properties = props;
         return props;
+    }
+
+    public void saveProperties() throws IOException {
+        File levelDatFile = new File(this.worldDir, "level.dat");
+        if (levelDatFile.exists()) {
+            File oldLevelDatFile = new File(this.worldDir, "level.dat.old");
+            try {
+                Files.copy(levelDatFile, oldLevelDatFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        DataContainer levelDat = this.properties.toContainer();
+        NbtIO.write(levelDat, levelDatFile);
     }
 
     public SChunk loadChunk(int x, int z) {
@@ -66,6 +92,10 @@ public class SaveHandler {
         // in flight or queued
         // TODO Auto-generated method stub
         return null;
+    }
+
+    public void saveChunk(SChunk chunk) {
+
     }
 
 }
